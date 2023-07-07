@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<!--<h4>{{ form }}</h4>-->
+<form method="post" novalidate enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+        <div class="form-group col-md-4">
+        </div>
+        <div class="form-group col-md-4">
+            <input class="btn btn-primary" type="submit" value="上傳"/>
+        </div>
+        <div class="form-group col-md-4">
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+        </div>
+        <div class="form-group col-md-4">
+            {{ form.image }}
+        </div>
+        <div class="form-group col-md-4">
+        </div>
+    </div>
+</form>
+
+<div class="row">
+    {% for photo in queryset %}
+
+    <br/>
+    <div class="col-md-4">
+        <div class="card mb-4 shadow-sm">
+            <img class="card-img-top" src="{{ photo.image.url }}"/>
+            <a type="button" class="btn btn-danger btn-sm" href="/image/{{ photo.id }}/delete/">刪除</a>
+
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

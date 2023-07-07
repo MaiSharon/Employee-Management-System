@@ -1,0 +1,10 @@
+.env.production
+.env.local
+.env.docker
+.git
+.history
+**/__pycache__
+slides
+snapshot
+media
+staticfiles

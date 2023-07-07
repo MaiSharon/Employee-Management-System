@@ -1,0 +1,63 @@
+# 因prometheus內部使用nobody啟動進程，掛載數據權限為root，故需要使用initContainer進行目錄權限修復
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: monitor
+  labels:
+    app: prometheus
+spec:
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      nodeSelector:
+        app: prometheus
+      initContainers:
+        - name: "change-prometheus-directory"
+          image: busybox
+          command: ['/bin/sh']
+          args: ["-c", "chown -R 65534:65534 /prometheus"]  #????
+          securityContext:
+            privileged: true
+          volumeMounts:
+            - mountPath: "/etc/prometheus"
+              name: config-volume
+            - mountPath: "/prometheus"
+              name: data
+      containers:
+        - image: prom/prometheus:v2.19.2
+          name: prometheus
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"  # 指定tsdb數據路徑
+            - "--web.enable-lifecycle"  # prometheus命令支持熱更新不用apply使用localhost:9090/-/reload即生效
+            - "--web.console.libraries=/usr/share/prometheus/console_libraries"
+            - "--web.console.templates=/usr/share/prometheus/console"
+          ports:
+            - containerPort: 9090
+              name: http
+          volumeMounts:
+            - mountPath: "/etc/prometheus"
+              name: config-volume
+            - mountPath: "/prometheus"
+              name: data
+          resources:
+            requests:
+              cpu: 100m
+              memory: 512Mi
+            limits:
+              cpu: 100m
+              memory: 512Mi
+      volumes:
+        - name: data
+          hostPath:
+            path: /data/prometheus/
+        - configMap:
+            name: prometheus-config
+          name: config-volume

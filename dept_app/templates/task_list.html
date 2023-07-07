@@ -1,0 +1,203 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="container">
+
+    <div class="container">
+        <h1>任務管理</h1>
+        <!-- 跟AJAX串接data需要form標籤使用id -->
+        <form id="formAdd" novalidate>
+            <div class="row">
+
+                {% for item in form %}
+                <div class="col-md-6">
+                    <div class="form-group" style="position: relative;margin-bottom: 22px">
+
+                        <label>{{item.label}}</label>
+                        {{ item }}
+                        <!--    跟AJAX串接使用class命名串    -->
+                         <span class="error_msg" style="font-size: 15px;color: red;position: absolute;margin-top: -3px"></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </form>
+
+        <input id="add" type="button" class="btn btn-primary btn-sm" value="點擊" >
+    </div>
+
+<!-- 傳送訊息給line用戶 -->
+<button id="myButton">Say Hi!</button>
+
+<script>
+document.getElementById('myButton').addEventListener('click', function() {
+    fetch('/send_greeting', {method: 'POST'});
+});
+</script>
+
+
+    <div class="container">
+        <div class="">
+            <table class="table">
+                <thead >
+                    <tr>
+                        <th scope="col">編號</th>
+                        <th scope="col">任務順序</th>
+                        <th scope="col">任務名稱</th>
+                        <th scope="col">詳細說明</th>
+<!--                        <th scope="col">負責人</th>-->
+                        <th scope="col"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in queryset %}
+                    <tr>
+                        <th scope="row">{{ item.id }}</th>
+                        <td>{{ item.get_level_display }}</td>
+                        <td>{{ item.title }}</td>
+                        <td>{{ item.detail }}</td>
+<!--                        <td>{{ item.user }}</td>-->
+
+                        <td>
+                            <a class="btn btn-primary btn-sm" href="" role="button">編輯</a>
+                            <a class="btn btn-danger btn-sm" href="" role="button">刪除</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <nav aria-label="...">
+        <ul class="pagination">
+            {{page_string}}
+
+        </ul>
+    </nav>
+
+<!--    <h3>示範1</h3>-->
+<!--    &lt;!&ndash;    DOM的綁定事件    &ndash;&gt;-->
+<!--&lt;!&ndash;    <input type="button" class="btn btn-primary btn-sm" value="點擊" onclick="clickMe();" />&ndash;&gt;-->
+
+<!--    &lt;!&ndash;    jQuery的綁定事件    &ndash;&gt;-->
+<!--    <input id="btn1" type="button" class="btn btn-primary btn-sm" value="點擊" >-->
+
+<!--    <h3>示範2</h3>-->
+<!--    <input type="text" id="txtuser" placeholder="姓名">-->
+<!--    <input type="text" id="txtage" placeholder="年齡">-->
+<!--    <input id="btn2" type="button" class="btn btn-primary btn-sm" value="點擊" >-->
+
+<!--    <h3>示範3-當輸入框很多可以使用form</h3>-->
+<!--    <form id="form3">-->
+<!--        <input type="text" name="user" placeholder="姓名">-->
+<!--        <input type="text" name="age" placeholder="年齡">-->
+<!--        <input type="text" name="pwd" placeholder="密碼">-->
+<!--        <input type="text" name="mobile" placeholder="手機">-->
+<!--    </form>-->
+<!--        <input id="btn3" type="button" class="btn btn-primary btn-sm" value="點擊" >-->
+
+</div>
+
+{% endblock %}
+
+{% block js %}
+    <script type="text/javascript">
+        $(function () {
+            // 當頁面框架加載完成後，程式碼會自動執行
+            bindBtn1Event();
+            bindBtn2Event();
+            bindBtn3Event();
+            bindaddEvent();
+        })
+
+        function bindBtn1Event() {
+            $("#btn1").click(function () {
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: "get",
+                    data: {
+                        n1: 123,
+                        n2: 456
+
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        console.log(res);
+                        console.log(res.status);
+                        console.log(res.data);
+                    }
+                })
+            })
+        }
+
+        function bindBtn2Event() {
+            $("#btn2").click(function () {
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: "post",
+                    <!--        獲取示範2的標籤，得到裡面的內容            -->
+                    data: {
+                        name: $("#txtuser").val(),
+                        age: $("#txtage").val(),
+
+
+                    },
+                    dataType: "JSON",
+                    success: function (res) {
+                        console.log(res);
+                        console.log(res.status);
+                        console.log(res.data);
+                    }
+                })
+            })
+        }
+
+        function bindBtn3Event() {
+            $("#btn3").click(function () {
+                $.ajax({
+                    url: '/task/ajax/',
+                    type: "post",
+                    <!--        獲取示範3的標籤，得到裡面的內容            -->
+                    data: $("#form3").serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        console.log(res);
+                    }
+                })
+            })
+        }
+
+        function bindaddEvent() {
+            $("#add").click(function () {
+
+                // 每次點擊，將以前的錯誤訊息清空
+                $(".error_msg").empty();
+
+                $.ajax({
+                    url: '/task/add/',
+                    type: "post",
+                    data: $("#formAdd").serialize(),
+                    dataType: "JSON",
+                    success: function (res) {
+                        // 若數據校驗正確
+                        if(res.status){
+                            alert("添加成功");
+                            // 用JS 實現頁面的刷新
+                            location.reload();
+                        } else {
+                            // 否則將錯誤信息顯示在輸入框下
+                            console.log(res);
+                            $.each(res.error, function(name,data){
+                                $("#id_" + name).next().text(data[0]);
+                            })
+                        }
+                    }
+                })
+            })
+        }
+
+
+    </script>
+
+{% endblock %}
+

@@ -1,0 +1,22 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h4>{{ title }}</h4>
+<form method="post" novalidate>
+    {% csrf_token %}
+
+    {% for item in form %}
+    <div class="form-group">
+        <label>{{item.label}}</label>
+        {{ item }}
+
+        {% for error in item.errors %}
+        <span style="color:red">{{ error }}</span>
+        {% endfor %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">提交</button>
+</form>
+
+</div>
+{% endblock %}

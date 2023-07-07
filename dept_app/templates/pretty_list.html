@@ -1,0 +1,75 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<p></p>
+<a type="button" class="btn btn-primary" href="/pretty/add/">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="20" fill="currentColor" class="bi bi-person-add"
+         viewBox="0 0 16 20">
+        <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm.5-5v1h1a.5.5 0 0 1 0 1h-1v1a.5.5 0 0 1-1 0v-1h-1a.5.5 0 0 1 0-1h1v-1a.5.5 0 0 1 1 0Zm-2-6a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/>
+        <path d="M8.256 14a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Z"/>
+    </svg>
+    新增靓號
+</a>
+
+<form method="get">
+    <div class="input-group mb-3" style="float: right; width:300px">
+        <input type="text" class="form-control" placeholder="find" aria-label="Recipient's username"
+               aria-describedby="button-addon2" name="search" value="{{search}}">
+        <div class="input-group-append">
+            <button class="btn btn-outline-secondary" type="submit" id="button-addon2">Search</button>
+        </div>
+    </div>
+</form>
+
+<table class="table" style="margin-top:10px">
+    <thead>
+    <tr>
+        <th>用戶列表</th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+        <th scope="col"></th>
+
+    </thead>
+    <tbody>
+    <tr>
+        <th scope="col">編號</th>
+        <th scope="col">號碼</th>
+        <th scope="col">費用</th>
+        <th scope="col">級別</th>
+        <th scope="col">狀態</th>
+
+    </tr>
+    {% for item in queryset %}
+    <tr>
+        <td scope="row">{{ item.id }}</td>
+        <td>{{ item.mobile }}</td>
+        <td>{{ item.price }}</td>
+        <td>{{ item.get_level_display }}</td>
+        <td>{{ item.get_status_display }}</td>
+        <td>
+            <a type="button" class="btn btn-primary btn-sm" href="/pretty/{{ item.id }}/edit/">編輯</a>
+            <a type="button" class="btn btn-danger btn-sm" href="/pretty/{{ item.id }}/delete/">刪除</a>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+
+<nav aria-label="...">
+    <ul class="pagination">
+        {{page_string}}
+        <form method="get">
+            <div class="input-group mb-3" style="float: right; width:130px">
+                <input type="text" class="form-control" placeholder="Page"
+                       aria-label="Recipient's username"
+                       aria-describedby="button-addon2" name="page" value="">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit" id="button-addon3">Search</button>
+                </div>
+            </div>
+        </form>
+    </ul>
+</nav>
+{% endblock %}

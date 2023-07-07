@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    app: flower
+  name: dept-flower
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: flower
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        app: flower
+    spec:
+      containers:
+        - command:
+            - /bin/sh
+            - /data/prj_dept/flower.start.sh
+          image: mher/flower
+          name: dept-flower
+          ports:
+            - containerPort: 5555
+          resources: {}
+          volumeMounts:
+            - mountPath: /data/logs/prj_dept
+              name: flower-claim0
+      restartPolicy: Always
+      volumes:
+        - name: flower-claim0
+          persistentVolumeClaim:
+            claimName: flower-claim0
+        - name: flower-claim1
+          persistentVolumeClaim:
+            claimName: flower-claim1

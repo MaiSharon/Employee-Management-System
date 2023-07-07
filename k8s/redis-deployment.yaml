@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.28.0 (c4137012e)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: redis
+  name: dept-redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: redis
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert
+        kompose.version: 1.28.0 (c4137012e)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sharon-mai-default: "true"
+        io.kompose.service: redis
+    spec:
+      containers:
+        - env:
+            - name: ALLOWED_HOSTS
+              valueFrom:
+                secretKeyRef:
+                  key: ALLOWED_HOSTS
+                  name: dept-secrets
+            - name: CELERY_BROKER_URL
+              valueFrom:
+                secretKeyRef:
+                  key: CELERY_BROKER_URL
+                  name: dept-secrets
+            - name: CELERY_RESULT_BACKEND
+              valueFrom:
+                secretKeyRef:
+                  key: CELERY_RESULT_BACKEND
+                  name: dept-secrets
+            - name: LINE_CHANNEL_ACCESS_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  key: LINE_CHANNEL_ACCESS_TOKEN
+                  name: dept-secrets
+            - name: LINE_CHANNEL_SECRET
+              valueFrom:
+                secretKeyRef:
+                  key: LINE_CHANNEL_SECRET
+                  name: dept-secrets
+            - name: MYSQL_HOST
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_HOST
+                  name: dept-secrets
+            - name: MYSQL_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_NAME
+                  name: dept-secrets
+            - name: MYSQL_ROOT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_PASSWORD
+                  name: dept-secrets
+            - name: MYSQL_PORT
+              valueFrom:
+                secretKeyRef:
+                  key: MYSQL_PORT
+                  name: dept-secrets
+            - name: REDIS_LOCATION
+              valueFrom:
+                secretKeyRef:
+                  key: REDIS_LOCATION
+                  name: dept-secrets
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: SECRET_KEY
+                  name: dept-secrets
+          image: redis:alpine
+          name: dept-redis
+          ports:
+            - containerPort: 6379
+          resources: {}
+      restartPolicy: Always
+status: {}

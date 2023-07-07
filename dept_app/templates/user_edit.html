@@ -1,0 +1,18 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+  <h4>編輯人員</h4>
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {% for item in form %}
+    <div class="form-group">
+      <label>{{ item.label }}</label>
+      {{ item }}
+      <span style="color:red">{{ item.errors.0 }}</span>
+<!--      部門沒有錯誤提示， 可能跟表結構class有關-->
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-primary">提交</button>
+  </form>
+{% endblock %}
