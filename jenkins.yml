@@ -5,10 +5,12 @@ services:
     environment:
       - TZ=Asia/Taipei
       - JAVA_OPTS=-Duser.timezone=Asia/Taipei
+      - SSH_CONFIG_FILE=/var/jenkins_home/.ssh/config
     ports:
       - 8080:8080
     volumes:
       - jenkins_home:/var/jenkins_home
+      - /c/Users/SharonMai/.ssh:/var/jenkins_home/.ssh
     restart: always
 volumes:
   jenkins_home:
