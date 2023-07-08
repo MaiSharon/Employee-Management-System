@@ -81,6 +81,12 @@ def logout(request):
     request.session.clear()
     return redirect("/login/")
 
+# def logout(request):
+#     """登出"""
+#
+#     logout(request)
+#     return redirect("/login/")
+
 from io import BytesIO
 
 def image_code(request):
