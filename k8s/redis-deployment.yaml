@@ -81,7 +81,7 @@ spec:
                 secretKeyRef:
                   key: SECRET_KEY
                   name: dept-secrets
-          image: redis:alpine
+          image: redis:6.2
           name: dept-redis
           ports:
             - containerPort: 6379
