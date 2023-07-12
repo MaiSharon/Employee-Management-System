@@ -41,7 +41,7 @@ pipeline {
                         )
                     ]) {
                         // 登录到 Docker Hub
-                        sh ('docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD')
+                        sh ('sudo docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD')
                         // 使用 docker-compose 文件构建镜像
                         sh 'docker-compose -f docker-compose-build.yml build'
                     }
