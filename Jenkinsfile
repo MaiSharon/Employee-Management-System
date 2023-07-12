@@ -5,7 +5,7 @@ pipeline {
         GIT_URL = "git@github.com:MaiSharon/Employee-Management-System.git"
         BRANCH_NAME = "main"
         DOCKER_USERNAME = credentials("ppp300a")
-        DOCKER_PASSWORD = credentials("R3sLk(mJD%BZFF$")
+        DOCKER_PASSWORD = credentials("DOCKER_HUB_PASSWORD")
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
     }
