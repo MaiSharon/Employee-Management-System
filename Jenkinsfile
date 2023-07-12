@@ -25,7 +25,7 @@ pipeline {
         stage('Check Docker CLI') {
             steps {
                 script {
-                    // 檢查 Docker CLI 版本
+                    // 检查 Docker CLI 版本
                     sh 'docker --version'
                 }
             }
@@ -40,9 +40,9 @@ pipeline {
                             passwordVariable: 'DOCKER_PASSWORD'
                         )
                     ]) {
-                        // 登錄到 Docker Hub
+                        // 登录到 Docker Hub
                         sh ('docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD')
-                        // 使用yml文件製作image
+                        // 使用 docker-compose 文件构建镜像
                         sh 'docker-compose -f docker-compose-build.yml build'
                     }
                 }
@@ -51,16 +51,15 @@ pipeline {
         stage('Test Django Application') {
             steps {
                 script {
-                    // 啟動 Docker 容器並運行 Django 單元測試
-                    sh 'docker-compose -f docker-compose-build.yml run --rm web python manage.py test  --settings=settings.local'
-                    }
+                    // 启动 Docker 容器并运行 Django 单元测试
+                    sh 'docker-compose -f docker-compose-build.yml run --rm web python manage.py test --settings=settings.local'
                 }
             }
         }
         stage('Start Docker Container') {
             steps {
                 script {
-                    // 啟動 Docker 容器
+                    // 启动 Docker 容器
                     sh 'docker-compose -f docker-compose-build.yml up -d'
                 }
             }
