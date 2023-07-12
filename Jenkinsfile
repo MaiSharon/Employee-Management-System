@@ -22,6 +22,14 @@ pipeline {
                 }
             }
         }
+        stage('Check Docker CLI') {
+            steps {
+                script {
+                    // 檢查 Docker CLI 版本
+                    sh 'docker --version'
+                }
+            }
+        }
         stage('Build Docker image') {
             steps {
                 script {
@@ -34,8 +42,8 @@ pipeline {
                     ]) {
                         // 登錄到 Docker Hub
                         sh ('docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD')
-                        // 使用 docker 命令根據 Dockerfile 構建 Docker 鏡像
-                        def app = docker.build("${IMAGE_NAME}:${IMAGE_TAG}")
+                        // 使用yml文件製作image
+                        sh 'docker-compose -f docker-compose-build.yml build'
                     }
                 }
             }
@@ -44,8 +52,7 @@ pipeline {
             steps {
                 script {
                     // 啟動 Docker 容器並運行 Django 單元測試
-                    docker.image("${IMAGE_NAME}:${IMAGE_TAG}").withRun {c ->
-                        sh 'python manage.py test  --settings=settings.local'
+                    sh 'docker-compose -f docker-compose-build.yml run --rm web python manage.py test  --settings=settings.local'
                     }
                 }
             }
@@ -54,7 +61,7 @@ pipeline {
             steps {
                 script {
                     // 啟動 Docker 容器
-                    docker.image("${IMAGE_NAME}:${IMAGE_TAG}").run()
+                    sh 'docker-compose -f docker-compose-build.yml up -d'
                 }
             }
         }
