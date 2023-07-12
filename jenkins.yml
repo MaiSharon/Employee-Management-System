@@ -10,6 +10,7 @@ services:
       - 8080:8080
     volumes:
       - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock # 掛載本機 Docker 到 Jenkins 容器中使用
       - /c/Users/SharonMai/.ssh:/var/jenkins_home/.ssh
     restart: always
 volumes:
