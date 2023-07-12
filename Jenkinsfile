@@ -4,8 +4,6 @@ pipeline {
         GIT_CREDENTIALS = "37ae2a82-cefd-4044-8f31-5d40bc2906be"
         GIT_URL = "git@github.com:MaiSharon/Employee-Management-System.git"
         BRANCH_NAME = "main"
-        DOCKER_USERNAME = credentials("ppp300a")
-        DOCKER_PASSWORD = credentials("DOCKER_HUB_PASSWORD")
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
     }
@@ -27,10 +25,18 @@ pipeline {
         stage('Build Docker image') {
             steps {
                 script {
-                    // 登錄到 Docker Hub
-                    sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
-                    // 使用 docker-compose 命令根據 Dockerfile 構建 Docker 鏡像
-                    sh 'docker-compose -f docker-compose-build.yml build'
+                    withCredentials([
+                        usernamePassword(
+                            credentialsId: 'DOCKER_HUB_CREDENTIALS',
+                            usernameVariable: 'DOCKER_USERNAME',
+                            passwordVariable: 'DOCKER_PASSWORD'
+                        )
+                    ]) {
+                        // 登錄到 Docker Hub
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                        // 使用 docker-compose 命令根據 Dockerfile 構建 Docker 鏡像
+                        sh 'docker-compose -f docker-compose-build.yml build'
+                    }
                 }
             }
         }
@@ -66,4 +72,3 @@ pipeline {
         }
     }
 }
-
