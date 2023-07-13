@@ -41,7 +41,7 @@ pipeline {
                         )
                     ]) {
                         // 使用 docker-compose 文件构建镜像
-                        sh 'docker-compose -f docker-compose-build.yml build'
+                        sh ('docker build -t $IMAGE_NAME:$IMAGE_TAG -f jenkins-Dockerfile .')
                     }
                 }
             }

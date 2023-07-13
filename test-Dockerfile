@@ -1,0 +1,14 @@
+# 使用基础镜像 alpine:latest
+FROM alpine:latest
+
+# 更新软件包并安装 Nginx
+RUN apk update && apk add nginx
+
+# 复制 Nginx 配置文件到容器中
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# 暴露容器的 80 端口
+EXPOSE 80
+
+# 启动 Nginx 服务
+CMD ["nginx", "-g", "daemon off;"]
