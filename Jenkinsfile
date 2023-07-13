@@ -41,7 +41,7 @@ pipeline {
                         )
                     ]) {
                         // 使用 docker-compose 文件构建镜像
-                        sh ('docker build -t $IMAGE_NAME:$IMAGE_TAG -f test-Dockerfile .')
+                        sh ('sudo docker build -t testtt:$IMAGE_TAG -f test-Dockerfile .')
                     }
                 }
             }
