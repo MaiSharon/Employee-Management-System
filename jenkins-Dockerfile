@@ -1,0 +1,16 @@
+FROM jenkins/jenkins:lts
+
+USER root
+
+RUN apt-get update \
+  && apt-get install -y sudo \
+  && apt-get install -y libltdl7 \
+  && rm -rf /var/lib/apt/lists/*
+
+# Create docker group and add jenkins user to docker group
+RUN groupadd docker
+
+RUN usermod -aG docker jenkins
+
+# Switch back to jenkins user
+USER jenkins
