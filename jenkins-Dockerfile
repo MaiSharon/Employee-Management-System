@@ -13,4 +13,4 @@ RUN groupadd docker
 RUN usermod -aG docker jenkins
 
 # Switch back to jenkins user
-USER jenkins
+USER root
