@@ -1,7 +1,9 @@
 version: '3.7'
 services:
   jenkins:
-    image: jenkins/jenkins:lts
+    build:
+      context: .  # Dockerfile的位置
+      dockerfile: jenkins-Dockerfile
     environment:
       - TZ=Asia/Taipei
       - JAVA_OPTS=-Duser.timezone=Asia/Taipei
@@ -9,9 +11,11 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - jenkins_home:/var/jenkins_home
+      - jenkins_home:/var/jenkins_home  # 持久化數據
       - /var/run/docker.sock:/var/run/docker.sock  # 掛載本機 Docker 到 Jenkins 容器中使用
-      - /c/Users/SharonMai/.ssh:/var/jenkins_home/.ssh
+      - /c/Users/SharonMai/.ssh:/var/jenkins_home/.ssh  # 讓jenkins使用SSH私鑰
+      - /usr/bin/docker-compose:/usr/local/bin/docker-compose  # 讓容器能夠使用主機上的 Docker-compose 命令
+#    command: /bin/bash
     restart: always
 volumes:
   jenkins_home:
