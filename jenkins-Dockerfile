@@ -1,18 +1,27 @@
+# Use an existing docker image as a base
 FROM jenkins/jenkins:lts
 
+# Switch to root user
 USER root
-# Install DockerCLI、sudo
-RUN apt-get update && apt-get install -y docker.io libltdl7 sudo \
- && rm -rf /var/lib/apt/lists/*
 
+# Install Docker CLI, sudo, curl and clean up in one RUN statement to reduce image layers
+RUN apt-get update && \
+    apt-get install -y docker.io libltdl7 sudo curl && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install Docker Compose
-RUN curl -L "https://github.com/docker/compose/releases/download/2.18.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
-  && chmod +x /usr/local/bin/docker-compose
+# Set environment variable
+ENV DOCKER_CONFIG /root/.docker
 
+# Make directory and download docker compose in one RUN statement
+RUN mkdir -p $DOCKER_CONFIG/cli-plugins && \
+    curl -SL https://github.com/docker/compose/releases/download/v2.19.1/docker-compose-linux-x86_64 -o $DOCKER_CONFIG/cli-plugins/docker-compose && \
+    chmod +x $DOCKER_CONFIG/cli-plugins/docker-compose
 
+# Check install docker-compose
+RUN docker compose version
+
+# Add jenkins user to sudoers
 RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 # Switch back to jenkins user
 USER jenkins
-

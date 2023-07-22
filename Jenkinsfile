@@ -26,7 +26,10 @@ pipeline {
             steps {
                 script {
                     // 检查 Docker CLI 版本
-                    sh 'docker --version'
+                    sh '''
+                    sudo docker version
+                    sudo docker compose version
+                    '''
                 }
             }
         }
@@ -50,7 +53,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器并运行 Django 单元测试
-                    sh 'docker-compose -f docker-compose-build.yml run --rm web python manage.py test --settings=settings.local'
+                    sh 'sudo docker compose -f docker-compose-build.yml run --rm web python manage.py test --settings=settings.local'
                 }
             }
         }
@@ -58,7 +61,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器
-                    sh 'docker-compose -f docker-compose-build.yml up -d'
+                    sh 'sudo docker compose -f docker-compose-build.yml up -d'
                 }
             }
         }
