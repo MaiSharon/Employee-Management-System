@@ -1,16 +1,18 @@
 FROM jenkins/jenkins:lts
 
 USER root
+# Install DockerCLI、sudo
+RUN apt-get update && apt-get install -y docker.io libltdl7 sudo \
+ && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update \
-  && apt-get install -y sudo \
-  && apt-get install -y libltdl7 \
-  && rm -rf /var/lib/apt/lists/*
 
-# Create docker group and add jenkins user to docker group
-RUN groupadd docker
+# Install Docker Compose
+RUN curl -L "https://github.com/docker/compose/releases/download/2.18.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose \
+  && chmod +x /usr/local/bin/docker-compose
 
-RUN usermod -aG docker jenkins
+
+RUN echo "jenkins ALL=NOPASSWD: ALL" >> /etc/sudoers
 
 # Switch back to jenkins user
-USER root
+USER jenkins
+
