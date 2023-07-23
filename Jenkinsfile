@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     // Start the web Docker container while simultaneously running the 'start.local.sh' script.
-                    sh "sudo docker compose -f docker-compose-build.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh"
+                    sh "sudo docker compose -f docker-compose-build.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh'"
                 }
             }
         }
@@ -68,6 +68,7 @@ pipeline {
                 }
             }
         }
+
         stage('Start Docker Container') {
             steps {
                 script {
