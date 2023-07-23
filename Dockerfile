@@ -15,4 +15,4 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime && \
 COPY . .
 RUN chmod +x ./start.local.sh
 EXPOSE 8000
-CMD ["/bin/sh", "/data/prj_dept/start.local.sh"]
+# CMD ["/bin/sh", "/data/prj_dept/start.local.sh"]
