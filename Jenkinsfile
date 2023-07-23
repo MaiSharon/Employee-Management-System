@@ -50,11 +50,20 @@ pipeline {
                 }
             }
         }
+        stage('Start Docker Container') {
+            steps {
+                script {
+                    // Start the web Docker container while simultaneously running the 'start.local.sh' script.
+                    sh "sudo docker compose -f docker-compose-build.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh"
+                }
+            }
+        }
+
         stage('Test Django Application') {
             steps {
                 script {
-                    // 启动 Docker 容器并运行 Django 单元测试
-                    sh "sudo docker-compose -f docker-compose-build.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh && python manage.py test --settings=settings.local'"
+                    // Run automated testing
+                    sh "sudo docker compose -f docker-compose-build.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh && python manage.py test --settings=settings.local'"
 
                 }
             }
