@@ -6,6 +6,7 @@ pipeline {
         BRANCH_NAME = "main"
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
+        ENV_JENKINS = "/var/jenkins_home/workspace/pull"
     }
     stages {
         stage('Checkout') {
@@ -61,7 +62,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器
-                    sh 'sudo docker compose -f docker-compose-build.yml up -d'
+                    sh "sudo docker run -d --name web ppp300a/dept-dev:1.2.0 /bin/sh ${ENV_JENKINS}/start.local.sh"
                 }
             }
         }
