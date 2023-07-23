@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器并运行 Django 单元测试
-                    sh 'sudo docker compose -f docker-compose-build.yml run --rm web python manage.py test --settings=settings.local'
+                    sh "sudo docker compose -f docker-compose-build.yml run --entrypoint '/bin/sh ${ENV_JENKINS}/start.local.sh' --rm web python manage.py test --settings=settings.local"
                 }
             }
         }
