@@ -6,7 +6,7 @@ pipeline {
         BRANCH_NAME = "main"
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
-        ENV_JENKINS = "/var/jenkins_home/workspace/pull"
+        ENV_JENKINS = "/var/jenkins_home/workspace/prj_dept-test"
     }
     stages {
         stage('Checkout') {
@@ -54,7 +54,7 @@ pipeline {
             steps {
                 script {
                     // Start the web Docker container while simultaneously running the 'start.local.sh' script.
-                    sh "sudo docker compose -f docker-compose-build.yml run --rm web /bin/sh -c 'command ${ENV_JENKINS}/start.local.sh'"
+                    sh "sudo docker compose -f docker-compose-test.yml run --rm web /bin/sh -c 'command ${ENV_JENKINS}/start.local.sh'"
                 }
             }
         }
@@ -63,7 +63,7 @@ pipeline {
             steps {
                 script {
                     // Run automated testing
-                    sh "sudo docker compose -f docker-compose-build.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh && python manage.py test --settings=settings.local'"
+                    sh "sudo docker compose -f docker-compose-test.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh && python manage.py test --settings=settings.local'"
 
                 }
             }
