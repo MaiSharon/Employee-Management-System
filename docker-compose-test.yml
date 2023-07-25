@@ -18,7 +18,7 @@ services:
     environment:
       - DOCKER_ENV=True  # 跟django交互判斷引用哪個.env文件
       - server_params=--settings=settings.local  # 添加額外的環境變量
-    entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
+    entrypoint: [ "/bin/sh", "/var/jenkins_home/workspace/prj_dept-test/start.local.sh" ]  # 容器啟動後執行的命令
 
     volumes:
       - .:/data/prj_dept
