@@ -10,7 +10,7 @@ services:
     env_file: .env.docker
 
   web:
-    image: ppp300a/dept-dev:1.2.0
+    image: ppp300a/dept-jenkins:1.3.0
     build:
       context: .  # Dockerfile的位置
       dockerfile: Dockerfile
@@ -18,11 +18,11 @@ services:
     environment:
       - DOCKER_ENV=True  # 跟django交互判斷引用哪個.env文件
       - server_params=--settings=settings.local  # 添加額外的環境變量
-    # entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
+    entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
 
 
     volumes:
-      - .:/data/prj_dept  # 映射當前本機路徑，達到自動更新加載改過的代碼
+      - jenkins_home:/var/jenkins_home/workspace/prj_dept:/data/prj_dept  # 映射當前本機路徑，達到自動更新加載改過的代碼
       - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
     ports:
       - "8000:8000"
@@ -64,3 +64,6 @@ services:
     entrypoint: ["/bin/sh", "/data/prj_dept/flower.start.sh"]
     depends_on:
       - redis
+
+volumes:
+  jenkins_home:
