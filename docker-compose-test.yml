@@ -10,7 +10,7 @@ services:
     env_file: .env.docker
 
   web:
-    image: ppp300a/dept-jenkins:1.4.0
+    image: ppp300a/dept-jenkins:1.5.0
     build:
       context: .  # Dockerfile的位置
       dockerfile: Dockerfile
@@ -22,6 +22,7 @@ services:
 
     volumes:
       - .:/data/prj_dept
+      - /var/jenkins_home/workspace/prj_dept-test:/data/prj_dept-test
 #    volumes:
 #      - jenkins_home:/var/jenkins_home  # 映射當前本機路徑，達到自動更新加載改過的代碼
         # 把日誌映射到主機的指定路徑以便查看和持久化
