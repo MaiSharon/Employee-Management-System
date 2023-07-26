@@ -24,7 +24,7 @@ pipeline {
                 }
             }
         }
-        stage('Check Docker CLI') {
+        stage('Check Docker CLI and Docker compose') {
             steps {
                 script {
                     // 检查 Docker CLI 版本
@@ -54,8 +54,8 @@ pipeline {
         stage('Start Docker Container') {
             steps {
                 script {
-                    // Start the web Docker container while simultaneously running the 'start.local.sh' script.
-                    sh "sudo docker compose -f docker-compose-test.yml run --rm web /bin/sh -c 'command ${ENV_JENKINS}/start.local.sh'"
+                    // Start the web Docker container .
+                    sh "sudo docker compose -f docker-compose-test.yml up -d"
                 }
             }
         }
@@ -63,9 +63,12 @@ pipeline {
         stage('Test Django Application') {
             steps {
                 script {
+                    // Ensure the containers are running
+                    sh "sudo docker-compose -f docker-compose-test.yml ps"
                     // Run automated testing
-                    sh "sudo docker compose -f docker-compose-test.yml run --rm web /bin/sh -c '${ENV_JENKINS}/start.local.sh && python manage.py test --settings=settings.local'"
-
+                    sh "sudo docker-compose -f docker-compose-test.yml run --rm web /bin/sh -c 'python manage.py test --settings=settings.local'"
+                    // Stop all the containers after testing
+                    sh "sudo docker-compose -f docker-compose-test.yml down"
                 }
             }
         }
@@ -74,7 +77,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器
-                    sh "sudo docker run -d --name web ppp300a/prj_dept-test:1.6.0 /bin/sh ${ENV_JENKINS}/start.local.sh"
+                    sh "sudo docker compose -f docker-compose-test.yml up -d"
                 }
             }
         }
