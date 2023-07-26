@@ -48,7 +48,7 @@ pipeline {
             steps {
                 script {
                     // Ensure the containers are running
-                    sh "sudo docker compose -f docker-compose-test.yml ps"
+                    sh "sudo docker compose -f docker-compose-test.yml down"
                     // Run automated testing
                     sh "sudo docker compose -f docker-compose-test.yml run --rm web /bin/sh -c 'python manage.py test --settings=settings.local'"
                     // Stop all the containers after testing
