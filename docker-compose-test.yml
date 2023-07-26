@@ -10,7 +10,7 @@ services:
     env_file: .env.docker
 
   web:
-    image: ppp300a/dept-jenkins:1.5.0
+    image: ppp300a/prj_dept-test:1.6.0
     build:
       context: .  # Dockerfile的位置
       dockerfile: Dockerfile
