@@ -38,11 +38,9 @@ pipeline {
         stage('Start Docker Container') {
             steps {
                 script {
-                    // Run automated testing
-                    sh "sudo docker compose -f docker-compose-test.yml run --rm web /bin/sh -c 'python manage.py test --settings=settings.local'"
+                    // Start the web Docker container and Down .
+                    sh "sudo docker compose -f docker-compose-test.yml up -d"
 
-                    // Ensure the containers are running
-                    sh "sudo docker compose -f docker-compose-test.yml down"
                 }
             }
         }
@@ -50,8 +48,8 @@ pipeline {
         stage('Test Django Application') {
             steps {
                 script {
-
-
+                    // Run automated testing
+                    sh "sudo docker compose -f docker-compose-test.yml exec web /bin/sh -c 'python manage.py test --settings=settings.local'"
                     // Stop all the containers after testing
                     sh "sudo docker compose -f docker-compose-test.yml down"
                 }

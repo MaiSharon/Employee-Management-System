@@ -49,7 +49,7 @@ services:
     container_name: dept-celery
     env_file: .env.docker
     volumes:
-      - .:/data/prj_dept
+      - jenkins_home-test:/data/prj_dept
       - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
     command: /bin/sh /data/prj_dept/worker.start.sh
     depends_on:
@@ -62,7 +62,7 @@ services:
     ports:
       - "5555:5555"
     volumes:
-      - .:/data/prj_dept
+      - jenkins_home-test:/data/prj_dept
       - /data/logs/prj_dept/:/data/logs/prj_dept/
     entrypoint: ["/bin/sh", "/data/prj_dept/flower.start.sh"]
     depends_on:
