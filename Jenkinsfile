@@ -27,7 +27,7 @@ pipeline {
         stage('Check Docker CLI and Docker compose') {
             steps {
                 script {
-                    // 检查 Docker CLI 版本
+                    // Check Docker CLI and Docker Compose CLI is ok?
                     sh '''
                     sudo docker version
                     sudo docker compose version
