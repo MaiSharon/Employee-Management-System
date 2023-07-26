@@ -6,7 +6,8 @@ pipeline {
         BRANCH_NAME = "main"
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
-        ENV_JENKINS = "/data/prj_dept"  # 依據Dockerfile的WORKDIR設定一樣
+        // 依據Dockerfile的WORKDIR設定一樣
+        ENV_JENKINS = "/data/prj_dept"
     }
     stages {
         stage('Checkout') {
