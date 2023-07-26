@@ -33,7 +33,6 @@ services:
       - mysql
       - redis
       - celery
-      - flower
 
 
   redis:
