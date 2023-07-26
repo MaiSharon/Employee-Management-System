@@ -11,6 +11,7 @@ services:
 
   web:
     image: ppp300a/prj_dept-test:1.6.0
+    container_name: dept-web
     build:
       context: .  # Dockerfile的位置
       dockerfile: Dockerfile
