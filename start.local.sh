@@ -11,21 +11,13 @@ if [ ! -f "settings/local.py" ]; then
     sed -i 's/DEBUG = False/DEBUG = True/g' settings/local.py
 fi
 
-
-# Try to connect to database using Django's manage.py check
+# Try to connect to database using Django's manage.py shell
 echo "=== Attempting to connect to the database ==="
-until python manage.py check $server_params; do
+until echo "from dept_app.models import Admin; print(Admin.objects.count())" | python manage.py shell; do
     echo "Waiting for the database to start"
-    sleep 1
+    sleep 2
 done
 echo "Database connection successful"
 
-
-
 # synchronous web server for development:
 python manage.py runserver 0.0.0.0:8000 $server_params  #
-
-
-# for async web server:
-# export DJANGO_SETTINGS_MODULE=settings.local
-# uvicorn prj_dept.asgi:application --workers 3
