@@ -6,7 +6,7 @@ pipeline {
         BRANCH_NAME = "main"
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
-        ENV_JENKINS = "/var/jenkins_home/workspace/prj_dept-test"
+        ENV_JENKINS = "/data/prj_dept"  # 依據Dockerfile的WORKDIR設定一樣
     }
     stages {
         stage('Checkout') {
@@ -73,7 +73,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器
-                    sh "sudo docker run -d --name web ppp300a/dept-dev:1.2.0 /bin/sh ${ENV_JENKINS}/start.local.sh"
+                    sh "sudo docker run -d --name web ppp300a/dept-dev:1.5.0 /bin/sh ${ENV_JENKINS}/start.local.sh"
                 }
             }
         }
