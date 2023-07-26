@@ -38,9 +38,11 @@ pipeline {
         stage('Start Docker Container') {
             steps {
                 script {
-                    // Start the web Docker container and Down .
+                    // Start the web Docker container .
                     sh "sudo docker compose -f docker-compose-test.yml up -d"
 
+                    // Pause the pipeline for 10 seconds
+                    sleep 10
                 }
             }
         }
