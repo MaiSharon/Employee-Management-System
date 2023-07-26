@@ -74,7 +74,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器
-                    sh "sudo docker run -d --name web ppp300a/dept-dev:1.5.0 /bin/sh ${ENV_JENKINS}/start.local.sh"
+                    sh "sudo docker run -d --name web ppp300a/dept-dev:1.6.0 /bin/sh ${ENV_JENKINS}/start.local.sh"
                 }
             }
         }
