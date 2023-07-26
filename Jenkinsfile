@@ -35,22 +35,6 @@ pipeline {
                 }
             }
         }
-        stage('Build Docker image') {
-            steps {
-                script {
-                    withCredentials([
-                        usernamePassword(
-                            credentialsId: 'DOCKER_HUB_CREDENTIALS',
-                            usernameVariable: 'DOCKER_USERNAME',
-                            passwordVariable: 'DOCKER_PASSWORD'
-                        )
-                    ]) {
-                        // 使用 docker-compose 文件构建镜像
-                        sh ('sudo docker build -t testtt:$IMAGE_TAG -f test-Dockerfile .')
-                    }
-                }
-            }
-        }
         stage('Start Docker Container') {
             steps {
                 script {
