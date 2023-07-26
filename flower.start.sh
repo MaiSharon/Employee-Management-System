@@ -1,1 +1,2 @@
-DJANGO_SETTINGS_MODULE=settings.local celery -A prj_dept flower
+export DJANGO_SETTINGS_MODULE=settings.local
+celery -A prj_dept flower -l INFO

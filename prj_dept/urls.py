@@ -46,7 +46,7 @@ urlpatterns = [
     # api test
     # path('aaa/haha', api_test.HelloView.as_view()),
     path('callback/', linebot_client.callback, name="line_callback"),
-    path('send_greeting', linebot_message.send_greeting_view),
+    path('send_greeting/', linebot_message.send_greeting_view),
 
 
 ]

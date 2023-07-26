@@ -54,19 +54,7 @@ services:
     command: /bin/sh /data/prj_dept/worker.start.sh
     depends_on:
       - redis
-  flower:
-    build:
-      context: .  # Dockerfile的位置
-      dockerfile: Dockerfile
-    container_name: dept-flower
-    ports:
-      - "5555:5555"
-    volumes:
-      - jenkins_home-test:/data/prj_dept
-      - /data/logs/prj_dept/:/data/logs/prj_dept/
-    entrypoint: ["/bin/sh", "/data/prj_dept/flower.start.sh"]
-    depends_on:
-      - redis
+
 
 volumes:
   jenkins_home-test:
