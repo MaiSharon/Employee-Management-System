@@ -13,7 +13,7 @@ fi
 
 # Try to connect to database using Django's manage.py shell
 echo "=== Attempting to connect to the database ==="
-until echo "from dept_app.models import Admin; print(Admin.objects.count())" | python manage.py shell; do
+until echo "from dept_app.models import Admin; print(Admin.objects.count())" | python manage.py shell $server_params ; do
     echo "Waiting for the database to start"
     sleep 2
 done

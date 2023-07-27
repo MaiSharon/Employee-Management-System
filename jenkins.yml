@@ -4,7 +4,7 @@ services:
     build:
       context: .  # 使用Dood因此需要自定義Dockerfile
       dockerfile: jenkins-Dockerfile
-      container_name: jenkins_ngrok
+    container_name: jenkins
     environment:
       - TZ=Asia/Taipei
       - JAVA_OPTS=-Duser.timezone=Asia/Taipei
@@ -18,7 +18,7 @@ services:
       - ./.env.docker:/var/jenkins_home/workspace/prj_dept-test/.env.docker  # 新增的映射
     restart: always
 
-  ngrok:
+  ngrok_jenkins:
     image: ngrok/ngrok
     container_name: jenkins_ngrok
     command:
@@ -29,6 +29,8 @@ services:
       - "http://jenkins:8080"
     environment:
       - NGROK_AUTHTOKEN=2RG1fHSquX899nCuJHo7bocpART_2eDPff3ixK3bbsGDRSdSn
+    ports:
+      - 4040:4040
 
 volumes:
   jenkins_home:

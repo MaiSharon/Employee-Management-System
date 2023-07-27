@@ -10,7 +10,7 @@ services:
     env_file: .env.docker
 
   web:
-    image: ppp300a/prj_dept-test:1.6.0
+    image: ppp300a/prj_dept-test:1.7.0
     container_name: dept-web
     build:
       context: .  # Dockerfile的位置
@@ -22,11 +22,8 @@ services:
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
 
     volumes:
-      - jenkins_home-test:/data/prj_dept
-#      - jenkins_home:/var/jenkins_home/workspace/prj_dept-test:/data/prj_dept-test
-#    volumes:
-#      - jenkins_home:/var/jenkins_home  # 映射當前本機路徑，達到自動更新加載改過的代碼
-        # 把日誌映射到主機的指定路徑以便查看和持久化
+      - .:/data/prj_dept
+
     ports:
       - "8000:8000"
     depends_on: # 設定服務的啟動順序
@@ -48,12 +45,9 @@ services:
     container_name: dept-celery
     env_file: .env.docker
     volumes:
-      - jenkins_home-test:/data/prj_dept
+      - .:/data/prj_dept
       - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
     command: /bin/sh /data/prj_dept/worker.start.sh
     depends_on:
       - redis
 
-
-volumes:
-  jenkins_home-test:
