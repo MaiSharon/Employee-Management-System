@@ -32,13 +32,13 @@ services:
       - redis
       - celery
 
-
   redis:
     image: "redis:alpine" # or replace with your own Redis image
     container_name: dept-redis
     env_file: .env.docker
     ports:
       - "6379:6379"
+
   celery:
     build:
       context: .  # Dockerfile的位置
@@ -46,8 +46,8 @@ services:
     container_name: dept-celery
     env_file: .env.docker
     volumes:
-      - .:/data/prj_dept
-      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
+      - shared_jenkins_home:/workspace/prj_dept-test:/data/prj_dept
+#      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
     command: /bin/sh /data/prj_dept/worker.start.sh
     depends_on:
       - redis
