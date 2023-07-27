@@ -22,7 +22,8 @@ services:
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
 
     volumes:
-      - .:/data/prj_dept
+      - shared_jenkins_home:/workspace/prj_dept-test:/data/prj_dept
+#      - /data/prj_dept
 
     ports:
       - "8000:8000"
@@ -51,3 +52,7 @@ services:
     depends_on:
       - redis
 
+volumes:
+  shared_jenkins_home:
+    external: true
+    name:  jenkins_home
