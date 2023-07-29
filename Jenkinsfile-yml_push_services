@@ -6,7 +6,7 @@ pipeline {
         BRANCH_NAME = "main"
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
-        DOCKER_HUB_CREDENTIALS = DOCKER_HUB_CREDENTIALS // please replace with your Docker Hub credentials ID
+        DOCKER_HUB_CREDENTIALS = "DOCKER_HUB_CREDENTIALS" // please replace with your Docker Hub credentials ID
     }
 
     stages {
