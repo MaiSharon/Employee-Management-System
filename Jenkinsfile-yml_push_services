@@ -6,7 +6,7 @@ pipeline {
         BRANCH_NAME = "main"
         IMAGE_NAME = "ECM-test"
         IMAGE_TAG = "1.0.0"
-
+        DOCKER_HUB_CREDENTIALS = 'your_docker_hub_credentials_id' // please replace with your Docker Hub credentials ID
     }
 
     stages {
@@ -30,11 +30,11 @@ pipeline {
                     // Read the docker-compose.yml file
                     def composeFile = readYaml file: 'docker-compose-test.yml'
 
-                    // Loop over services and push each one
+                    // Loop over services and build and push each one
                     for (service in composeFile.services.keySet()) {
-                        echo "Pushing $service..."
-                        docker.withRegistry('https://registry.hub.docker.com', 'DOCKER_HUB_CREDENTIALS') {
-                            def dockerImage = docker.image("ppp300a/$service")
+                        echo "Building and pushing $service..."
+                        docker.withRegistry('https://registry.hub.docker.com', DOCKER_HUB_CREDENTIALS) {
+                            def dockerImage = docker.build("ppp300a/$service:${IMAGE_TAG}")
                             dockerImage.push()
                         }
                     }
