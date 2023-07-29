@@ -1,13 +1,14 @@
 pipeline {
     agent any
     environment {
-        GIT_CREDENTIALS = "37ae2a82-cefd-4044-8f31-5d40bc2906be"
-        GIT_URL = "git@github.com:MaiSharon/Employee-Management-System.git"
-        BRANCH_NAME = "main"
-        IMAGE_NAME = "ECM-test"
-        IMAGE_TAG = "1.0.0"
-
+        GIT_CREDENTIALS = '37ae2a82-cefd-4044-8f31-5d40bc2906be'
+        GIT_URL = 'git@github.com:MaiSharon/Employee-Management-System.git'
+        BRANCH_NAME = 'main'
+        IMAGE_NAME = 'ECM-test'
+        IMAGE_TAG = '1.0.0'
+        DOCKER_HUB_CREDENTIALS = 'docker-hub-credentials' // replace with your Docker Hub credentials ID
     }
+
     stages {
         stage('Checkout') {
             steps {
@@ -23,61 +24,23 @@ pipeline {
                 }
             }
         }
-        stage('Check Docker CLI and Docker compose') {
+        stage('Build and Push Images') {
             steps {
                 script {
-                    // Check Docker CLI and Docker Compose CLI is ok
-                    sh '''
-                    sudo docker version
-                    sudo docker compose version
-                    '''
-                }
-            }
-        }
-        stage('Start Docker Container') {
-            steps {
-                script {
-                    // Start the web Docker container.
-                    sh "sudo docker compose -f docker-compose-test.yml up -d"
+                    // Read the docker-compose.yml file
+                    def composeFile = readYaml file: 'docker-compose-test.yml'
 
-                    // Pause the pipeline for 10 seconds
-                    sleep 10
+                    // Loop over services and build and push each one
+                    for (service in composeFile.services.keySet()) {
+                        echo "Building and pushing $service..."
+                        withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                            sh "docker build -t ppp300a/$service:${IMAGE_TAG} ."
+                            sh "echo ${DOCKER_PASSWORD} | sudo docker login -u ${DOCKER_USERNAME} --password-stdin"
+                            sh "sudo docker push ppp300a/$service:${IMAGE_TAG}"
+                        }
+                    }
                 }
             }
-        }
-
-        stage('Test Django Application') {
-            steps {
-                script {
-                    // Run automated testing
-                    sh "sudo docker compose -f docker-compose-test.yml exec web /bin/sh -c 'python manage.py test --settings=settings.local'"
-                    // Stop all the containers after testing
-                    sh "sudo docker compose -f docker-compose-test.yml down"
-                }
-            }
-        }
-
-        stage('Start Web Container') {
-            steps {
-                script {
-                    // 启动 Docker 容器
-                    sh "sudo docker compose -f docker-compose-test.yml up -d"
-                }
-            }
-        }
-    }
-    post {
-        always {
-            // 总是在 pipeline 结束后执行的步骤
-            sh 'echo "Pipeline has finished"'
-        }
-        success {
-            // 只有在 pipeline 成功结束后才执行的步骤
-            sh 'echo "Pipeline completed successfully"'
-        }
-        failure {
-            // 只有在 pipeline 失败后才执行的步骤
-            sh 'echo "Pipeline failed"'
         }
     }
 }
