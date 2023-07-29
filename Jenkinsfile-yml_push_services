@@ -33,9 +33,9 @@ pipeline {
                     // Loop over services and build and push each one
                     for (service in composeFile.services.keySet()) {
                         echo 'Building and pushing $service...'
-                        withCredentials([usernamePassword(credentialsId: DOCKER_HUB_CREDENTIALS, passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
                             sh('docker build -t ppp300a/$service:$IMAGE_TAG .')
-                            sh('echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin')
+                            sh('echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin')
                             sh('docker push ppp300a/$service:$IMAGE_TAG')
                         }
                     }
