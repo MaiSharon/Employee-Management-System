@@ -5,7 +5,7 @@ pipeline {
         GIT_URL = 'git@github.com:MaiSharon/Employee-Management-System.git'
         BRANCH_NAME = 'main'
         IMAGE_NAME = 'ECM-test'
-        IMAGE_TAG = '1.0.0'
+        IMAGE_TAG = '1.7.0'
         DOCKER_HUB_CREDENTIALS = credentials('DOCKER_HUB_CREDENTIALS') // replace with your Docker Hub credentials ID
     }
 
@@ -34,7 +34,7 @@ pipeline {
                     for (service in composeFile.services.keySet()) {
                         echo 'Building and pushing $service...'
                         withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
-                            sh('sudo docker build -t ppp300a/$service:$IMAGE_TAG .')
+                            sh('sudo docker build -t ppp300a/$service:$IMAGE_TAG')
                             sh('echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin')
                             sh('sudo docker push ppp300a/$service:$IMAGE_TAG')
                         }
