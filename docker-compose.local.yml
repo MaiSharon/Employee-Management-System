@@ -51,6 +51,7 @@ services:
     command: /bin/sh /data/prj_dept/worker.start.sh
     depends_on:
       - redis
+
   flower:
     build:
       context: .  # Dockerfile的位置

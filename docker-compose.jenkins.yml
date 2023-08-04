@@ -3,7 +3,7 @@ services:
   jenkins:
     build:
       context: .  # 使用Dood因此需要自定義Dockerfile
-      dockerfile: jenkins-Dockerfile
+      dockerfile: Dockerfile.jenkins
     container_name: jenkins
     environment:
       - TZ=Asia/Taipei
