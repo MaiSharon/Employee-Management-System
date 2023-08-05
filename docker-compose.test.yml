@@ -52,7 +52,7 @@ services:
     volumes:
 #      - staticfiles-local:/data/prj_dept/nginx.conf:/etc/nginx/nginx.conf
       - staticfiles-local:/var/prj_dept/staticfiles
-      - shared_jenkins_home:/workspace/prj_dept-test/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx.conf:/etc/nginx/nginx.conf
     command: [ nginx-debug, '-g', 'daemon off;' ]
     ports:
       - "192.168.1.103:80:80"
