@@ -20,6 +20,7 @@ services:
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
     volumes:
       - staticfiles-local:/data/prj_dept/staticfiles
+      - staticfiles-local:/data/prj_dept/nginx.conf
     ports:
       - "8000:8000"
     depends_on: # 設定服務的啟動順序
@@ -49,14 +50,16 @@ services:
   nginx:
     image: nginx
     volumes:
-      - staticfiles-local:/var/prj_dept/nginx.conf:/etc/nginx/nginx.conf
+#      - staticfiles-local:/data/prj_dept/nginx.conf:/etc/nginx/nginx.conf
       - staticfiles-local:/var/prj_dept/staticfiles
-#      - shared_jenkins_home:/workspace/prj_dept-test/nginx.conf:/etc/nginx/nginx.conf:ro
+      - shared_jenkins_home:/workspace/prj_dept-test/nginx.conf:/etc/nginx/nginx.conf
     command: [ nginx-debug, '-g', 'daemon off;' ]
+    ports:
+      - "192.168.1.103:80:80"
 
 
 volumes:
   staticfiles-local:
-#  shared_jenkins_home:
-#    external: true
-#    name:  jenkins_home
+  shared_jenkins_home:
+    external: true
+    name:  jenkins_home
