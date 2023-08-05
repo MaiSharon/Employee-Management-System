@@ -8,7 +8,7 @@ django-admin compilemessages
 if [ ! -f "settings/local.py" ]; then
     echo "=== warning: local.py does not exist, will initialize the file, please update the configs ==="
     cp settings/production.py settings/local.py
-    sed -i 's/DEBUG = False/DEBUG = True/g' settings/local.py
+    sed -i 's/DEBUG = False/DEBUG = False/g' settings/local.py
 fi
 
 # Try to connect to database using Django's manage.py shell
@@ -18,6 +18,10 @@ until echo "from dept_app.models import Admin; print(Admin.objects.count())" | p
     sleep 2
 done
 echo "Database connection successful"
+
+# Collect static files (--noinput ->It's say yes)
+echo "=== Collecting static files ==="
+python manage.py collectstatic --noinput $server_params
 
 # synchronous web server for development:
 python manage.py runserver 0.0.0.0:8000 $server_params  #

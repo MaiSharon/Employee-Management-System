@@ -38,7 +38,7 @@ pipeline {
             steps {
                 script {
                     // Start the web Docker container.
-                    sh "sudo docker compose -f docker-compose-test.yml up -d"
+                    sh "sudo docker compose -f docker-compose.test.yml up -d --build"
 
                     // Pause the pipeline for 10 seconds
                     sleep 10
@@ -50,9 +50,9 @@ pipeline {
             steps {
                 script {
                     // Run automated testing
-                    sh "sudo docker compose -f docker-compose-test.yml exec web /bin/sh -c 'python manage.py test --settings=settings.local'"
+                    sh "sudo docker compose -f docker-compose.test.yml exec web /bin/sh -c 'python manage.py test --settings=settings.local'"
                     // Stop all the containers after testing
-                    sh "sudo docker compose -f docker-compose-test.yml down"
+                    sh "sudo docker compose -f docker-compose.test.yml down"
                 }
             }
         }
@@ -61,7 +61,7 @@ pipeline {
             steps {
                 script {
                     // 启动 Docker 容器
-                    sh "sudo docker compose -f docker-compose-test.yml up -d"
+                    sh "sudo docker compose -f docker-compose.test.yml up -d"
                 }
             }
         }
