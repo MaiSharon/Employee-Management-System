@@ -19,7 +19,7 @@ services:
       - server_params=--settings=settings.local  # 添加額外的環境變量
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
     volumes:
-      - staticfiles:/data/prj_dept/staticfiles
+      - staticfiles-local:/data/prj_dept/staticfiles
     ports:
       - "8000:8000"
     depends_on: # 設定服務的啟動順序
