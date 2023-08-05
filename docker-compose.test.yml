@@ -20,7 +20,7 @@ services:
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.local.sh" ]  # 容器啟動後執行的命令
     volumes:
       - staticfiles-local:/data/prj_dept/staticfiles
-      - staticfiles-local:/data/prj_dept/nginx.conf
+#      - staticfiles-local:/data/prj_dept/nginx.conf
     ports:
       - "8000:8000"
     depends_on: # 設定服務的啟動順序
