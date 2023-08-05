@@ -40,8 +40,8 @@ services:
       context: .  # Dockerfile的位置
     container_name: dept-celery
     env_file: .env.docker
-    volumes:
-      - shared_jenkins_home:/workspace/prj_dept-test:/data/prj_dept
+#    volumes:
+#      - shared_jenkins_home:/workspace/prj_dept-test:/data/prj_dept
 #      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
     entrypoint: [ "/bin/sh", "/data/prj_dept/worker.start.sh" ]
     depends_on:
@@ -54,8 +54,8 @@ services:
 #    command: [ nginx-debug, '-g', 'daemon off;' ]
 
 
-volumes:
-#  staticfiles:
-  shared_jenkins_home:
-    external: true
-    name:  jenkins_home
+#volumes:
+##  staticfiles:
+#  shared_jenkins_home:
+#    external: true
+#    name:  jenkins_home

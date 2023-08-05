@@ -41,7 +41,7 @@ pipeline {
                     sh "sudo docker compose -f docker-compose.test.yml up -d --build"
 
                     // Pause the pipeline for 10 seconds
-                    sleep 10
+                    sleep 20
                 }
             }
         }
