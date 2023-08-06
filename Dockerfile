@@ -6,6 +6,8 @@ COPY requirements.txt ./
 # 創建非root用戶和組
 RUN groupadd uwsgi && useradd -g uwsgi uwsgiuser
 
+# Switch to root user
+USER root
 
 # 安裝必要的包和庫，然後清理
 RUN apk update && \
