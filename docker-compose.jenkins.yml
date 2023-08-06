@@ -12,7 +12,7 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - shared_jenkins_home:/var/jenkins_home  # 持久化數據
+#      - shared_jenkins_home:/var/jenkins_home  # 持久化數據
       - /c/Users/SharonMai/data/jenkins_home:/var/jenkins_home
 
 #      - /c/Users/SharonMai/data:/var/jenkins_home
@@ -35,9 +35,9 @@ services:
       - NGROK_AUTHTOKEN=2RG1fHSquX899nCuJHo7bocpART_2eDPff3ixK3bbsGDRSdSn
     ports:
       - 4040:4040
-
-# in both docker-compose.yml files
-volumes:
-  shared_jenkins_home:
-    external: true
-    name:  jenkins_home
+#
+## in both docker-compose.yml files
+#volumes:
+#  shared_jenkins_home:
+#    external: true
+#    name:  jenkins_home
