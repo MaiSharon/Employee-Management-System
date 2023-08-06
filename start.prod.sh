@@ -23,5 +23,8 @@ echo "Database connection successful"
 echo "=== Collecting static files ==="
 python manage.py collectstatic --noinput $server_params
 
+chown -R uwsgiuser:uwsgi /data/prj_dept/staticfiles/
+
+
 # 使用 uWSGI 運行 Django 應用
 exec uwsgi --ini /data/prj_dept/uwsgi.ini

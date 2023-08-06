@@ -26,8 +26,7 @@ RUN touch /data/prj_dept/dept_app.performance.log && \
     touch /data/prj_dept/dept_app.log && \
     chown uwsgiuser:uwsgi /data/prj_dept/dept_app.performance.log && \
     chown uwsgiuser:uwsgi /data/prj_dept/dept_app.task.log && \
-    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.log && \
-    chown -R uwsgiuser:uwsgi /data/prj_dept/staticfiles/
+    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.log
 
 
 RUN chmod +x ./start.prod.sh
