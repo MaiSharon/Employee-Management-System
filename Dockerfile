@@ -3,8 +3,9 @@ WORKDIR /data/prj_dept
 ENV server_params=
 COPY requirements.txt ./
 
-# 創建非root用戶
-RUN adduser -D uwsgiuser
+# 創建非root用戶和組
+RUN addgroup -S uwsgi && adduser -S uwsgiuser -G uwsgi
+
 
 # 安裝必要的包和庫，然後清理
 RUN apk update && \
