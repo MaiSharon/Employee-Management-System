@@ -21,10 +21,7 @@ echo "Database connection successful"
 
 # Collect static files (--noinput ->It's say yes)
 echo "=== Collecting static files ==="
-
-chown -R uwsgiuser:uwsgi /data/prj_dept/
 python manage.py collectstatic --noinput $server_params
-
 
 
 # 使用 uWSGI 運行 Django 應用
