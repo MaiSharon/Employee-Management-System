@@ -12,6 +12,9 @@ RUN apk update && \
 RUN ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime && \
     echo 'Asia/Taipei' >/etc/timezone
 
+# install uWSGI
+RUN pip install uwsgi
+
 # 將當前目錄（即 Dockerfile 所在的目錄）下的所有文件和子目錄複製到 WORKDIR 路徑中
 COPY . .
 
