@@ -20,7 +20,13 @@ RUN apk update && \
 
 # 將當前目錄（即 Dockerfile 所在的目錄）下的所有文件和子目錄複製到 WORKDIR 路徑中
 COPY . .
-RUN touch /data/prj_dept/dept_app.log && chown uwsgiuser:uwsgi /data/prj_dept/dept_app.log
+RUN touch /data/prj_dept/dept_app.performance.log && \
+    touch /data/prj_dept/dept_app.task.log && \
+    touch /data/prj_dept/dept_app.log && \
+    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.performance.log && \
+    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.task.log && \
+    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.log
+
 
 RUN chmod +x ./start.prod.sh
 EXPOSE 8000
