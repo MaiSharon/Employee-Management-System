@@ -1,21 +1,20 @@
-FROM python:3.9
+FROM python:3.9-alpine
 WORKDIR /data/prj_dept
 ENV server_params=
 COPY requirements.txt ./
 
 # 創建非root用戶和組
-RUN addgroup --system uwsgi && adduser --system --ingroup uwsgi uwsgiuser
+RUN addgroup -S uwsgi && adduser -S uwsgiuser -G uwsgi
+
 
 # 安裝必要的包和庫，然後清理
-RUN apt-get update && \
-    apt-get install -y gcc libffi-dev libmariadbclient-dev gettext && \
+RUN apk update && \
+    apk add --no-cache gcc musl-dev libffi-dev mariadb-connector-c-dev gettext && \
     python3 -m pip install --upgrade pip && \
     pip install -r requirements.txt && \
     pip install uwsgi && \
-    apt-get remove -y gcc libffi-dev && \
-    apt-get autoremove -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/* && \
+    apk del gcc musl-dev libffi-dev && \
+    rm -rf /var/cache/apk/* && \
     ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime && \
     echo 'Asia/Taipei' >/etc/timezone
 
