@@ -17,7 +17,7 @@ services:
     env_file: .env.docker  # 從.env文件加載環境變量
     environment:
       - DJANGO_SETTINGS_MODULE=settings.local  # 告诉 Django 和 uWSGI 使用哪个设置文件
-      - PYTHONPATH=/data/prj_dept
+#      - PYTHONPATH=/data/prj_dept
 #      - server_params=--settings=settings.local  # 给 manage.py 命令用的
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
     volumes:
