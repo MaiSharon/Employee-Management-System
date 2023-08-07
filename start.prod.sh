@@ -1,8 +1,7 @@
 #!/bin/bash
 set -e
 
-# 更改靜態文件的權限
-chown -R uwsgiuser:uwsgi /data/prj_dept/staticfiles/
+
 
 # django-admin compilemessages
 django-admin compilemessages
@@ -28,6 +27,9 @@ echo "Database connection successful"
 # Collect static files (--noinput ->It's say yes)
 echo "=== Collecting static files ==="
 python manage.py collectstatic --noinput $server_params
+
+# 更改靜態文件的權限
+chown -R uwsgiuser:uwsgi /data/prj_dept/staticfiles/
 
 # 使用 uWSGI 運行 Django 應用
 # 使用 su 命令以 uwsgiuser 身份運行 uwsgi
