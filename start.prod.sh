@@ -26,7 +26,7 @@ echo "Database connection successful"
 
 # Collect static files (--noinput ->It's say yes)
 echo "=== Collecting static files ==="
-python manage.py collectstatic --noinput $server_params
+su - uwsgiuser -c "python manage.py collectstatic --noinput $server_params"
 
 # 更改靜態文件的權限
 chown -R uwsgiuser:uwsgi /data/prj_dept/staticfiles/
