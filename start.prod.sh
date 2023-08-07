@@ -19,6 +19,9 @@ until echo "from dept_app.models import Admin; print(Admin.objects.count())" | p
 done
 echo "Database connection successful"
 
+#RUN chown -R uwsgiuser:uwsgi /data/prj_dept/staticfiles/
+
+
 # Collect static files (--noinput ->It's say yes)
 echo "=== Collecting static files ==="
 python manage.py collectstatic --noinput $server_params
