@@ -19,7 +19,7 @@ services:
       - server_params=--settings=settings.local  # 添加額外的環境變量
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
     #權限問題添加user?
-    user: "uwsgiuser:uwsgi"
+#    user: "uwsgiuser:uwsgi"
     volumes:
       - staticfiles-local:/data/prj_dept/staticfiles
 #      - staticfiles-local:/data/prj_dept/nginx.conf
