@@ -24,11 +24,9 @@ echo "Database connection successful"
 
 # Collect static files (--noinput ->It's say yes)
 echo "=== Collecting static files ==="
-su - uwsgiuser -c "python manage.py collectstatic --noinput $server_params"
+python manage.py collectstatic --noinput $server_params
 
-# 更改靜態文件的權限
-chown -R uwsgiuser:uwsgi /data/prj_dept/staticfiles/
+
 
 # 使用 uWSGI 運行 Django 應用
-# 使用 su 命令以 uwsgiuser 身份運行 uwsgi
-su uwsgiuser -c "exec uwsgi --ini /data/prj_dept/uwsgi.ini"
+exec uwsgi --ini /data/prj_dept/uwsgi.ini
