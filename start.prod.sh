@@ -20,7 +20,7 @@ done
 echo "Database connection successful"
 
 
-RUN rm -rf /data/prj_dept/staticfiles/*
+#RUN rm -rf /data/prj_dept/staticfiles/*
 
 # Collect static files (--noinput ->It's say yes)
 echo "=== Collecting static files ==="
