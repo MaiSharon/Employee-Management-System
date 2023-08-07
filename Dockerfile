@@ -36,4 +36,4 @@ RUN chmod +x ./start.prod.sh
 EXPOSE 8000
 
 # 使用非root用戶運行容器
-# USER uwsgiuser
+USER uwsgiuser

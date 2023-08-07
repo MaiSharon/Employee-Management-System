@@ -1,8 +1,6 @@
 #!/bin/bash
 set -e
 
-
-
 # django-admin compilemessages
 django-admin compilemessages
 
