@@ -24,7 +24,7 @@ echo "=== Collecting static files ==="
 python manage.py collectstatic --noinput $server_params
 
 # synchronous web server for development:
-#python manage.py runserver 0.0.0.0:8000 $server_params  #
+python manage.py runserver 0.0.0.0:8000 $server_params
 
 # 使用 uWSGI 運行 Django 應用
-exec uwsgi --ini /data/prj_dept/uwsgi.ini
+#exec uwsgi --ini /data/prj_dept/uwsgi.ini
