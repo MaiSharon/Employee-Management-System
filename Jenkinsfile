@@ -50,7 +50,7 @@ pipeline {
             steps {
                 script {
                     // Run automated testing
-                    sh "sudo docker compose -f docker-compose.test.yml exec web /bin/sh -c 'su - uwsgiuser -c \"python manage.py test --settings=settings.local\"'"
+                    sh "sudo docker-compose -f docker-compose.test.yml exec web --user uwsgiuser /bin/sh -c 'python manage.py test --settings=settings.local'"
 
                     // sh "sudo docker compose -f docker-compose.test.yml exec web /bin/sh -c 'python manage.py test --settings=settings.local'"
                     // Stop all the containers after testing
