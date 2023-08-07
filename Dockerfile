@@ -29,7 +29,7 @@ RUN touch /data/prj_dept/dept_app.performance.log && \
     chown uwsgiuser:uwsgi /data/prj_dept/dept_app.log
 
 # Change ownership of the entire project directory
-RUN chown -R uwsgiuser:uwsgi /data/prj_dept/
+# RUN chown -R uwsgiuser:uwsgi /data/prj_dept/
 # RUN rm -rf /data/prj_dept/staticfiles/*
 
 RUN chmod +x ./start.prod.sh
