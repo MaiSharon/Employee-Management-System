@@ -14,11 +14,7 @@ from django.core.wsgi import get_wsgi_application
 
 def load_env_file():
     """Get now .env file"""
-    if os.getenv("DOCKER_ENV"):
-        dotenv_path = '.env.docker'
-    else:
-        dotenv_path = '.env.local'
-
+    dotenv_path = '.env.docker'
     load_dotenv(dotenv_path)
 
 
