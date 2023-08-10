@@ -28,7 +28,7 @@ pipeline {
             steps {
                 script {
                     // Read the docker-compose.yml file
-                    def composeFile = readYaml file: 'docker-compose-test.yml'
+                    def composeFile = readYaml file: 'docker-compose.test.yml'
 
                     // Loop over services and build and push each one
                     for (service in composeFile.services.keySet()) {
