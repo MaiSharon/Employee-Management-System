@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    environment {
+        REMOTE_HOST = 'ubuntu@18.140.54.76'
+        REMOTE_PATH = '/home/sharon_mai/dept_app_run'
+        LOCAL_FILE = './docker-compose.prod.yml'
+        SSH_CREDENTIALS_ID = credentials('dept_prod_demo')
+    }
+
+    stages {
+        stage('SCP Transfer') {
+            steps {
+                script {
+                    sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                        sh ("scp ${LOCAL_FILE} ${REMOTE_HOST}:${REMOTE_PATH}")
+                    }
+                }
+            }
+        }
+
+        stage('Download Docker Images') {
+            steps {
+                script {
+                    sshagent(credentials: [SSH_CREDENTIALS_ID]) {
+                        sh
+                        ("""
+                            ssh ${REMOTE_HOST} "cd ${REMOTE_PATH} && docker-compose -f ${LOCAL_FILE} pull"
+                        """)
+                    }
+                }
+            }
+        }
+    }
+}

@@ -14,7 +14,6 @@ services:
     volumes:
       - shared_jenkins_home:/var/jenkins_home  # 持久化數據
 #      - /c/Users/SharonMai/data/jenkins_home:/var/jenkins_home  # 壞掉
-
       - /var/run/docker.sock:/var/run/docker.sock  # 掛載本機 Docker 到 Jenkins 容器中使用
       - /c/Users/SharonMai/.ssh:/var/jenkins_home/.ssh  # 讓jenkins使用SSH私鑰
       - ./.env.docker:/var/jenkins_home/workspace/prj_dept-test/.env.docker  # 新增的映射
@@ -34,7 +33,7 @@ services:
       - NGROK_AUTHTOKEN=2RG1fHSquX899nCuJHo7bocpART_2eDPff3ixK3bbsGDRSdSn
     ports:
       - 4040:4040
-#
+
 ## in both docker-compose.yml files
 volumes:
   shared_jenkins_home:
