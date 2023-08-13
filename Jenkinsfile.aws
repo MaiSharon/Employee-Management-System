@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        REMOTE_HOST = 'ubuntu@18.140.54.76'
+        REMOTE_HOST = 'ubuntu@3.1.220.124'
         REMOTE_PATH = '/home/sharon_mai/dept_app_run'
         LOCAL_FILE = './docker-compose.prod.yml'
         SSH_CREDENTIALS_ID = credentials('dept_prod_demo')
