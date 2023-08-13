@@ -6,6 +6,7 @@ pipeline {
         REMOTE_PATH = '/home/sharon_mai/dept_app_run'
         LOCAL_FILE = './docker-compose.prod.yml'
         SSH_CREDENTIALS_ID = credentials('dept_prod_demo')
+        PEM_FILE_PATH = '/var/jenkins_home/.ssh/dept.pem' // 添加PEM文件的位置變量
     }
 
     stages {
@@ -13,7 +14,7 @@ pipeline {
             steps {
                 script {
                     sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                        sh ("scp ${LOCAL_FILE} ${REMOTE_HOST}:${REMOTE_PATH}")
+                        sh ("scp -i ${PEM_FILE_PATH} ${LOCAL_FILE} ${REMOTE_HOST}:${REMOTE_PATH}") // 使用PEM文件進行SCP傳輸
                     }
                 }
             }
@@ -25,7 +26,7 @@ pipeline {
                     sshagent(credentials: [SSH_CREDENTIALS_ID]) {
                         sh
                         ("""
-                            ssh ${REMOTE_HOST} "cd ${REMOTE_PATH} && docker-compose -f ${LOCAL_FILE} pull"
+                            sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} "cd ${REMOTE_PATH} && docker-compose -f ${LOCAL_FILE} pull" // 使用PEM文件進行SSH連接
                         """)
                     }
                 }
