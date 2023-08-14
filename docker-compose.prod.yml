@@ -52,7 +52,7 @@ services:
       - staticfiles-local:/var/prj_dept/staticfiles
     command: [ nginx-debug, '-g', 'daemon off;' ]
     ports:
-      - "192.168.1.103:80:80"
+      - "172.31.19.94:80:80"
 
 
 volumes:
