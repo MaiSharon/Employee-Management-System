@@ -44,7 +44,7 @@ pipeline {
                         def image = imageDetails.image
                         if (image) {
                             echo "Pulling image ${image}..."
-                            sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker pull ppp300a/${serviceName}:${IMAGE_TAG}\"")
+                            // sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker pull ppp300a/${serviceName}:${IMAGE_TAG}\"")
                             sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker compose -f ${LOCAL_FILE} up -d\"")
                         }
                     }
