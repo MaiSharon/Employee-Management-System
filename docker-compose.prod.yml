@@ -50,7 +50,7 @@ services:
     container_name: dept-nginx
     volumes:
       - staticfiles-local:/var/prj_dept/staticfiles
-    command: [ nginx-debug, '-g', 'daemon off;' ]
+#    command: [ "nginx", "-g", "daemon off;" ]
     ports:
       - "172.31.19.94:80:80"
 
