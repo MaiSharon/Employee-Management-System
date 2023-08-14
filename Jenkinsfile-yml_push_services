@@ -6,6 +6,7 @@ pipeline {
         BRANCH_NAME = 'main'
         IMAGE_NAME = 'ECM-test'
         IMAGE_TAG = '1.7.0'
+        LOCAL_FILE = './docker-compose.test.yml'
         DOCKER_HUB_CREDENTIALS = credentials('DOCKER_HUB_CREDENTIALS') // replace with your Docker Hub credentials ID
     }
 
@@ -28,7 +29,7 @@ pipeline {
             steps {
                 script {
                     // Read the docker-compose.yml file
-                    def composeFile = readYaml file: 'docker-compose.test.yml'
+                    def composeFile = readYaml file: "${LOCAL_FILE}"
 
                     // Loop over services and build and push each one
                     for (service in composeFile.services.keySet()) {

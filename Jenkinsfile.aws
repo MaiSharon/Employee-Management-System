@@ -5,16 +5,27 @@ pipeline {
         REMOTE_HOST = 'ubuntu@3.1.220.124'
         REMOTE_PATH = '/home/sharon_mai/dept_app_run'
         LOCAL_FILE = './docker-compose.prod.yml'
-        SSH_CREDENTIALS_ID = credentials('dept_prod_demo')
-        PEM_FILE_PATH = '/var/jenkins_home/.ssh/dept.pem' // 添加PEM文件的位置變量
+        PEM_FILE_PATH = '/var/jenkins_home/.ssh/dept.pem'
+        IMAGE_TAG = '1.7.0'
     }
 
     stages {
         stage('SCP Transfer') {
             steps {
                 script {
-                    sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                        sh ("scp -i ${PEM_FILE_PATH} ${LOCAL_FILE} ${REMOTE_HOST}:${REMOTE_PATH}") // 使用PEM文件進行SCP傳輸
+                    def workspace = pwd()
+                    sshagent(credentials: ['dept_prod_demo']) {
+                        sh("sudo scp -i ${PEM_FILE_PATH} ${workspace}/${LOCAL_FILE} ${REMOTE_HOST}:${REMOTE_PATH}")
+                    }
+                }
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                script {
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
+                        sh('echo $DOCKER_HUB_CREDENTIALS_PSW | sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} "sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin"')
                     }
                 }
             }
@@ -23,11 +34,19 @@ pipeline {
         stage('Download Docker Images') {
             steps {
                 script {
-                    sshagent(credentials: [SSH_CREDENTIALS_ID]) {
-                        sh
-                        ("""
-                            sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} "cd ${REMOTE_PATH} && docker-compose -f ${LOCAL_FILE} pull" // 使用PEM文件進行SSH連接
-                        """)
+                    def composeFile = readYaml file: "${LOCAL_FILE}"
+                    def serviceNames = composeFile.services.keySet()
+                    def serviceDetailsList = composeFile.services.values()
+
+                    for (int i = 0; i < serviceNames.size(); i++) {
+                        def serviceName = serviceNames[i]
+                        def imageDetails = serviceDetailsList[i]
+                        def image = imageDetails.image
+                        if (image) {
+                            echo "Pulling image ${image}..."
+                            sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker pull ppp300a/${serviceName}:${IMAGE_TAG}\"")
+                            sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker compose -f ${LOCAL_FILE} up -d\"")
+                        }
                     }
                 }
             }
