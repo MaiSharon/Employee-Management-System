@@ -1,9 +1,8 @@
 version: "3.2"
-x-image-version: &image-version 1.7.0
 
 services:
   mysql:
-    image: ppp300a/mysql:*image-version
+    image: ppp300a/mysql:1.7.0
     container_name: dept-mysql
     ports:
       - "3306:3306"
@@ -12,7 +11,7 @@ services:
     env_file: .env.prod
 
   web:
-    image: ppp300a/web:*image-version
+    image: ppp300a/web:1.7.0
     container_name: dept-web
     env_file: .env.prod  # 從.env文件加載環境變量
     environment:
@@ -29,14 +28,14 @@ services:
       - celery
 
   redis:
-    image: ppp300a/redis:*image-version
+    image: ppp300a/redis:1.7.0
     container_name: dept-redis
     env_file: .env.prod
     ports:
       - "6379:6379"
 
   celery:
-    image: ppp300a/celery:*image-version
+    image: ppp300a/celery:1.7.0
     container_name: dept-celery
     env_file: .env.prod
 #    volumes:
@@ -47,7 +46,7 @@ services:
       - redis
 
   nginx:
-    image: ppp300a/nginx:*image-version
+    image: ppp300a/nginx:1.7.0
     container_name: dept-nginx
     volumes:
       - staticfiles-local:/var/prj_dept/staticfiles
