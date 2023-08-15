@@ -12,7 +12,7 @@ services:
     build:
       context: .  # Dockerfile的位置
       args:
-        - DJANGO_SETTINGS_MODULE:settings.local
+        DJANGO_SETTINGS_MODULE: settings.local
     image: ppp300a/prj_dept-web:1.0.0
     container_name: dept-web
     env_file: .env.docker  # 從.env文件加載環境變量

@@ -4,7 +4,7 @@ pipeline {
     environment {
         REMOTE_HOST = 'ubuntu@3.1.220.124'
         REMOTE_PATH = '/home/sharon_mai/dept_app_run'
-        LOCAL_FILE = './docker-compose.prod.yml'
+        YML_FILE = './docker-compose.prod.yml'
         PEM_FILE_PATH = '/var/jenkins_home/.ssh/dept.pem'
         IMAGE_TAG = '1.7.0'
     }
@@ -15,7 +15,7 @@ pipeline {
                 script {
                     def workspace = pwd()
                     sshagent(credentials: ['dept_prod_demo']) {
-                        sh("sudo scp -i ${PEM_FILE_PATH} ${workspace}/${LOCAL_FILE} ${REMOTE_HOST}:${REMOTE_PATH}")
+                        sh("sudo scp -i ${PEM_FILE_PATH} ${workspace}/${YML_FILE} ${REMOTE_HOST}:${REMOTE_PATH}")
                     }
                 }
             }
@@ -34,7 +34,7 @@ pipeline {
         stage('Download Docker Images') {
             steps {
                 script {
-                    def composeFile = readYaml file: "${LOCAL_FILE}"
+                    def composeFile = readYaml file: "${YML_FILE}"
                     def serviceNames = composeFile.services.keySet()
                     def serviceDetailsList = composeFile.services.values()
 
@@ -45,7 +45,7 @@ pipeline {
                         if (image) {
                             echo "Pulling image ${image}..."
                             // sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker pull ppp300a/${serviceName}:${IMAGE_TAG}\"")
-                            sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker compose -f ${LOCAL_FILE} up -d\"")
+                            sh("sudo ssh -i ${PEM_FILE_PATH} ${REMOTE_HOST} \"cd ${REMOTE_PATH} && sudo docker compose -f ${YML_FILE} up -d\"")
                         }
                     }
                 }

@@ -4,7 +4,7 @@ pipeline {
         GIT_CREDENTIALS = '37ae2a82-cefd-4044-8f31-5d40bc2906be'
         GIT_URL = 'git@github.com:MaiSharon/Employee-Management-System.git'
         BRANCH_NAME = 'main'
-        LOCAL_FILE = './docker-compose.test.yml'
+        YML_FILE = './docker-compose.test.yml'
         DOCKER_HUB_CREDENTIALS = credentials('DOCKER_HUB_CREDENTIALS') // replace with your Docker Hub credentials ID
     }
 
@@ -23,27 +23,32 @@ pipeline {
                 }
             }
         }
-            stage('Build and Push Images') {
+        stage('Build Images') {
+            steps {
+                sh("sudo docker compose -f ${YML_FILE}")
+            }
+        }
+        stage('Login to Docker Hub') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
+                    sh("echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin")
+                }
+            }
+        }
+        stage('Push Images with Build Section') {
             steps {
                 script {
-                    // Read the docker-compose.yml file
-                    def composeFile = readYaml file: "${LOCAL_FILE}"
-
-                    // Login to Docker Hub outside the loop
-                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
-                        sh('echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin')
-                    }
-
-                    // Loop over services and build and push each one
-                    for (service in composeFile.services.keySet()) {
-                        if (composeFile.services[service].build) { // Only build if there's a 'build' attribute
-                            def imageName = composeFile.services[service].image ?: "default-image-name"
-                            echo "Building and pushing ${imageName}..."
-                            sh("sudo docker build -t ${imageName} .")
-                            sh("sudo docker push ${imageName}")
-                        }
+                    // 使用 shell 命令解析 docker-compose 文件，找到具有 build 部分的映像名稱
+                    def imagesToPush = sh(script: "grep -B 2 'build:' ${YML_FILE} | grep 'image:' | awk '{print \$2}'", returnStdout: true).trim().split('\n')
+                    imagesToPush.each { image ->
+                        sh("sudo docker push ${image}")
                     }
                 }
+            }
+        }
+        stage('Cleanup') {
+            steps {
+                sh "sudo docker image prune -f"
             }
         }
     }

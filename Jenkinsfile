@@ -4,9 +4,6 @@ pipeline {
         GIT_CREDENTIALS = "37ae2a82-cefd-4044-8f31-5d40bc2906be"
         GIT_URL = "git@github.com:MaiSharon/Employee-Management-System.git"
         BRANCH_NAME = "main"
-        IMAGE_NAME = "ECM-test"
-        IMAGE_TAG = "1.0.0"
-
     }
     stages {
         stage('Checkout') {
