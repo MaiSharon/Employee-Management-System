@@ -23,9 +23,6 @@ echo "Database connection successful"
 echo "=== Collecting static files ==="
 python manage.py collectstatic --noinput
 
-# 更改靜態文件的所有權
-echo "=== Changing ownership of static files ==="
-chown -R www-data:www-data /data/prj_dept/staticfiles
 
 # 使用 uWSGI 運行 Django 應用
 exec uwsgi --ini /data/prj_dept/uwsgi.ini
