@@ -31,19 +31,16 @@ services:
 
   redis:
     image: "redis:alpine" # or replace with your own Redis image
-    container_name: dept-redis
     env_file: .env.docker
     ports:
       - "6379:6379"
 
   celery:
-    build:
-      context: .  # Dockerfile的位置
-    container_name: dept-celery
+    image: "celery:alpine"
     env_file: .env.docker
-#    volumes:
-#      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
-    entrypoint: [ "/bin/sh", "/data/prj_dept/worker.start.sh" ]
+    environment:
+      - DJANGO_SETTINGS_MODULE=settings.local
+    command: ["celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo"]
     depends_on:
       - redis
 
@@ -54,7 +51,7 @@ services:
       dockerfile: Dockerfile.nginx
     volumes:
       - staticfiles-local:/var/prj_dept/staticfiles
-    command: [ nginx-debug, '-g', 'daemon off;' ]
+    command: [ 'nginx-debug', '-g', 'daemon off;' ]
     ports:
       - "192.168.1.103:80:80"
 

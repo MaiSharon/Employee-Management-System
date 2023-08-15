@@ -41,7 +41,7 @@ services:
 #    volumes:
 #      - shared_jenkins_home:/workspace/prj_dept-test:/data/prj_dept
 #      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
-    entrypoint: [ "/bin/sh", "/data/prj_dept/worker.start.sh" ]
+    entrypoint: [ "/bin/sh", "/data/prj_dept/NotUse.worker.start.sh" ]
     depends_on:
       - redis
 

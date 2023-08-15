@@ -24,7 +24,7 @@ spec:
       containers:
         - command:
             - /bin/sh
-            - /data/prj_dept/worker.start.sh
+            - /data/prj_dept/NotUse.worker.start.sh
           env:
             - name: ALLOWED_HOSTS
               valueFrom:
