@@ -6,7 +6,7 @@ WORKDIR /data/prj_dept
 
 # 設置環境變量
 ENV server_params=
-ARG DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+ARG DJANGO_SETTINGS_MODULE
 
 # 複製 requirements.txt 並安裝必要的包和庫，然後清理
 COPY requirements.txt ./
