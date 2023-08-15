@@ -27,7 +27,7 @@ RUN touch /data/prj_dept/dept_app.performance.log && \
     touch /data/prj_dept/dept_app.log && \
     chown uwsgiuser:uwsgi /data/prj_dept/dept_app.*
 
-ARG DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
+ARG DJANGO_SETTINGS_MODULE=settings.local
 
 # 保護敏感文件的暫時變量
 ARG SECRET_KEY=default_value
