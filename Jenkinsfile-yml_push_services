@@ -25,13 +25,13 @@ pipeline {
         }
         stage('Build Images') {
             steps {
-                sh("sudo docker compose -f ${YML_FILE}")
+                sh("sudo docker compose -f ${YML_FILE} build")
             }
         }
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
-                    sh("echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin")
+                    sh('echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin')
                 }
             }
         }
