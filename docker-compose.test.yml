@@ -36,7 +36,7 @@ services:
       - "6379:6379"
 
   celery:
-    image: celery:latest
+    image: ppp300a/prj_dept-test:1.7.0
     env_file: .env.docker
     environment:
       - DJANGO_SETTINGS_MODULE=settings.local
