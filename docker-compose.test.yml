@@ -36,7 +36,7 @@ services:
       - "6379:6379"
 
   celery:
-    image: "celery:alpine"
+    image: celery:latest
     env_file: .env.docker
     environment:
       - DJANGO_SETTINGS_MODULE=settings.local

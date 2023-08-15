@@ -16,8 +16,8 @@ services:
 #      - /c/Users/SharonMai/data/jenkins_home:/var/jenkins_home  # 壞掉
       - /var/run/docker.sock:/var/run/docker.sock  # 掛載本機 Docker 到 Jenkins 容器中使用
       - /c/Users/SharonMai/.ssh:/var/jenkins_home/.ssh  # 讓jenkins使用SSH私鑰
-      - ./.env.docker:/var/jenkins_home/workspace/prj_dept-test/.env.docker  # 新增的映射
-      - ./.env.docker:/var/jenkins_home/workspace/yml_service_push/.env.docker
+      - ./.env.docker:/var/jenkins_home/workspace/00.prj_dept-build-docker-test/.env.docker  # 新增的映射
+      - ./.env.docker:/var/jenkins_home/workspace/01.yml_service_push/.env.docker
     restart: always
 
   ngrok_jenkins:
