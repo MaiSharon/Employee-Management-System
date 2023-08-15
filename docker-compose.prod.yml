@@ -2,8 +2,7 @@ version: "3.2"
 
 services:
   mysql:
-    image: ppp300a/mysql:1.7.0
-    container_name: dept-mysql
+    image: "mysql:8.0"
     ports:
       - "3306:3306"
 #    volumes:
@@ -11,7 +10,7 @@ services:
     env_file: .env.prod
 
   web:
-    image: ppp300a/web:1.7.0
+    image: ppp300a/prj_dept-web:1.0.0
     container_name: dept-web
     env_file: .env.prod  # 從.env文件加載環境變量
     environment:
@@ -19,7 +18,7 @@ services:
       - DJANGO_SETTINGS_MODULE=settings.local  # 告诉 Django 和 uWSGI 使用哪个设置文件
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
     volumes:
-      - staticfiles-local:/data/prj_dept/staticfiles
+      - staticfiles-data:/data/prj_dept/staticfiles
     ports:
       - "8000:8000"
     depends_on: # 設定服務的啟動順序
@@ -27,16 +26,24 @@ services:
       - redis
       - celery
 
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    image: ppp300a/prj_dept-nginx:1.0.0
+    volumes:
+      - staticfiles-data:/var/prj_dept/staticfiles
+    ports:
+      - "0.0.0.0:80:80"
+
   redis:
-    image: ppp300a/redis:1.7.0
-    container_name: dept-redis
+    image: "redis:alpine"
     env_file: .env.prod
     ports:
       - "6379:6379"
 
   celery:
-    image: ppp300a/celery:1.7.0
-    container_name: dept-celery
+    image: ppp300a/prj_dept-web:1.0.0
     env_file: .env.prod
 #    volumes:
 #      - shared_jenkins_home:/workspace/prj_dept-test:/data/prj_dept
@@ -45,15 +52,8 @@ services:
     depends_on:
       - redis
 
-  nginx:
-    image: ppp300a/nginx:1.7.0
-    container_name: dept-nginx
-    volumes:
-      - staticfiles-local:/var/prj_dept/staticfiles
-#    command: [ "nginx", "-g", "daemon off;" ]
-    ports:
-      - "172.31.19.94:80:80"
+
 
 
 volumes:
-  staticfiles-local:
+  staticfiles-data:

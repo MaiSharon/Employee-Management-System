@@ -19,13 +19,9 @@ until echo "from dept_app.models import Admin; print(Admin.objects.count())" | p
 done
 echo "Database connection successful"
 
-# 收集靜態文件
-echo "=== Collecting static files ==="
-python manage.py collectstatic --noinput
-
-# 更改靜態文件的所有權
-echo "=== Changing ownership of static files ==="
-chown -R www-data:www-data /data/prj_dept/staticfiles
+## 收集靜態文件
+#echo "=== Collecting static files ==="
+#python manage.py collectstatic --noinput
 
 # 使用 uWSGI 運行 Django 應用
 exec uwsgi --ini /data/prj_dept/uwsgi.ini

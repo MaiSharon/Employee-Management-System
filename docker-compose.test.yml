@@ -2,7 +2,6 @@ version: "3.2"
 services:
   mysql:
     image: "mysql:8.0"
-    container_name: dept-mysql
     ports:
       - "3306:3306"
     volumes:
@@ -12,7 +11,10 @@ services:
   web:
     build:
       context: .  # Dockerfile的位置
-    image: ppp300a/prj_dept-test:1.7.0
+      args:
+        - DJANGO_SETTINGS_MODULE=settings.local
+    image: ppp300a/prj_dept-web:1.0.0
+#    user: "100:101"
     container_name: dept-web
     env_file: .env.docker  # 從.env文件加載環境變量
     environment:
@@ -21,7 +23,7 @@ services:
 #      - server_params=--settings=settings.local  # 给 manage.py 命令用的
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
     volumes:
-      - staticfiles-local:/data/prj_dept/staticfiles
+      - staticfiles-data:/data/prj_dept/staticfiles
     ports:
       - "8000:8000"
     depends_on: # 設定服務的啟動順序
@@ -29,14 +31,24 @@ services:
       - redis
       - celery
 
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.nginx
+    image: ppp300a/prj_dept-nginx:1.0.0
+    volumes:
+      - staticfiles-data:/var/prj_dept/staticfiles
+    ports:
+      - "192.168.1.103:80:80"
+
   redis:
-    image: "redis:alpine" # or replace with your own Redis image
+    image: "redis:alpine"
     env_file: .env.docker
     ports:
       - "6379:6379"
 
   celery:
-    image: ppp300a/prj_dept-test:1.7.0
+    image: ppp300a/prj_dept-web:1.0.0
     env_file: .env.docker
     environment:
       - DJANGO_SETTINGS_MODULE=settings.local
@@ -44,20 +56,7 @@ services:
     depends_on:
       - redis
 
-  nginx:
-    image: custom-nginx:latest
-    build:
-      context: .
-      dockerfile: Dockerfile.nginx
-    volumes:
-      - staticfiles-local:/var/prj_dept/staticfiles
-    command: [ 'nginx-debug', '-g', 'daemon off;' ]
-    ports:
-      - "192.168.1.103:80:80"
-
 
 volumes:
-  staticfiles-local:
-  shared_jenkins_home:
-    external: true
-    name:  jenkins_home
+  staticfiles-data:
+    name:  staticfiles-data

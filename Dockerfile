@@ -20,19 +20,35 @@ RUN apk update && \
 
 # 將當前目錄（即 Dockerfile 所在的目錄）下的所有文件和子目錄複製到 WORKDIR 路徑中
 COPY . .
+
 # 設定日誌文件和靜態文件的權限
 RUN touch /data/prj_dept/dept_app.performance.log && \
     touch /data/prj_dept/dept_app.task.log && \
     touch /data/prj_dept/dept_app.log && \
-    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.performance.log && \
-    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.task.log && \
-    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.log
+    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.*
 
-# Change ownership of the entire project directory
-# RUN chown -R uwsgiuser:uwsgi /data/prj_dept/
-# RUN rm -rf /data/prj_dept/staticfiles/*
+ARG DJANGO_SETTINGS_MODULE=$DJANGO_SETTINGS_MODULE
 
-RUN chmod +x ./start.prod.sh
+# 保護敏感文件的暫時變量
+ARG SECRET_KEY=default_value
+ARG ALLOWED_HOSTS=default_value
+ARG MYSQL_NAME=default_value
+ARG MYSQL_USER=default_value
+ARG MYSQL_ROOT_PASSWORD=default_value
+ARG MYSQL_PASSWORD=default_value
+ARG MYSQL_HOST=default_value
+ARG MYSQL_PORT=default_value
+ARG REDIS_LOCATION=default_value
+ARG CELERY_BROKER_URL=default_value
+ARG CELERY_RESULT_BACKEND=default_value
+ARG LINE_CHANNEL_ACCESS_TOKEN=default_value
+ARG LINE_CHANNEL_SECRET=default_value
+
+
+# 收集靜態文件
+RUN python manage.py collectstatic --noinput
+
+RUN chmod +x /data/prj_dept/start.prod.sh
 EXPOSE 8000
 
 # 使用非root用戶運行容器
