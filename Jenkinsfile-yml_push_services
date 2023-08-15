@@ -23,7 +23,7 @@ pipeline {
                 }
             }
         }
-        stage('Build and Push Images') {
+            stage('Build and Push Images') {
             steps {
                 script {
                     // Read the docker-compose.yml file
@@ -36,9 +36,12 @@ pipeline {
 
                     // Loop over services and build and push each one
                     for (service in composeFile.services.keySet()) {
-                        echo "Building and pushing ${IMAGE_NAME}-${service}:${IMAGE_TAG}..."
-                        sh("sudo docker build -t ppp300a/${IMAGE_NAME}-${service}:${IMAGE_TAG} .")
-                        sh("sudo docker push ppp300a/${IMAGE_NAME}-${service}:${IMAGE_TAG}")
+                        if (composeFile.services[service].build) { // Only build if there's a 'build' attribute
+                            def imageName = composeFile.services[service].image ?: "default-image-name"
+                            echo "Building and pushing ${imageName}..."
+                            sh("sudo docker build -t ${imageName} .")
+                            sh("sudo docker push ${imageName}")
+                        }
                     }
                 }
             }
