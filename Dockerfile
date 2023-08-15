@@ -37,5 +37,3 @@ EXPOSE 8000
 
 # 使用非root用戶運行容器
 USER uwsgiuser
-
-RUN chown -R www-data:www-data /data/prj_dept/staticfiles
