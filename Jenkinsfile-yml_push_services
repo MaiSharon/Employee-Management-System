@@ -4,8 +4,6 @@ pipeline {
         GIT_CREDENTIALS = '37ae2a82-cefd-4044-8f31-5d40bc2906be'
         GIT_URL = 'git@github.com:MaiSharon/Employee-Management-System.git'
         BRANCH_NAME = 'main'
-        IMAGE_NAME = 'ECM-test'
-        IMAGE_TAG = '1.7.0'
         LOCAL_FILE = './docker-compose.test.yml'
         DOCKER_HUB_CREDENTIALS = credentials('DOCKER_HUB_CREDENTIALS') // replace with your Docker Hub credentials ID
     }
@@ -31,14 +29,16 @@ pipeline {
                     // Read the docker-compose.yml file
                     def composeFile = readYaml file: "${LOCAL_FILE}"
 
+                    // Login to Docker Hub outside the loop
+                    withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
+                        sh('echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin')
+                    }
+
                     // Loop over services and build and push each one
                     for (service in composeFile.services.keySet()) {
-                        echo 'Building and pushing $service...'
-                        withCredentials([usernamePassword(credentialsId: 'DOCKER_HUB_CREDENTIALS', passwordVariable: 'DOCKER_HUB_CREDENTIALS_PSW', usernameVariable: 'DOCKER_HUB_CREDENTIALS_USR')]) {
-                            sh("sudo docker build -t ppp300a/${service}:${IMAGE_TAG} .")
-                            sh('echo $DOCKER_HUB_CREDENTIALS_PSW | sudo docker login -u $DOCKER_HUB_CREDENTIALS_USR --password-stdin')
-                            sh("sudo docker push ppp300a/${service}:${IMAGE_TAG}")
-                        }
+                        echo "Building and pushing ${IMAGE_NAME}-${service}:${IMAGE_TAG}..."
+                        sh("sudo docker build -t ppp300a/${IMAGE_NAME}-${service}:${IMAGE_TAG} .")
+                        sh("sudo docker push ppp300a/${IMAGE_NAME}-${service}:${IMAGE_TAG}")
                     }
                 }
             }
