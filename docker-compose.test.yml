@@ -14,7 +14,6 @@ services:
       args:
         - DJANGO_SETTINGS_MODULE=settings.local
     image: ppp300a/prj_dept-web:1.0.0
-#    user: "100:101"
     container_name: dept-web
     env_file: .env.docker  # 從.env文件加載環境變量
     environment:
