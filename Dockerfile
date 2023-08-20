@@ -26,6 +26,9 @@ RUN addgroup -S uwsgi && adduser -S uwsgiuser -G uwsgi
 # 將當前目錄（即 Dockerfile 所在的目錄）下的所有文件和子目錄複製到 WORKDIR 路徑中
 COPY . .
 
+RUN chown -R uwsgiuser:uwsgi /data/prj_dept
+
+
 # 設定日誌文件和靜態文件的權限
 RUN touch /data/prj_dept/dept_app.performance.log && \
     touch /data/prj_dept/dept_app.task.log && \

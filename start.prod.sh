@@ -4,24 +4,23 @@ set -e
 # 編譯 Django 消息
 django-admin compilemessages
 
-# 如果本地配置文件不存在，則複製一個
-if [ ! -f "settings/local.py" ]; then
-    echo "=== warning: local.py does not exist, will initialize the file, please update the configs ==="
-    cp settings/production.py settings/local.py
-    sed -i 's/DEBUG = False/DEBUG = False/g' settings/local.py
-fi
 
-# 嘗試使用 Django 的 manage.py shell 連接到數據庫
+# 嘗試使用 Django 的 manage.py shell 連接到數據庫並檢查 db_mai 數據庫
 echo "=== Attempting to connect to the database ==="
-until echo "from dept_app.models import Admin; print(Admin.objects.count())" | python manage.py shell; do
-    echo "Waiting for the database to start"
-    sleep 2
+until echo "from django.db import connection; cursor = connection.cursor(); cursor.execute('SHOW DATABASES'); print('db_mai' in [row[0] for row in cursor.fetchall()])" | python manage.py shell | grep "True"; do
+    echo "Waiting for the database 'db_mai' to start"
+    sleep 5
 done
-echo "Database connection successful"
+echo "Database 'db_mai' connection successful"
 
-## 收集靜態文件
-#echo "=== Collecting static files ==="
-#python manage.py collectstatic --noinput
+# 執行數據庫遷移
+echo "=== Running database migrations ==="
+#python manage.py makemigrations
+python manage.py migrate
+
+# 創建管理員用戶
+echo "=== Creating admin user if not exists ==="
+python create_admin.py
 
 # 使用 uWSGI 運行 Django 應用
 exec uwsgi --ini /data/prj_dept/uwsgi.ini

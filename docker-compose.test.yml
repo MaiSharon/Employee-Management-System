@@ -1,12 +1,19 @@
-version: "3.2"
+version: "3.8"
 services:
   mysql:
-    image: "mysql:8.0"
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql8
+    image: ppp300a/prj_dept-mysql8:1.0.0
+    container_name: dept-mysql8
     ports:
       - "3306:3306"
-    volumes:
-      - "/c/Users/SharonMai/mysql_data:/var/lib/mysql"
-    env_file: .env.docker
+#    volumes:
+#      - "/c/Users/SharonMai/mysql_data:/var/lib/mysql"
+    command: [ "/bin/sh", "/custom-init.sh" ] # Use the init script as the command
+    env_file: .env.test
+    restart: always
+
 
   web:
     build:
@@ -15,7 +22,7 @@ services:
         DJANGO_SETTINGS_MODULE: settings.local
     image: ppp300a/prj_dept-web:1.0.0
     container_name: dept-web
-    env_file: .env.docker  # 從.env文件加載環境變量
+    env_file: .env.test  # 從.env文件加載環境變量
     environment:
       - PYTHONPATH=/data/prj_dept  # 當項目結構非django預設時需要使用
       - DJANGO_SETTINGS_MODULE=settings.local  # 告诉 Django 和 uWSGI 使用哪个设置文件
@@ -25,30 +32,39 @@ services:
       - staticfiles-data:/data/prj_dept/staticfiles
     ports:
       - "8000:8000"
-    depends_on: # 設定服務的啟動順序
+    depends_on:
       - mysql
       - redis
       - celery
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001')" ]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   nginx:
     build:
       context: .
       dockerfile: Dockerfile.nginx
     image: ppp300a/prj_dept-nginx:1.0.0
+    entrypoint: [ "nginx", "-g", "daemon off;" ]
     volumes:
       - staticfiles-data:/var/prj_dept/staticfiles
+    depends_on:
+      web:
+        condition: service_healthy
     ports:
       - "192.168.1.103:80:80"
 
   redis:
     image: "redis:alpine"
-    env_file: .env.docker
+    env_file: .env.test
     ports:
       - "6379:6379"
 
   celery:
     image: ppp300a/prj_dept-web:1.0.0
-    env_file: .env.docker
+    env_file: .env.test
     environment:
       - DJANGO_SETTINGS_MODULE=settings.local
     command: ["celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo"]

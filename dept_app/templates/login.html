@@ -58,41 +58,33 @@
         <div class="card-body">
             <h3 class="card-title text-center">Log in</h3>
             <div class="card-text">
-                <!--
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">Incorrect username or password.</div> -->
                 <form method="post" novalidate>
                 {% csrf_token %}
                     <div class="form-group">
                         <label for="exampleInputEmail1">User</label>
                         {{ form.username }}
-<!--                        <input type="email" class="form-control form-control-sm" id="exampleInputEmail1"-->
-<!--                               aria-describedby="emailHelp">-->
                         <span style="color: red;">{{ form.username.errors.0 }}</span>
-
                     </div>
                     <div class="form-group">
                         <label for="exampleInputPassword1">Password</label>
                         <a href="#" style="float:right;font-size:12px;">Forgot password?</a>
                         {{ form.password }}
                         <span style="color: red;">{{ form.password.errors.0 }}</span>
-<!--                        <input type="password" class="form-control form-control-sm" id="exampleInputPassword1">-->
                     </div>
                     <div class="form-group">
                         <label for="id_code">圖片驗證碼</label>
                         <div class="row g-2">
                             <div class="col">
                                 {{ form.user_code }}
-<!--                                <input type="text" name="code" class="form-control" placeholder="請輸入圖片驗證碼" required="" id="id_code">-->
                                 <span style="color: red;">{{ form.user_code.errors.0 }}</span>
                             </div>
                             <div class="col">
                                 <img class="img-fluid" id="image_code" src="/image/code/" >
+                                <button id="refresh-captcha" class="btn btn-secondary btn-sm">刷新驗證碼</button>
                             </div>
                         </div>
-
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Sign in</button>
-
                     <div class="sign-up">
                         Don't have an account? <a href="#">Create One</a>
                     </div>
@@ -105,6 +97,28 @@
 
 <script src="{% static 'js\jquery-3.6.1.min.js' %}"></script>
 <script src="{% static 'plugins\bootstrap-4.6.2-dist\js\bootstrap.js' %}"></script>
+
+<script>
+    var lastRefreshTime = 0; // 用於存儲上次刷新時間的變量
+
+    document.getElementById("refresh-captcha").addEventListener("click", function(e) {
+        e.preventDefault(); // 防止表單提交
+
+        var currentTime = new Date().getTime();
+        var timeDifference = currentTime - lastRefreshTime;
+
+        // 檢查是否已經過了三分鐘（180000毫秒）
+        if (timeDifference > 180000 || lastRefreshTime === 0) {
+            var captchaImage = document.getElementById("image_code");
+            var randomParam = new Date().getTime(); // 生成隨機參數
+            captchaImage.src = '/image/code/?' + randomParam; // 添加隨機時間戳
+            lastRefreshTime = currentTime; // 更新最後刷新時間
+        } else {
+            alert("請等待三分鐘後再次刷新驗證碼。");
+        }
+    });
+</script>
+
 
 </body>
 </html>

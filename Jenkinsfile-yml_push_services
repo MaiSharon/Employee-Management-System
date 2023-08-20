@@ -39,7 +39,7 @@ pipeline {
             steps {
                 script {
                     // 使用 shell 命令解析 docker-compose 文件，找到具有 build 部分的映像名稱
-                    def imagesToPush = sh(script: "grep -B 2 'build:' ${YML_FILE} | grep 'image:' | awk '{print \$2}'", returnStdout: true).trim().split('\n')
+                    def imagesToPush = sh(script: "grep -B 2 'build:' ${YML_FILE} | grep 'image:' | awk -F ': ' '{print \$2}'", returnStdout: true).trim().split('\n')
                     imagesToPush.each { image ->
                         sh("sudo docker push ${image}")
                     }

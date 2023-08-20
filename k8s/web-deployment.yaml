@@ -17,7 +17,7 @@ spec:
         app: web
     spec:
       containers:
-        - command: ["/bin/sh", "/data/prj_dept/start.local.sh"]
+        - command: ["/bin/sh", "/data/prj_dept/start.dev.sh"]
           env:
             - name: server_params
               value: "--settings=settings.local"

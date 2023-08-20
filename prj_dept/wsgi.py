@@ -14,7 +14,7 @@ from django.core.wsgi import get_wsgi_application
 
 def load_env_file():
     """Get now .env file"""
-    dotenv_path = '.env.docker'
+    dotenv_path = '.env.test'
     load_dotenv(dotenv_path)
 
 

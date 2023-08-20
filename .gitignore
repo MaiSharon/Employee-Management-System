@@ -10,8 +10,8 @@ __pycache__/
 .jenkins-ngrok.yml
 
 # Django stuff
-.env.local
-.env.docker
+.env.dev
+.env.test
 .env.prod
 *.log
 local_settings.py

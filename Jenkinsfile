@@ -4,6 +4,7 @@ pipeline {
         GIT_CREDENTIALS = "37ae2a82-cefd-4044-8f31-5d40bc2906be"
         GIT_URL = "git@github.com:MaiSharon/Employee-Management-System.git"
         BRANCH_NAME = "main"
+        YML_FILE = "./docker-compose.test.yml"
     }
     stages {
         stage('Checkout') {

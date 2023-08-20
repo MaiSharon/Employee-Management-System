@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 def load_env_file():
     """Get now .env file"""
-    dotenv_path = '.env.docker'
+    dotenv_path = '.env.test'
     load_dotenv(dotenv_path)
 
 
