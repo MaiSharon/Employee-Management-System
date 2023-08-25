@@ -4,7 +4,7 @@ from django.shortcuts import render, redirect
 from django import forms
 from dept_app import models
 from dept_app.utils.bootstrap import BootStrapForm
-from dept_app.utils.image_code import check_code
+from dept_app.utils.image_code.image_code import check_code
 
 
 class LoginForm(BootStrapForm):
@@ -103,4 +103,5 @@ def image_code(request):
     # 将图片保存到内存
     stream = BytesIO()  # 相當於創建了個文件
     img.save(stream, 'png')  # 圖片寫入內存文件中
-    return HttpResponse(stream.getvalue())
+    img_show = stream.getvalue()  # 取圖片
+    return HttpResponse(img_show, content_type='image/png')

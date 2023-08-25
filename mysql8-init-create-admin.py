@@ -1,4 +1,4 @@
-# create_admin.py
+# mysql8-init-create-admin.py
 import os
 import django
 from django.contrib.auth.hashers import make_password
@@ -13,8 +13,8 @@ django.setup()
 from dept_app.models import Admin
 
 # 從環境變量中獲取管理員的用戶名和密碼。如果環境變量未設置，則使用默認值。
-username = os.getenv('ADMIN_USERNAME', 'b')
-password = os.getenv('ADMIN_PASSWORD', 'b')
+username = os.getenv('MYSQL8_ADMIN_USERNAME', 'b')
+password = os.getenv('MYSQL8_ADMIN_PASSWORD', 'b')
 
 # 對密碼進行哈希處理，以便以安全的方式存儲在數據庫中。
 hashed_password = make_password(password)

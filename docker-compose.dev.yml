@@ -2,76 +2,64 @@ version: "3.2"
 services:
   mysql:
     image: "mysql:8.0"
-    container_name: dept-mysql
+    container_name: dev-mysql
+    volumes:
+      - /c/Users/SharonMai/mysql_data:/var/lib/mysql
+    env_file: .env.dev
     ports:
       - "3306:3306"
-    volumes:
-      - "/c/Users/SharonMai/mysql_data:/var/lib/mysql"
-    env_file: .env.test
 
-  web:
-    image: ppp300a/prj_dept-local:1.0.0
-    container_name: dept-web
-    build:
-      context: .  # Dockerfile的位置
-    env_file: .env.test  # 從.env文件加載環境變量
-    environment:
-      - server_params=--settings=settings.local  # 添加額外的環境變量
-    entrypoint: [ "/bin/sh", "/data/prj_dept/start.dev.sh" ]  # 容器啟動後執行的命令
-    volumes:
-      - .:/data/prj_dept  # 映射當前本機路徑，達到自動更新加載改過的代碼
-      - staticfiles-local:/data/prj_dept/staticfiles/
-      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
-    ports:
-      - "8000:8000"
-    depends_on: # 設定服務的啟動順序
-      - mysql
-      - redis
-      - celery
-      - flower
+#  web:
+#    image: ppp300a/prj_dept-dev:1.0.0
+#    container_name: dev-web
+#    build:
+#      context: .  # Dockerfile的位置
+#      dockerfile: Dockerfile.dev
+#    env_file: .env.dev  # 從.env文件加載環境變量
+#    environment:
+#      - DJANGO_SETTINGS_MODULE=settings.dev
+#      - DJANGO_ENV=dev
+#    command: [ "/bin/sh", "/data/prj_dept/start.dev.sh" ]  # 容器啟動後執行的命令
+#    volumes:
+#      - .:/data/prj_dept  # 映射當前本機路徑，達到自動更新加載改過的代碼
+#      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
+#    ports:
+#      - "8000:8000"
+#    depends_on:
+#      - mysql
+#      - redis
+#      - celery
+#      - flower
 
 
   redis:
     image: "redis:alpine" # or replace with your own Redis image
-    container_name: dept-redis
-    env_file: .env.test
+    container_name: dev-redis
+    env_file: .env.dev
     ports:
       - "6379:6379"
+
   celery:
-    build:
-      context: .  # Dockerfile的位置
-      dockerfile: Dockerfile
-    container_name: dept-celery
-    env_file: .env.test
+    image: ppp300a/prj_dept-dev:1.0.0
+    container_name: dev-celery
+    env_file: .env.dev
+    environment:
+      - DJANGO_SETTINGS_MODULE=settings.dev
     volumes:
       - .:/data/prj_dept
       - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
-    command: /bin/sh /data/prj_dept/NotUse.worker.start.sh
+    command: [ "celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo" ]
     depends_on:
       - redis
 
   flower:
-    build:
-      context: .  # Dockerfile的位置
-      dockerfile: Dockerfile
-    container_name: dept-flower
+    image: ppp300a/prj_dept-dev:1.0.0
+    container_name: dev-flower
     ports:
       - "5555:5555"
     volumes:
       - .:/data/prj_dept
       - /data/logs/prj_dept/:/data/logs/prj_dept/
-    entrypoint: ["/bin/sh", "/data/prj_dept/flower.start.sh"]
+    entrypoint: [ "/bin/sh", "/data/prj_dept/flower.start.sh" ]
     depends_on:
       - redis
-
-  nginx:
-    image: nginx
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - staticfiles-local:/var/prj_dept/staticfiles
-    command: [ nginx-debug, '-g', 'daemon off;' ]
-    ports:
-      - "192.168.1.103:80:80"
-
-volumes:
-  staticfiles-local:

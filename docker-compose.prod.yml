@@ -17,7 +17,7 @@ services:
     env_file: .env.prod
     environment:
       - PYTHONPATH=/data/prj_dept
-      - DJANGO_SETTINGS_MODULE=settings.local
+      - DJANGO_SETTINGS_MODULE=settings.prod
     entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]
     volumes:
       - staticfiles-data:/data/prj_dept/staticfiles
@@ -60,7 +60,7 @@ services:
     image: ppp300a/prj_dept-web:1.0.0
     env_file: .env.prod
     environment:
-      - DJANGO_SETTINGS_MODULE=settings.local
+      - DJANGO_SETTINGS_MODULE=settings.prod
 #    volumes:
 #      - "logs:/data/logs/celery" # 日誌映射
     command: [ "celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo" ]

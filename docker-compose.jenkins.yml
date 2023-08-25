@@ -2,7 +2,7 @@ version: '3.7'
 services:
   jenkins:
     build:
-      context: .  # 使用Dood因此需要自定義Dockerfile
+      context: ..  # 使用Dood因此需要自定義Dockerfile
       dockerfile: Dockerfile.jenkins
     container_name: jenkins
     environment:
@@ -29,8 +29,9 @@ services:
       - "--label"
       - "edge=edghts_2SNk363rvTx8UIR6Rbj9eF0oq7G"
       - "http://jenkins:8080"
-    environment:
-      - NGROK_AUTHTOKEN=2RG1fHSquX899nCuJHo7bocpART_2eDPff3ixK3bbsGDRSdSn
+    env_file: ../.env.dev
+#    environment:
+#      - NGROK_AUTHTOKEN=2RG1fHSquX899nCuJHo7bocpART_2eDPff3ixK3bbsGDRSdSn
     ports:
       - 4040:4040
 

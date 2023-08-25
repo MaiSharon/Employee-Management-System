@@ -6,15 +6,18 @@ from dotenv import load_dotenv
 
 
 def load_env_file():
-    """Get now .env file"""
-    dotenv_path = '.env.test'
+    """Get now .env file need use docker compose"""
+    if os.environ.get('DJANGO_ENV') == 'dev':
+        dotenv_path = '.env.dev'
+    elif 'runserver' in sys.argv:
+        dotenv_path = '.env.dev'
+    else:
+        dotenv_path = '.env.test'
     load_dotenv(dotenv_path)
-
 
 def main():
     """Run administrative tasks."""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'prj_dept.settings')
-    # os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings.base')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:

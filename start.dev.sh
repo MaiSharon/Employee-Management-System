@@ -1,24 +1,25 @@
 #!/bin/bash
 set -e
 
-# django-admin compilemessages
-django-admin compilemessages
+# 翻譯文件
+#django-admin compilemessages
 
 # if local config file does not exist, clone one:
-if [ ! -f "settings/local.py" ]; then
-    echo "=== warning: local.py does not exist, will initialize the file, please update the configs ==="
-    cp settings/production.py settings/local.py
-    sed -i 's/DEBUG = False/DEBUG = False/g' settings/local.py
-fi
+#if [ ! -f "settings/dev.py" ]; then
+#    echo "=== warning: dev.py does not exist, will initialize the file, please update the configs ==="
+#    cp settings/prod.py settings/dev.py
+#    sed -i 's/DEBUG = False/DEBUG = False/g' settings/dev.py
+#fi
 
-# Try to connect to database using Django's manage.py shell
+# 嘗試使用 Django 的 manage.py shell 連接到數據庫並檢查 db_mai 數據庫
 echo "=== Attempting to connect to the database ==="
-until echo "from dept_app.models import Admin; print(Admin.objects.count())" | python manage.py shell $server_params ; do
-    echo "Waiting for the database to start"
-    sleep 2
+until echo "from django.db import connection; cursor = connection.cursor(); cursor.execute('SHOW DATABASES'); print('db_mai' in [row[0] for row in cursor.fetchall()])" | python manage.py shell | grep "True"; do
+    echo "Waiting for the database 'db_mai' to start"
+    sleep 5
 done
-echo "Database connection successful"
+echo "Database 'db_mai' connection successful"
 
 
 # synchronous web server for development:
-python manage.py runserver 0.0.0.0:8000 $server_params
+python manage.py runserver 0.0.0.0:8000
+

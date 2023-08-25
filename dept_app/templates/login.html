@@ -47,6 +47,11 @@
         font-size: 13px;
         margin-top:20px;
     }
+    .captcha-image {
+    max-width: 50%; /* 調整驗證碼圖片的最大寬度 */
+    height: auto;
+    }
+
     </style>
 </head>
 
@@ -71,7 +76,7 @@
                         {{ form.password }}
                         <span style="color: red;">{{ form.password.errors.0 }}</span>
                     </div>
-                    <div class="form-group">
+                   <div class="form-group">
                         <label for="id_code">圖片驗證碼</label>
                         <div class="row g-2">
                             <div class="col">
@@ -79,9 +84,12 @@
                                 <span style="color: red;">{{ form.user_code.errors.0 }}</span>
                             </div>
                             <div class="col">
-                                <img class="img-fluid" id="image_code" src="/image/code/" >
-                                <button id="refresh-captcha" class="btn btn-secondary btn-sm">刷新驗證碼</button>
+                                <button type="button" class="btn mt-auto" id="refresh-captcha">
+                                    <img class="img-fluid" id="image_code" src="/image/code/" >
+{#                                </button>#}
+
                             </div>
+
                         </div>
                     </div>
                     <button type="submit" class="btn btn-primary btn-block">Sign in</button>
@@ -99,26 +107,37 @@
 <script src="{% static 'plugins\bootstrap-4.6.2-dist\js\bootstrap.js' %}"></script>
 
 <script>
-    var lastRefreshTime = 0; // 用於存儲上次刷新時間的變量
+document.getElementById("refresh-captcha").addEventListener("click", function(e) {
+    e.preventDefault(); // 防止表單提交
 
-    document.getElementById("refresh-captcha").addEventListener("click", function(e) {
-        e.preventDefault(); // 防止表單提交
+    var currentTime = new Date().getTime();
+    var lastRefreshTime = localStorage.getItem('lastRefreshTime'); // 從localStorage獲取上次刷新時間
 
-        var currentTime = new Date().getTime();
-        var timeDifference = currentTime - lastRefreshTime;
+    if (lastRefreshTime === null) {
+        lastRefreshTime = 0;
+    }
 
-        // 檢查是否已經過了三分鐘（180000毫秒）
-        if (timeDifference > 180000 || lastRefreshTime === 0) {
-            var captchaImage = document.getElementById("image_code");
-            var randomParam = new Date().getTime(); // 生成隨機參數
-            captchaImage.src = '/image/code/?' + randomParam; // 添加隨機時間戳
-            lastRefreshTime = currentTime; // 更新最後刷新時間
-        } else {
-            alert("請等待三分鐘後再次刷新驗證碼。");
-        }
-    });
+    var timeDifference = currentTime - lastRefreshTime;
+
+    // 檢查是否已經過了30秒（30000毫秒）
+    if (timeDifference > 30000 || lastRefreshTime == 0) {
+        var captchaImage = document.getElementById("image_code");
+        var randomParam = new Date().getTime(); // 生成隨機參數
+        captchaImage.src = '/image/code/?' + randomParam; // 添加隨機時間戳
+        localStorage.setItem('lastRefreshTime', currentTime); // 將最後刷新時間存儲在localStorage中
+    } else {
+        alert("請等待30秒後再次刷新驗證碼。");
+    }
+});
+
+// 按下 Enter 鍵觸發登入按鈕
+document.getElementById("id_user_code").addEventListener("keyup", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        document.querySelector("button[type='submit']").click();
+    }
+});
 </script>
-
 
 </body>
 </html>

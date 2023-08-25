@@ -10,7 +10,7 @@ services:
       - "3306:3306"
 #    volumes:
 #      - "/c/Users/SharonMai/mysql_data:/var/lib/mysql"
-    command: [ "/bin/sh", "/custom-init.sh" ] # Use the init script as the command
+    command: [ "/bin/sh", "/mysql8-init.sh" ] # Use the init script as the command
     env_file: .env.test
     restart: always
 
@@ -66,7 +66,7 @@ services:
     image: ppp300a/prj_dept-web:1.0.0
     env_file: .env.test
     environment:
-      - DJANGO_SETTINGS_MODULE=settings.local
+      - DJANGO_SETTINGS_MODULE=settings.dev
     command: ["celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo"]
     depends_on:
       - redis

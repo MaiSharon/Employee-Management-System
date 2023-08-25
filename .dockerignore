@@ -1,10 +1,24 @@
-.env.production
-.env.local
-.env.docker
+# 環境配置文件
+.env.*
+
+# 版本控制系統
 .git
+
+# 命令行歷史
 .history
+
+# Python編譯的文件
 **/__pycache__
+
+# 非必要的文件和目錄
 slides
 snapshot
 media
 staticfiles
+
+# 其他常見的忽略項目
+*.log
+*.swp
+*.bak
+.DS_Store
+node_modules/

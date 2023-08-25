@@ -29,23 +29,33 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dept_app.apps.DeptAppConfig',
+    'debug_toolbar',
     'rest_framework',
     'celery',
 ]
 
 MIDDLEWARE = [
+    "debug_toolbar.middleware.DebugToolbarMiddleware",  # django debug toolbar
     'dept_app.performance.performance_logger_middleware',  # 性能紀錄要放在最上面，下面執行時才能抓到紀錄
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    "django.middleware.cache.UpdateCacheMiddleware",  # redis
+    # "django.middleware.cache.UpdateCacheMiddleware",  # redis
     "django.middleware.common.CommonMiddleware",
-    "django.middleware.cache.FetchFromCacheMiddleware",  # redis
+    # "django.middleware.cache.FetchFromCacheMiddleware",  # redis
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'dept_app.middleware.auth.AuthMiddleware',
 ]
+INTERNAL_IPS = [
+    # ...
+    "127.0.0.1",
+    # ...
+]
+
+
+
 
 ROOT_URLCONF = 'prj_dept.urls'
 
@@ -109,24 +119,23 @@ USE_TZ = True
 # Logging ，Django沿用了Python的dictConfig方式
 LOGGING = {
     'version': 1,  # logging 設定格式版本，目前只有版本 1
-
-    'disable_existing_loggers': False,  # 是否禁止所有已存在的 logger
+    'disable_existing_loggers': False,  # 是否禁止所有已存在的 logger /Django有內痔的日誌，可設定為否
 
     'formatters': {  # 訊息輸出格式的定義
         'simple': {  # 一個名為 'simple' 的 formatter
-            'format': '%(asctime)s %(name)-12s %(lineno)d %(levelname)-8s %(message)s',  # 設定輸出的格式
+            'format': '%(asctime)s -%(name)-12s %(lineno)d %(levelname)-8s %(message)s',  # 設定輸出的格式
         },
     },
     'handlers': {  # 處理器的定義，負責處理日誌訊息的輸出
         'console': {
-            'class': 'logging.StreamHandler',  # 負責日誌輸出到控制台中
+            'class': 'logging.StreamHandler',  # 將日誌內容輸出到控制台中
             'formatter': 'simple',  # 這個處理器使用的 formatter
         },
         # 'mail_admins': {
         #     'level': 'ERROR',
         #     'class': 'django.utils.log.AdminEmailHandler',  # 負責日誌輸出到信件中
         # },
-        'admin': {
+        'file': {
             # 'level': 'INFO',
             'class': 'logging.FileHandler',  # 使用的處理器類型
             'formatter': 'simple',  # 這個處理器使用的 formatter
@@ -147,17 +156,17 @@ LOGGING = {
     },
 
     'root': {  # 根 logger 的設定
-        'handlers': ['console', 'admin'],  # 會將日誌發送到這兩個處理器
+        'handlers': ['console', 'file'],  # 會將日誌發送到這兩個處理器
         'level': 'INFO',  # 只有 "INFO"、"WARNING"、"ERROR" 和 "CRITICAL" 這四種級別的日誌會被記錄，而 "DEBUG" 級別的日誌會被忽略
     },
 
-    'loggers': {  # 自定義 logger 的設定
-        "dept_app": {  #
-            "handlers": ["console", "admin"],
+    'loggers': {  # 自定義 logger 的設定，可以指定只捕捉局部模塊發送的日誌
+        "dept_app": {  # 自定義的日誌設定
+            "handlers": ["console", "file"],  # 套用前面的處理器
             "level": "DEBUG",  # 這個 logger 的日誌級別，將會覆蓋root
         },
 
-        "dept_app.task": {  # 只記錄task頁面中操作
+        "dept_app.task": {  # 只for views.task此模塊使用
             "handlers": ["console", "task"],
             "level": "INFO",
             "propagate": False,  # 是否將日誌訊息傳播到父 logger
