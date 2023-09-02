@@ -57,9 +57,11 @@ services:
     container_name: dev-flower
     ports:
       - "5555:5555"
+    environment:
+      - DJANGO_SETTINGS_MODULE=settings.dev
     volumes:
       - .:/data/prj_dept
       - /data/logs/prj_dept/:/data/logs/prj_dept/
     entrypoint: [ "/bin/sh", "/data/prj_dept/flower.start.sh" ]
     depends_on:
-      - redis
+      - celery

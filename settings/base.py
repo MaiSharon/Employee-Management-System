@@ -46,7 +46,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'dept_app.middleware.auth.AuthMiddleware',
+    # 'dept_app.middleware.auth.AuthMiddleware',
 ]
 INTERNAL_IPS = [
     # ...

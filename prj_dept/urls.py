@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from dept_app.views import depart, pretty, user, admin, account, task
+from dept_app.views import depart, pretty, user, admin, account, task, register
 from django.views.generic import TemplateView
 
 urlpatterns = [
@@ -33,6 +33,7 @@ urlpatterns = [
     # path('image/<int:nid>/delete/', image.image_delete),
 
     path('login/', account.login, name="login"),
+    path('register/', register.register_popup, name="index"),
     path('logout/', account.logout),
     path('image/code/', account.image_code),
 

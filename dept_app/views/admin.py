@@ -7,7 +7,6 @@ from django.contrib.auth.hashers import make_password
 from dept_app import models
 from dept_app.utils.pagination import Pagination
 from dept_app.utils.bootstrap import BootStrapModelForm
-from dept_app.utils.encrypt import md5
 
 
 def admin_list(request):

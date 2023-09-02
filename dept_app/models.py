@@ -10,13 +10,15 @@ class Photo(models.Model):
 
 
 class Admin(models.Model):
-    """ 管理員 """
+    """ 已經註冊的用戶 """
     username = models.CharField(verbose_name="帳號名", max_length=32, unique=True)
     password = models.CharField(verbose_name="密碼", max_length=512)
     # 輸出對象時，顯示對象文字
 
     def __str__(self):
         return self.username
+
+
 
 
 class Department(models.Model):
@@ -32,7 +34,6 @@ class UserInfo(models.Model):
     name = models.CharField(verbose_name="姓名", max_length=16)
     password = models.CharField(verbose_name="密碼", max_length=64)
     birthday = models.DateField(verbose_name="生日", default='2000-01-01')
-
 
     def age(self):
         if self.birthday is None:

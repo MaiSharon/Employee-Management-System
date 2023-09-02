@@ -83,7 +83,6 @@ def user_list(request):
 
 
 def user_add(request):
-    """"添加用戶(Model Form)版本"""
     if request.method == "GET":
         form = UserModelForm()
         return render(request, "user_add.html", {'form': form})

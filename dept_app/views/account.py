@@ -41,7 +41,6 @@ def login(request):
 
     form = LoginForm(data=request.POST)
 
-    # 驗證表單是否有效
     if form.is_valid():
 
         # 檢查驗證碼是否過期
@@ -105,3 +104,4 @@ def image_code(request):
     img.save(stream, 'png')  # 圖片寫入內存文件中
     img_show = stream.getvalue()  # 取圖片
     return HttpResponse(img_show, content_type='image/png')
+
