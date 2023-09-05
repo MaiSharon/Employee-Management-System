@@ -119,39 +119,42 @@ USE_TZ = True
 # Logging ，Django沿用了Python的dictConfig方式
 LOGGING = {
     'version': 1,  # logging 設定格式版本，目前只有版本 1
-    'disable_existing_loggers': False,  # 是否禁止所有已存在的 logger /Django有內痔的日誌，可設定為否
+    'disable_existing_loggers': False,  # 是否禁止所有已存在的 logger /Django有內建的日誌，可設定為否
 
     'formatters': {  # 訊息輸出格式的定義
         'simple': {  # 一個名為 'simple' 的 formatter
             'format': '%(asctime)s -%(name)-12s %(lineno)d %(levelname)-8s %(message)s',  # 設定輸出的格式
         },
     },
+
     'handlers': {  # 處理器的定義，負責處理日誌訊息的輸出
         'console': {
             'class': 'logging.StreamHandler',  # 將日誌內容輸出到控制台中
             'formatter': 'simple',  # 這個處理器使用的 formatter
         },
-        # 'mail_admins': {
-        #     'level': 'ERROR',
-        #     'class': 'django.utils.log.AdminEmailHandler',  # 負責日誌輸出到信件中
-        # },
         'file': {
             # 'level': 'INFO',
             'class': 'logging.FileHandler',  # 使用的處理器類型
             'formatter': 'simple',  # 這個處理器使用的 formatter
-            'filename': os.path.join(BASE_DIR, 'dept_app.log'),  # 日誌輸出到這個檔案
+            'filename': os.path.join(BASE_DIR, 'log', 'dept_app.log'),  # 日誌輸出到這個檔案
         },
-        'task': {
+        'task': {   # 若有後台任務（ Celery ）
             # 'level': 'INFO',
             'class': 'logging.FileHandler',  # 使用的處理器類型
             'formatter': 'simple',  # 這個處理器使用的 formatter
-            'filename': os.path.join(BASE_DIR, 'dept_app.task.log'),  # 日誌輸出到這個檔案
+            'filename': os.path.join(BASE_DIR, 'log', 'dept_app.task.log'),  # 日誌輸出到這個檔案
         },
         'performance': {
             # 'level': 'INFO',
             'class': 'logging.FileHandler',  # 使用的處理器類型
             'formatter': 'simple',  # 這個處理器使用的 formatter
-            'filename': os.path.join(BASE_DIR, 'dept_app.performance.log'),  # 日誌輸出到這個檔案
+            'filename': os.path.join(BASE_DIR, 'log', 'dept_app.performance.log'),  # 日誌輸出到這個檔案
+        },
+        'views_task': {  # 任務功能
+            # 'level': 'INFO',
+            'class': 'logging.FileHandler',  # 使用的處理器類型
+            'formatter': 'simple',  # 這個處理器使用的 formatter
+            'filename': os.path.join(BASE_DIR, 'log', 'dept_app.views.task.log'),  # 日誌輸出到這個檔案
         },
     },
 
@@ -166,7 +169,7 @@ LOGGING = {
             "level": "DEBUG",  # 這個 logger 的日誌級別，將會覆蓋root
         },
 
-        "dept_app.task": {  # 只for views.task此模塊使用
+        "dept_app.task": {  # 若有後台任務（ Celery ）
             "handlers": ["console", "task"],
             "level": "INFO",
             "propagate": False,  # 是否將日誌訊息傳播到父 logger

@@ -72,7 +72,7 @@ def login(request):
         # 網站會先隨機生成字符串，使用者來訪後給使用者生成的隨機字符串，登入成功再寫入session(在資料庫裡叫做django_session)
         # 用戶訊息寫入到session中，也就是session概念中特定儲存空間的小格子裡面
         request.session["info"] = {'id': admin_object.id, 'name': admin_object.username}
-        # 重新设置session的超时时间,這段時間內來訪者的session不會刪除可以持續保持登入狀態
+        # session的有效時間
         request.session.set_expiry(60 * 60 * 24)
 
         return redirect("/admin/list")

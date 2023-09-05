@@ -8,6 +8,9 @@ services:
     env_file: .env.dev
     ports:
       - "3306:3306"
+    networks:
+      - shared-network
+
 
 #  web:
 #    image: ppp300a/prj_dept-dev:1.0.0
@@ -39,29 +42,33 @@ services:
     ports:
       - "6379:6379"
 
-  celery:
-    image: ppp300a/prj_dept-dev:1.0.0
-    container_name: dev-celery
-    env_file: .env.dev
-    environment:
-      - DJANGO_SETTINGS_MODULE=settings.dev
-    volumes:
-      - .:/data/prj_dept
-      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
-    command: [ "celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo" ]
-    depends_on:
-      - redis
+#  celery:
+#    image: ppp300a/prj_dept-dev:1.0.0
+#    container_name: dev-celery
+#    env_file: .env.dev
+#    environment:
+#      - DJANGO_SETTINGS_MODULE=settings.dev
+#    volumes:
+#      - .:/data/prj_dept
+#      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
+#    command: [ "celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo" ]
+#    depends_on:
+#      - redis
 
-  flower:
-    image: ppp300a/prj_dept-dev:1.0.0
-    container_name: dev-flower
-    ports:
-      - "5555:5555"
-    environment:
-      - DJANGO_SETTINGS_MODULE=settings.dev
-    volumes:
-      - .:/data/prj_dept
-      - /data/logs/prj_dept/:/data/logs/prj_dept/
-    entrypoint: [ "/bin/sh", "/data/prj_dept/flower.start.sh" ]
-    depends_on:
-      - celery
+#  flower:
+#    image: ppp300a/prj_dept-dev:1.0.0
+#    container_name: dev-flower
+#    ports:
+#      - "5555:5555"
+#    environment:
+#      - DJANGO_SETTINGS_MODULE=settings.dev
+#    volumes:
+#      - .:/data/prj_dept
+#      - /data/logs/prj_dept/:/data/logs/prj_dept/
+#    entrypoint: [ "/bin/sh", "/data/prj_dept/flower.start.sh" ]
+#    depends_on:
+#      - celery
+
+networks:
+  shared-network:
+    driver: bridge

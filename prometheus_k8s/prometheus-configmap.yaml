@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: prometheus-config
+  name: prometheus_k8s-config
   namespace: monitor
 data:
   prometheus.yml: |

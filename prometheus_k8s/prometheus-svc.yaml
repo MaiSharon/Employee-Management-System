@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus
+  name: prometheus_k8s
   namespace: monitor
   labels:
-    app: prometheus
+    app: prometheus_k8s
 spec:
   selector:
-    app: prometheus
+    app: prometheus_k8s
   type: ClusterIP
   ports:
     - name: web

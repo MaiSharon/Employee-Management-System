@@ -50,7 +50,7 @@ def task_add(request):
 
 import logging
 
-logger = logging.getLogger('dept_app.task')
+logger = logging.getLogger('views_task')
 
 def task_list(request):
     form = TaskModelForm

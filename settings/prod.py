@@ -40,12 +40,25 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Taipei'
 
-# Line
-LINE_CHANNEL_ACCESS_TOKEN = os.getenv('LINE_CHANNEL_ACCESS_TOKEN')
-LINE_CHANNEL_SECRET = os.getenv('LINE_CHANNEL_SECRET')
 
 STATIC_URL = 'static/'
 
 INSTALLED_APPS += {
     # your apps here
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        # 日志格式
+        'standard': {
+            'format': '[trace_id:%(correlation_id)s][timestamp:%(asctime)s] [file_info:%(filename)s:%(lineno)d] [func_info:%(module)s:%(funcName)s] '
+                      '[level:%(levelname)s]- message:%(message)s',
+            'datefmt': '%Y-%m-%dT%H:%M:%S+08:00'},
+        'simple': {  # 简单格式
+            'format': '%(levelname)s %(message)s'
+        },
+    },
+
 }

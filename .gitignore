@@ -109,4 +109,4 @@ cython_debug/
 # .idea/xxx.py
 
 # test file
-prometheus/
+prometheus_k8s/

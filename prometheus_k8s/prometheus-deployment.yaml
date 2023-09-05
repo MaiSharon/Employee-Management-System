@@ -2,50 +2,50 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: prometheus
+  name: prometheus_k8s
   namespace: monitor
   labels:
-    app: prometheus
+    app: prometheus_k8s
 spec:
   selector:
     matchLabels:
-      app: prometheus
+      app: prometheus_k8s
   template:
     metadata:
       labels:
-        app: prometheus
+        app: prometheus_k8s
     spec:
-      serviceAccountName: prometheus
+      serviceAccountName: prometheus_k8s
       nodeSelector:
-        app: prometheus
+        app: prometheus_k8s
       initContainers:
-        - name: "change-prometheus-directory"
+        - name: "change-prometheus_k8s-directory"
           image: busybox
           command: ['/bin/sh']
-          args: ["-c", "chown -R 65534:65534 /prometheus"]  #????
+          args: ["-c", "chown -R 65534:65534 /prometheus_k8s"]  #????
           securityContext:
             privileged: true
           volumeMounts:
-            - mountPath: "/etc/prometheus"
+            - mountPath: "/etc/prometheus_k8s"
               name: config-volume
-            - mountPath: "/prometheus"
+            - mountPath: "/prometheus_k8s"
               name: data
       containers:
-        - image: prom/prometheus:v2.19.2
-          name: prometheus
+        - image: prom/prometheus_k8s:v2.19.2
+          name: prometheus_k8s
           args:
-            - "--config.file=/etc/prometheus/prometheus.yml"
-            - "--storage.tsdb.path=/prometheus"  # 指定tsdb數據路徑
+            - "--config.file=/etc/prometheus_k8s/prometheus_k8s.yml"
+            - "--storage.tsdb.path=/prometheus_k8s"  # 指定tsdb數據路徑
             - "--web.enable-lifecycle"  # prometheus命令支持熱更新不用apply使用localhost:9090/-/reload即生效
-            - "--web.console.libraries=/usr/share/prometheus/console_libraries"
-            - "--web.console.templates=/usr/share/prometheus/console"
+            - "--web.console.libraries=/usr/share/prometheus_k8s/console_libraries"
+            - "--web.console.templates=/usr/share/prometheus_k8s/console"
           ports:
             - containerPort: 9090
               name: http
           volumeMounts:
-            - mountPath: "/etc/prometheus"
+            - mountPath: "/etc/prometheus_k8s"
               name: config-volume
-            - mountPath: "/prometheus"
+            - mountPath: "/prometheus_k8s"
               name: data
           resources:
             requests:
@@ -57,7 +57,7 @@ spec:
       volumes:
         - name: data
           hostPath:
-            path: /data/prometheus/
+            path: /data/prometheus_k8s/
         - configMap:
-            name: prometheus-config
+            name: prometheus_k8s-config
           name: config-volume

@@ -39,22 +39,22 @@ def user_list(request):
     search_query = request.GET.get("search", "")  # 後面""為預設空字串，讓input框內不出現None字符
 
     # # step2:依據搜尋條件獲取數據
-    # filtered_userinfo = get_filitered_userinfo(search_query)
+    filtered_userinfo = get_filitered_userinfo(search_query)
 
 
-    # For each distinct search_query, store and retrieve its own cache
-    cache_key = f'cache_user_list:{search_query}'
-
-    # Try to get filtered userinfo from cache
-    filtered_userinfo = cache.get(cache_key)
-    print(filtered_userinfo)
-    # If cache does not exist, query the data and set the cache
-    if filtered_userinfo is None:
-        filtered_userinfo = get_filitered_userinfo(search_query)
-        cache.set('cache_user_list', filtered_userinfo, 60 * 15)
+    # # For each distinct search_query, store and retrieve its own cache
+    # cache_key = f'cache_user_list:{search_query}'
+    #
+    # # Try to get filtered userinfo from cache
+    # filtered_userinfo = cache.get(cache_key)
+    # print(filtered_userinfo)
+    # # If cache does not exist, query the data and set the cache
+    # if filtered_userinfo is None:
+    #     filtered_userinfo = get_filitered_userinfo(search_query)
+    #     cache.set('cache_user_list', filtered_userinfo, 60 * 15)
 
     # step3:分頁處理
-    paginator = Pagination(request, filtered_userinfo, page_size=5)
+    paginator = Pagination(request,filtered_userinfo, page_size=5)
 
     context = {
         "search": search_query,
@@ -64,21 +64,6 @@ def user_list(request):
     }
 
     return render(request, 'user_list.html', context)
-
-
-# def user_form_add(request):
-#     if request.method == "GET":
-#         context = {
-#             'gender_choices': models.UserInfo.gender_choices,
-#             'depart_list': models.Department.objects.all(),
-#         }
-#         return render(request, 'user_form_add.html', context)
-#
-#     gender_id = request.POST.get('gd')
-#     depart_id = request.POST.get('dp')
-#
-#     models.UserInfo.objects.create(gender=gender_id, depart=depart_id)
-#     return redirect("/layout/")
 
 
 
