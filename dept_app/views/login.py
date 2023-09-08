@@ -3,34 +3,28 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django import forms
 from dept_app import models
-from dept_app.utils.bootstrap import BootStrapForm
+# from dept_app.utils.bootstrap import BootStrapForm
 from dept_app.utils.image_code.image_code import check_code
 
 
-class LoginForm(BootStrapForm):
+class LoginForm(forms.Form):
     username = forms.CharField(
         label="用戶名",
-        widget=forms.TextInput,  # 被BootStrapForm裡的樣式屬性設定控制
+        widget=forms.TextInput,
         required=True
     )
     password = forms.CharField(
         label="密碼",
-        widget=forms.PasswordInput(render_value=True),  # 輸入錯密碼但密碼仍保留 # 被BootStrapForm裡的樣式屬性設定控制，若無繼承則如下行
-        # widget=forms.PasswordInput(attrs={"class": "form-control form-control-sm"})
+        widget=forms.PasswordInput(render_value=True),  # 輸入錯密碼但密碼仍保留
         required=True
 
     )
     user_code = forms.CharField(
         label="圖片驗證碼",
-        widget=forms.TextInput,  # 目前樣式屬性繼承自BootStrapForm，若無繼承則如下行
-        # widget=forms.PasswordInput(attrs={"class": "form-control form-control-sm"})
+        widget=forms.TextInput,
         required=True
 
     )
-    #
-    # def clean_password(self):
-    #     pwd = self.cleaned_data.get("password")
-    #     return md5(pwd)
 
 
 def login(request):
@@ -42,11 +36,10 @@ def login(request):
     form = LoginForm(data=request.POST)
 
     if form.is_valid():
-
         # 檢查驗證碼是否過期
         if 'image_code' not in request.session:
             form.add_error("user_code", "驗證碼已過期，請輸入新驗證碼。")
-            return render(request, "login.html", {"form": form})
+            return render(request, "login_old.html", {"form": form})
 
         # 驗證圖片驗證碼
         user_input_code = form.cleaned_data.pop('user_code')  # 從字典中先移除圖片驗證碼
@@ -56,17 +49,17 @@ def login(request):
             return render(request, "login.html", {"form": form})
 
         # 查找並驗證管理員對象
-        # 等同下行models.Admin.objects.filter(username=form.cleaned_data["username"], password=form.cleaned_data["password"]).first()
         admin_object = models.Admin.objects.filter(username=form.cleaned_data["username"]).first()
         if not admin_object:
             """不存在的用戶出現的錯誤提示"""
             form.add_error("username", "用戶名錯誤")
             return render(request, "login.html", {"form": form})
 
-        # 使用 check_password 驗證密碼
+        # 驗證密碼
         if not check_password(form.cleaned_data["password"], admin_object.password):
+            print(form.cleaned_data["password"], admin_object.password)
             form.add_error("password", "密碼錯誤")
-            return render(request, "login.html", {"form": form})
+            return render(request, "login_old.html", {"form": form})
 
 
         # 網站會先隨機生成字符串，使用者來訪後給使用者生成的隨機字符串，登入成功再寫入session(在資料庫裡叫做django_session)

@@ -19,10 +19,13 @@ scrape_configs:
         labels:
           job: devops       # 标签名，用于筛选数据，最好取一个易于识别的名称
           __path__: /var/log/*.log    # 修改為容器內的日誌位置。收集日志的路径，“*”是通配符，支持正则匹配
+  - job_name: mysql_logs
+    static_configs:
+        - targets: [ 'dev-mysql' ]  # MySQL 容器的名稱
+          labels:
+            job: mysql_logs
+            __path__: /var/log/mysql/*.log  # MySQL 容器內的日誌路徑
     pipeline_stages:
-      - match:
-          selector: '{job="devops"}'
-          stages:
-            - multiline:
-                firstline: '^\[[a-f0-9]{32}]*'
-                max_wait_time: 3s
+      - multiline:
+          firstline: '^\[[a-f0-9]{32}]*'
+          max_wait_time: 3s

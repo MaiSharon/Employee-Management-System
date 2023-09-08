@@ -5,7 +5,9 @@ services:
     container_name: dev-mysql
     volumes:
       - /c/Users/SharonMai/mysql_data:/var/lib/mysql
+      - ./monitoring_PLG_configs/logs/mysql:/var/log/mysql
     env_file: .env.dev
+    command: --general-log=1 --general-log-file=/var/log/mysql/general.log
     ports:
       - "3306:3306"
     networks:

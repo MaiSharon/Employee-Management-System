@@ -50,3 +50,15 @@ STATIC_URL = 'static/'
 INSTALLED_APPS += {
     # your apps here
 }
+# import sentry_sdk
+# from sentry_sdk.integrations.django import DjangoIntegration
+# sentry_sdk.init(
+#     dsn="http://dbd1d4644ff4b5c9ec8c3d259c96ac8a@localhost:9000/2",
+#     integrations=[DjangoIntegration()],
+#     # 採樣率，1.0為100%，每一 url請求都記錄性能
+#     traces_sample_rate=1.0,
+#
+#     # If you wish to associate users to errors (assuming you are using
+#     # django.contrib.auth) you may enable sending PII data.
+#     send_default_pii=True,
+# )

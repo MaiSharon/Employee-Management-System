@@ -10,9 +10,10 @@ class Photo(models.Model):
 
 
 class Admin(models.Model):
-    """ 已經註冊的用戶 """
-    username = models.CharField(verbose_name="帳號名", max_length=32, unique=True)
-    password = models.CharField(verbose_name="密碼", max_length=512)
+    """ 用戶註冊 """
+    username = models.CharField(verbose_name="帳號名", max_length=512)
+    password = models.CharField(verbose_name="密碼", max_length=512, null=True)
+    email = models.EmailField(verbose_name="信箱", unique=True)
     # 輸出對象時，顯示對象文字
 
     def __str__(self):

@@ -8,8 +8,7 @@ from dept_app import models
 from dept_app.utils.pagination import Pagination
 from dept_app.utils.form import UserModelForm
 # from django.core import paginator
-@receiver(post_save, sender=models.UserInfo)
-@receiver(post_delete, sender=models.UserInfo)
+
 def clear_cache(sender, **kwargs):
     print("hi im chche single")
     cache.delete('cache_user_list')
@@ -26,13 +25,6 @@ def get_filitered_userinfo(search):
 
 
 def user_list(request):
-    # search_dict = {}
-    # search = request.GET.get("search", "")  # 後面""為預設空字串，讓input框內不出現None字符
-    # if search:  # 0.2.1 True 將會把獲取值新增到字典
-    #     search_dict["username__contains"] = search  # 找出 username 欄位中包含特定字串的所有對象"。contains 是一種查詢類型
-    #
-    # queryset = models.UserInfo.objects.filter(**search_dict)
-
 
 
     # step1:分析搜尋條件

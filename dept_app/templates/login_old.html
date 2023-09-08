@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登入頁面</title>
+    <link rel="stylesheet" href="{% static 'plugins\bootstrap-4.6.2-dist\css\bootstrap.min.css' %}">
+    <style>
+            html,body {
+        height: 100%;
+    }
+
+    .global-container{
+        height:100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: none;
+    }
+
+    form{
+        padding-top: 10px;
+        font-size: 14px;
+        margin-top: 30px;
+    }
+
+    .card-title{ font-weight:300; }
+
+    .btn{
+        font-size: 14px;
+        margin-top:20px;
+    }
+
+
+    .login-form{
+        width:330px;
+        margin:20px;
+    }
+
+    .sign-up{
+        text-align:center;
+        padding:20px 0 0;
+    }
+
+    .alert{
+        margin-bottom:-30px;
+        font-size: 13px;
+        margin-top:20px;
+    }
+    .captcha-image {
+    max-width: 50%; /* 調整驗證碼圖片的最大寬度 */
+    height: auto;
+    }
+
+    </style>
+</head>
+
+
+<body>
+<div class="container" style="margin-top:40px">
+<div class="global-container">
+    <div class="card login-form">
+        <div class="card-body">
+            <h3 class="card-title text-center">Log in</h3>
+            <div class="card-text">
+                <form method="post" novalidate>
+                {% csrf_token %}
+                    <div class="form-group">
+                        <label for="exampleInputEmail1">User</label>
+
+                        <input name="{{ form.username.name}}" type="text" id="form3Example1" class="form-control" />
+                        <span style="color: red;">{{ form.username.errors.0 }}</span>
+                    </div>
+                    <div class="form-group">
+                        <label for="exampleInputPassword1">Password</label>
+                        <a href="#" style="float:right;font-size:12px;">Forgot password?</a>
+                        {{ form.password }}
+                        <span style="color: red;">{{ form.password.errors.0 }}</span>
+                    </div>
+                   <div class="form-group">
+                        <label for="id_code">圖片驗證碼</label>
+                        <div class="row g-2">
+                            <div class="col">
+                                {{ form.user_code }}
+                                <span style="color: red;">{{ form.user_code.errors.0 }}</span>
+                            </div>
+                            <div class="col">
+                                <button type="button" class="btn mt-auto" id="refresh-captcha">
+                                    <img class="img-fluid" id="image_code" src="/image/code/" >
+{#                                </button>#}
+
+                            </div>
+
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-block">Sign in</button>
+                    <div class="sign-up">
+                        Don't have an account? <a href="#">Create One</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+<script src="{% static 'js\jquery-3.6.1.min.js' %}"></script>
+<script src="{% static 'plugins\bootstrap-4.6.2-dist\js\bootstrap.js' %}"></script>
+
+<script>
+document.getElementById("refresh-captcha").addEventListener("click", function(e) {
+    e.preventDefault(); // 防止表單提交
+
+    var currentTime = new Date().getTime();
+    var lastRefreshTime = localStorage.getItem('lastRefreshTime'); // 從localStorage獲取上次刷新時間
+
+    if (lastRefreshTime === null) {
+        lastRefreshTime = 0;
+    }
+
+    var timeDifference = currentTime - lastRefreshTime;
+
+    // 檢查是否已經過了30秒（30000毫秒）
+    if (timeDifference > 30000 || lastRefreshTime == 0) {
+        var captchaImage = document.getElementById("image_code");
+        var randomParam = new Date().getTime(); // 生成隨機參數
+        captchaImage.src = '/image/code/?' + randomParam; // 添加隨機時間戳
+        localStorage.setItem('lastRefreshTime', currentTime); // 將最後刷新時間存儲在localStorage中
+    } else {
+        alert("請等待30秒後再次刷新驗證碼。");
+    }
+});
+
+// 按下 Enter 鍵觸發登入按鈕
+document.getElementById("id_user_code").addEventListener("keyup", function(e) {
+    if (e.key === "Enter") {
+        e.preventDefault();
+        document.querySelector("button[type='submit']").click();
+    }
+});
+</script>
+
+</body>
+</html>

@@ -1,8 +1,0 @@
-# 創建新的命名空間monitor，儲存prometheus相關資源
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: monitor
-
-
-

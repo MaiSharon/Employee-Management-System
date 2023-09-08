@@ -1,3 +1,4 @@
+from django.forms import ModelForm
 from django.shortcuts import render, redirect
 from django import forms
 from django.core.exceptions import ValidationError
@@ -6,21 +7,10 @@ from django.contrib.auth.hashers import make_password
 
 from dept_app import models
 from dept_app.utils.pagination import Pagination
-from dept_app.utils.bootstrap import BootStrapModelForm
 
 
 def admin_list(request):
     """ 管理員 """
-
-    #  已經使用中間件校驗並登入了，可直接抓取數據
-    ## "info"這個名稱不是預設，是在account.py中login中定義的(session特定空間小格子)
-    #### "id"、"name"也是在是在account.py中login中定義的
-    # info_dict = request.session.get("info", {})
-    # print(info_dict["id"])
-    # print(info_dict["name"])
-    ##假如沒登入，返回到登入頁面
-    # if 'id' not in request.session.get("info", {}):
-    #     return redirect("/login")
 
     search_dict = {}
     search = request.GET.get("search", "")  # 預設為空字串，讓input不出現None保持乾淨空的
@@ -35,14 +25,12 @@ def admin_list(request):
         "search": search,
         "queryset": page_object.page_queryset,  # 分完頁的數據
         "page_string": page_object.html(),  # 頁碼
-
-
     }
 
     return render(request, "admin_list.html", context)
 
 
-class AdminModelForm(BootStrapModelForm):
+class AdminModelForm(ModelForm):
     """  """
     confirm_password = forms.CharField(
         label="確認密碼",
@@ -56,11 +44,10 @@ class AdminModelForm(BootStrapModelForm):
             "password": forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
         }
 
-    # --- 用戶名驗證。數據字段設定(....unique=True)
-    # 即便沒有鉤子驗證規則，輸入已有用戶名會出現"這個 帳號名 在 Admin 已經存在。"
+
     def clean_username(self):
+        """ 驗證用戶名是否只包含字母、數字、下劃線和點 """
         username = self.cleaned_data.get("username")
-        # 檢查用戶名是否只包含字母、數字、下劃線和點
         if not all(char.isalnum() or char in {'_', '.'} for char in username):
             raise ValidationError("用戶名只能包含字母、數字、下劃線和點")
 
@@ -114,7 +101,7 @@ def admin_add(request):
     return render(request, "change.html", {"form": form, "title": title})
 
 
-class AdminResetModelForm(BootStrapModelForm):
+class AdminResetModelForm(ModelForm):
     confirm_password = forms.CharField(
         label="確認密碼",
         widget=forms.PasswordInput(render_value=True)  # 密碼不一致不清空，預設會自動清空# *****
@@ -171,7 +158,7 @@ def admin_reset(request, nid):
     return render(request, "change.html", {"title": title, "form": form})
 
 
-class AdminEditModelForm(BootStrapModelForm):
+class AdminEditModelForm(ModelForm):
     class Meta:
         model = models.Admin
         fields = ["username"]

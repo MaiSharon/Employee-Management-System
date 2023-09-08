@@ -3,7 +3,7 @@ from django import forms
 from django.core.exceptions import ValidationError
 
 from dept_app import models
-from dept_app.utils.bootstrap import BootStrapModelForm
+from dept_app.utils.bootstrap_NotUse import BootStrapModelForm
 
 
 class UploadModelForm(forms.ModelForm):

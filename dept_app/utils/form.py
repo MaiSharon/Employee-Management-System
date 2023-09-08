@@ -1,12 +1,12 @@
 from django import forms
+from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
 from dept_app import models
-from dept_app.utils.bootstrap import BootStrapModelForm
 
 
-class UserModelForm(BootStrapModelForm):
+class UserModelForm(ModelForm):
     class Meta:
         model = models.UserInfo
         fields = ["name", "password", "birthday", "account", "create_time", "gender", "depart"]
@@ -16,7 +16,7 @@ class UserModelForm(BootStrapModelForm):
         }
 
 
-class PrettyModelForm(BootStrapModelForm):
+class PrettyModelForm(ModelForm):
     hi = RegexValidator(r'^09', "手機號格式錯誤")
     # 報錯提示方式一：正則表達式
     mobile = forms.CharField(
@@ -44,7 +44,7 @@ class PrettyModelForm(BootStrapModelForm):
         return txt_mobile
 
 
-class PrettyEditModelForm(BootStrapModelForm):
+class PrettyEditModelForm(ModelForm):
     mobile = forms.CharField(disabled=True, label="mobile")
 
     class Meta:

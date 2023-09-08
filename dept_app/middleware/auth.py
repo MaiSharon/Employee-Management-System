@@ -10,7 +10,7 @@ class AuthMiddleware(MiddlewareMixin):
         # 如果有返回值 HttpResponse, render, redirect，則直接在此中間件中斷不繼續向後執行
 
         # 0.排除不需要登入即可到訪的頁面
-        if request.path_info.startswith('/__debug__/') or request.path_info in ["/login/","/user/list/", "/image/code/", "/callback/","/about/"]:
+        if request.path_info.startswith('/__debug__/') or request.path_info in ["/login/","/user/list/","/task/", "/image/code/", "/callback/","/about/"]:
             return
         # 1.(未登入時會有死循環，需要做排除)讀取當前session訊息，若有才能進入，若沒有則返回
         info_dic = request.session.get("info")

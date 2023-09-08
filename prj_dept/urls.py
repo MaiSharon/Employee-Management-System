@@ -1,12 +1,22 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from dept_app.views import depart, pretty, user, admin, account, task, register
+from dept_app.views import depart, pretty, user, admin, login, task, register
 from django.views.generic import TemplateView
+from django.urls import path
 
+def trigger_error(request):
+  division_by_zero = 1 / 0
+
+  # urlpatterns = [
+  #   path('sentry-debug/', trigger_error),
+  #   # ...
+  # ]
 urlpatterns = [
 
     path('about/', TemplateView.as_view(template_name="no_js.html")),
+
+    # path('sentry-debug/', trigger_error),
     # path('admin/', admin.site.urls),
     path('depart/list/', depart.depart_list),
     path('depart/add/', depart.depart_add),
@@ -32,14 +42,14 @@ urlpatterns = [
     # path('image/add/', image.image_add),
     # path('image/<int:nid>/delete/', image.image_delete),
 
-    path('login/', account.login, name="login"),
-    path('register/', register.register_popup, name="index"),
-    path('logout/', account.logout),
-    path('image/code/', account.image_code),
+    path('login/', login.login, name="login"),
+    path('register/', register.admin_add, name="register"),
+    path('logout/', login.logout),
+    path('image/code/', login.image_code),
 
-    path('task/', task.task_list),
-    path('task/ajax/', task.task_sayhi),
-    path('task/add/', task.task_add),
+    # path('task/', task.task_list),
+    # path('task/ajax/', task.task_sayhi),
+    # path('task/add/', task.task_add),
     # path('task/<int:nid>/edit/', task.task_edit),
 
 ]

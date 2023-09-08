@@ -9,10 +9,10 @@ def load_env_file():
     """Get now .env file need use docker compose"""
     if os.environ.get('DJANGO_ENV') == 'dev':
         dotenv_path = '.env.dev'
-    elif 'runserver' in sys.argv:
+    elif 'runserver' or 'migrate' in sys.argv:
         dotenv_path = '.env.dev'
     else:
-        dotenv_path = '.env.test'
+        dotenv_path = '.env.dev'
     load_dotenv(dotenv_path)
 
 def main():

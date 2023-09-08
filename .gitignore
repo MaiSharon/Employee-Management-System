@@ -110,3 +110,4 @@ cython_debug/
 
 # test file
 prometheus_k8s/
+sentry/
