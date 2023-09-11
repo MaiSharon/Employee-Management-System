@@ -163,7 +163,7 @@ LOGGING = {
         },
     },
 
-    'root': {  # 根 logger 的設定
+    'root': {  # 根 logger 的設定 捉整個 Django 應用（包括所有模塊和 apps）
         'handlers': ['console', 'file'],  # 會將日誌發送到這兩個處理器
         'level': 'INFO',  # 只有 "INFO"、"WARNING"、"ERROR" 和 "CRITICAL" 這四種級別的日誌會被記錄，而 "DEBUG" 級別的日誌會被忽略
     },
@@ -172,6 +172,7 @@ LOGGING = {
         "dept_app": {  # 自定義的日誌設定
             "handlers": ["console", "file"],  # 套用前面的處理器
             "level": "DEBUG",  # 這個 logger 的日誌級別，將會覆蓋root
+            "propagate": False,
         },
 
         "dept_app.task": {  # 若有後台任務（ Celery ）

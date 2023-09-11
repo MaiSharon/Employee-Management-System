@@ -6,11 +6,12 @@ from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
 
 from dept_app import models
+from dept_app.utils.bootstrap import BootStrapModelForm
 
 
-
-class AdminModelForm(ModelForm):
+class AdminModelForm(BootStrapModelForm):
     """  """
+
     confirm_password = forms.CharField(
         label="確認密碼",
         widget=forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
@@ -18,9 +19,11 @@ class AdminModelForm(ModelForm):
 
     class Meta:
         model = models.Admin
-        fields = ["username", "password", "confirm_password"]  #
+        fields = ["username", "email", "password"]  #
         widgets = {
-            "password": forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
+            'username': forms.TextInput(attrs={'render_value': True}),
+            'email': forms.EmailInput(attrs={'render_value': True}),
+            "password": forms.PasswordInput(attrs={'render_value': True}),  # 當密碼不一致不清空，預設會自動清空# *****
         }
 
 
@@ -44,10 +47,23 @@ class AdminModelForm(ModelForm):
 
     def clean_password(self):
         password = self.cleaned_data.get("password")
-        if len(password) >= 25:
-            raise ValidationError("密碼長度不可超過24個字符")
+
+        # 最小長度檢查
+        if len(password) < 8:
+            raise ValidationError("密碼長度必須至少為8個字符")
+
+        if len(password) >= 65:
+            raise ValidationError("密碼長度不可超過64個字符")
+
+        # 其他基本檢查（空格等）
         if ' ' in password:
             raise ValidationError("密碼不能包含空格")
+
+        # 特殊字符檢查
+        if not any(char in "!@#$%^&*()-+_=<>?/[]" for char in password):
+            raise ValidationError("密碼必須包含至少一個特殊字符")
+
+        # Django內建的密碼強度檢查，已含最小長度檢查不可<8
         validate_password(password, self.instance)
         return password
 
@@ -63,17 +79,35 @@ class AdminModelForm(ModelForm):
 
         return confirm_password
 
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+        exists = models.Admin.objects.filter(email=email).exists()
+        if exists:
+            raise ValidationError("此信箱已經存在")
+        return email
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 def admin_add(request):
-    title = "新增管理員"
     if request.method == "GET":
         form = AdminModelForm()
-        return render(request, "register.html", {"form": form, "title": "新增管理員"})
+        return render(request, "register.html", {"form": form})
+
 
     form = AdminModelForm(data=request.POST)
     if form.is_valid():
         admin = form.save(commit=False)
         admin.password = make_password(form.cleaned_data["password"])
         admin.save()
-        return redirect("/admin/list/")
+
+        logger.info(f"Admin account created: {admin.username}, Email: [REDACTED]")
+        return redirect("admin_list")
+    # Log sanitized errors
+    sanitized_errors = {k: "[REDACTED]" if k in ["password", "email"] else v for k, v in form.errors.items()}
+    logger.warning(f"Failed admin account creation attempt: {sanitized_errors}")
+    return render(request, "register.html", {"form": form})
+
+
 

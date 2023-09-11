@@ -26,6 +26,8 @@
 <body>
 <!-- Section: Design Block -->
 <section class="background-radial-gradient overflow-hidden">
+
+
   <style>
     .background-radial-gradient {
       background-color: hsl(218, 41%, 15%);
@@ -41,11 +43,19 @@
           hsl(218, 41%, 20%) 75%,
           hsl(218, 41%, 19%) 80%,
           transparent 100%);
-        position: absolute;
+        position: fixed;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
+          z-index: -1;
+    }
+
+    .scrollable-content {
+      position: relative;
+      z-index: 1;
+      overflow: auto;
+      height: 100vh;
     }
 
     #radius-shape-1 {
@@ -72,7 +82,7 @@
       backdrop-filter: saturate(200%) blur(25px);
     }
   </style>
-
+<div class="scrollable-content">
   <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
     <div class="row gx-lg-5 align-items-center mb-5">
       <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
@@ -94,30 +104,37 @@
 
         <div class="card bg-glass">
           <div class="card-body px-4 py-5 px-md-5">
-              {% block form_content %}
+            <form method="post" novalidate>
+            {% csrf_token %}
 
-            <form>
-              <!-- Username input -->
-              <div class="form-outline mb-4">
-                  <div class="form-outline">
-                    <input name="{{ form.username.name}}" type="text" id="form3Example1" class="form-control" />
-                    <label class="form-label" for="form3Example1">User name</label>
+            {% block form_content %}
+
+                {% for field in form %}
+                  <div class="form-outline mb-4">
+                    <div class="form-outline">
+                {#      <input name="{{ field.name }}" type="{{ field.field.widget.input_type }}" id="{{ field.id_for_label }}" class="form-control" />#}
+                      {{ field }}
+{#                        {{ form.username.errors.0 }}#}
+                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    </div>
+                    <span style="color:red">{{ field.errors.0 }}</span>
                   </div>
-              </div>
-
-              <!-- Email input -->
+                {% endfor %}
+{#              <!-- Username input -->#}
 {#              <div class="form-outline mb-4">#}
-{#                <input type="email" id="form3Example3" class="form-control" />#}
-{#                <label class="form-label" for="form3Example3">Email address</label>#}
+{#                  <div class="form-outline">#}
+{#                    <input name="{{ form.username.name}}" type="text" id="form3Example1" class="form-control" />#}
+{#                    <label class="form-label" for="form3Example1">User name</label>#}
+{#                  </div>#}
+{#              </div>#}
+{##}
+{#              <!-- Password input -->#}
+{#              <div class="form-outline mb-4">#}
+{#                <input type="password" id="form3Example4" class="form-control" />#}
+{#                <label class="form-label" for="form3Example4">Password</label>#}
 {#              </div>#}
 
-              <!-- Password input -->
-              <div class="form-outline mb-4">
-                <input type="password" id="form3Example4" class="form-control" />
-                <label class="form-label" for="form3Example4">Password</label>
-              </div>
-
-{#              <!-- Checkbox -->#}
+              <!-- Checkbox -->
 {#              <div class="form-check d-flex justify-content-center mb-4">#}
 {#                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example33" checked />#}
 {#                <label class="form-check-label" for="form2Example33">#}
@@ -156,12 +173,13 @@
               </div>
             </form>
 
-              {% endblock %}
+          {% endblock %}
           </div>
         </div>
       </div>
     </div>
   </div>
+    </div>
 </section>
 <!-- Section: Design Block -->
     <!-- MDB -->
