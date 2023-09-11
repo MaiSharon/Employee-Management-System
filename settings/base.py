@@ -116,7 +116,7 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Logging ，Django沿用了Python的dictConfig方式
+# Django沿用了Python的dictConfig方式
 LOGGING = {
     'version': 1,  # logging 設定格式版本，目前只有版本 1
     'disable_existing_loggers': False,  # 是否禁止所有已存在的 logger /Django有內建的日誌，可設定為否
@@ -127,12 +127,12 @@ LOGGING = {
                       '[level:%(levelname)s]- message:%(message)s',
             'datefmt': '%Y-%m-%dT%H:%M:%S+08:00'},
 
-        'simple': {  # 简单格式
+        'simple': {  # 簡單格式
             'format': '%(levelname)s %(message)s'
         },
     },
 
-    'handlers': {  # 處理器的定義，負責處理日誌訊息的輸出
+    'handlers': {  # 處理器，負責處理日誌訊息的輸出
         'console': {
             'class': 'logging.StreamHandler',  # 將日誌內容輸出到控制台中
             'formatter': 'standard',  # 這個處理器使用的 formatter
@@ -143,19 +143,19 @@ LOGGING = {
             'formatter': 'standard',  # 這個處理器使用的 formatter
             'filename': os.path.join(BASE_DIR, 'monitoring_PLG_configs', 'logs', 'dept_app.log'),  # 日誌輸出到這個檔案
         },
-        'task': {   # 若有後台任務（ Celery ）
+        'task': {   # 若有後台任務適合用（ Celery ）
             'level': 'INFO',
             'class': 'logging.FileHandler',  # 使用的處理器類型
             'formatter': 'standard',  # 這個處理器使用的 formatter
             'filename': os.path.join(BASE_DIR, 'monitoring_PLG_configs', 'logs', 'dept_app.task.log'),  # 日誌輸出到這個檔案
         },
-        'performance': {
+        'performance': {  # 性能日誌
             'level': 'INFO',
             'class': 'logging.FileHandler',  # 使用的處理器類型
             'formatter': 'simple',  # 這個處理器使用的 formatter
             'filename': os.path.join(BASE_DIR, 'monitoring_PLG_configs', 'logs', 'dept_app.performance.log'),  # 日誌輸出到這個檔案
         },
-        'views_task': {  # 任務功能
+        'views_task': {  # 特定模塊，任務功能日誌
             'level': 'INFO',
             'class': 'logging.FileHandler',  # 使用的處理器類型
             'formatter': 'standard',  # 這個處理器使用的 formatter
@@ -163,7 +163,7 @@ LOGGING = {
         },
     },
 
-    'root': {  # 根 logger 的設定 補捉整個 Django 應用（包括所有模塊和 apps）
+    'root': {  # 根 logger 的設定，補捉整個 Django 應用（包括所有模塊和 apps）
         'handlers': ['console', 'file'],  # 會將日誌發送到這兩個處理器
         'level': 'INFO',  # 只有 "INFO"、"WARNING"、"ERROR" 和 "CRITICAL" 這四種級別的日誌會被記錄，而 "DEBUG" 級別的日誌會被忽略
     },
