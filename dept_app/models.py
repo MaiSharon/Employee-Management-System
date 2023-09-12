@@ -1,5 +1,5 @@
-from datetime import date
-
+import uuid
+from datetime import timedelta, date
 from django.db import models
 from django.utils import timezone
 
@@ -14,8 +14,20 @@ class Admin(models.Model):
     username = models.CharField(verbose_name="帳號名", max_length=512)
     password = models.CharField(verbose_name="密碼", max_length=512, null=True)
     email = models.EmailField(verbose_name="信箱", unique=True)
-    # 輸出對象時，顯示對象文字
+    email_token = models.UUIDField(verbose_name="驗證碼", default=uuid.uuid4, editable=False)
+    is_verified = models.BooleanField(verbose_name="驗證已確認", default=False)
+    token_expiration = models.DateTimeField(verbose_name="驗證碼期限",default=timezone.now() + timedelta(hours=72))
 
+    def update_token_expiration(self):
+        """
+        更新用戶的email_token和token_expiration字段。
+        這通常在重新發送驗證郵件時調用。
+        """
+        self.token_expiration = timezone.now() + timedelta(hours=72)  # 更新驗證期限
+        self.email_token = uuid.uuid4()  # 更新驗證碼
+        self.save()
+
+    # 輸出對象時，顯示對象文字
     def __str__(self):
         return self.username
 
