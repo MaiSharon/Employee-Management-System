@@ -78,6 +78,8 @@ def login(request):
     return render(request, "login.html", {"form": form})
 
 
+
+
 def logout(request):
     """ 登出功能 """
     request.session.clear()

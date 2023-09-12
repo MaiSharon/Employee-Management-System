@@ -44,6 +44,9 @@ urlpatterns = [
 
     path('login/', login.login, name="login"),
     path('register/', register.admin_add, name="register"),
+    path('verify/<str:token>/', register.verify_email, name='verify_email'),
+    path('re-verify/', register.re_verify, name='re_verify'),
+
     path('logout/', login.logout),
     path('image/code/', login.image_code),
 

@@ -1,0 +1,29 @@
+{% extends 'login.html' %}
+{% block form_content %}
+{% if messages %}
+  <ul class="messages">
+    {% for message in messages %}
+      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+    {% endfor %}
+  </ul>
+{% endif %}
+
+
+    {% for field in form %}
+  <div class="form-outline mb-4">
+    <div class="form-outline">
+      {{ field }}
+      <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+    </div>
+    <span style="color:red">{{ field.errors.0 }}</span>
+  </div>
+{% endfor %}
+  <button type="submit" class="btn btn-primary btn-block mb-4">
+    Send email
+  </button>
+
+  <!-- Simple link -->
+  <div class="text-center">
+    <a href="/register">Register?</a> / <a href="/login">Login?</a>
+  </div>
+{% endblock %}
