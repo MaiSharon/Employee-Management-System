@@ -148,8 +148,8 @@ def verify_email(request, token):
         admin = models.Admin.objects.get(email_token=email_token)
 
     except ObjectDoesNotExist:
-        # 若無對應的Admin對象，到重新驗證輸入信箱頁面
-        messages.success(request, '無效的驗證碼，請重新發送認證信。')
+        # 若無對應的Admin對象，可能是已驗證或無效驗證碼都到重新驗證頁面
+        messages.success(request, '無效驗證碼或已驗證成功，請重發認證信或登入。')
         return redirect('re_verify')
 
     if timezone.now() > admin.token_expiration:
