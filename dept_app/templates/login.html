@@ -82,103 +82,120 @@
       backdrop-filter: saturate(200%) blur(25px);
     }
   </style>
-<div class="scrollable-content">
-  <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
-    <div class="row gx-lg-5 align-items-center mb-5">
-      <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
-        <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
-          The best offer <br />
-          <span style="color: hsl(218, 81%, 75%)">for your business</span>
-        </h1>
-        <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
-          Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-          Temporibus, expedita iusto veniam atque, magni tempora mollitia
-          dolorum consequatur nulla, neque debitis eos reprehenderit quasi
-          ab ipsum nisi dolorem modi. Quos?
-        </p>
-      </div>
+  <div class="scrollable-content">
+    <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
+      <div class="row gx-lg-5 align-items-center mb-5">
+        <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
+          <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
+            The best offer <br />
+            <span style="color: hsl(218, 81%, 75%)">for your business</span>
+          </h1>
+          <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
+            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
+            Temporibus, expedita iusto veniam atque, magni tempora mollitia
+            dolorum consequatur nulla, neque debitis eos reprehenderit quasi
+            ab ipsum nisi dolorem modi. Quos?
+          </p>
+        </div>
 
-      <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
-        <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
-        <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
+        <div class="col-lg-6 mb-5 mb-lg-0 position-relative">
+          <div id="radius-shape-1" class="position-absolute rounded-circle shadow-5-strong"></div>
+          <div id="radius-shape-2" class="position-absolute shadow-5-strong"></div>
 
-        <div class="card bg-glass">
-          <div class="card-body px-4 py-5 px-md-5">
-            <form method="post" novalidate>
-            {% csrf_token %}
+          <div class="card bg-glass">
+            <div class="card-body px-4 py-5 px-md-5">
+              <form method="post" novalidate>
+              {% csrf_token %}
 
-            {% block form_content %}
-
-                {% for field in form %}
-                  <div class="form-outline mb-4">
-                    <div class="form-outline">
-                {#      <input name="{{ field.name }}" type="{{ field.field.widget.input_type }}" id="{{ field.id_for_label }}" class="form-control" />#}
-                      {{ field }}
-{#                        {{ form.username.errors.0 }}#}
-                        <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+              {% block form_content %}
+                <div class="row mb-4">
+                  {% for field in form %}
+                    {% if field.name == 'image_captcha_input' %}
+                      <!-- 2 column grid layout with text inputs for the image captcha and image -->
+                      <div class="col">
+                        <div class="form-outline">
+                          {{ field }}
+                            <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        </div>
+                          <span style="color: red;">{{ field.errors.0 }}</span>
+                      </div>
+                      <div class="col">
+                        <div class="text-center">
+                          <div class="form-outline">
+                            <img class="img-fluid" id="image_code" src="/image/code/" >
+                          </div>
+                        </div>
+                      </div>
+                    {% else %}
+                    <div class="form-outline mb-4">
+                      <div class="form-outline">
+                        {{ field }}
+                          <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+                      </div>
+                      <span style="color:red">{{ field.errors.0 }}</span>
                     </div>
-                    <span style="color:red">{{ field.errors.0 }}</span>
-                  </div>
+                  {% endif %}
                 {% endfor %}
-{#              <!-- Username input -->#}
-{#              <div class="form-outline mb-4">#}
-{#                  <div class="form-outline">#}
-{#                    <input name="{{ form.username.name}}" type="text" id="form3Example1" class="form-control" />#}
-{#                    <label class="form-label" for="form3Example1">User name</label>#}
-{#                  </div>#}
-{#              </div>#}
-{##}
-{#              <!-- Password input -->#}
-{#              <div class="form-outline mb-4">#}
-{#                <input type="password" id="form3Example4" class="form-control" />#}
-{#                <label class="form-label" for="form3Example4">Password</label>#}
-{#              </div>#}
-
-              <!-- Checkbox -->
-{#              <div class="form-check d-flex justify-content-center mb-4">#}
-{#                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example33" checked />#}
-{#                <label class="form-check-label" for="form2Example33">#}
-{#                  Subscribe to our newsletter#}
-{#                </label>#}
-{#              </div>#}
-
-              <!-- Submit button -->
-              <button type="submit" class="btn btn-primary btn-block mb-4">
-                Sign in
-              </button>
-
-              <!-- Simple link -->
-              <div class="text-center">
-                Not a member? <a href="/register">register</a>
               </div>
+  {#              <!-- Username input -->#}
+  {#              <div class="form-outline mb-4">#}
+  {#                  <div class="form-outline">#}
+  {#                    <input name="{{ form.username.name}}" type="text" id="form3Example1" class="form-control" />#}
+  {#                    <label class="form-label" for="form3Example1">User name</label>#}
+  {#                  </div>#}
+  {#              </div>#}
+  {##}
+  {#              <!-- Password input -->#}
+  {#              <div class="form-outline mb-4">#}
+  {#                <input type="password" id="form3Example4" class="form-control" />#}
+  {#                <label class="form-label" for="form3Example4">Password</label>#}
+  {#              </div>#}
 
-              <!-- Register buttons -->
-{#              <div class="text-center">#}
-{#                <p>or Sign in with:</p>#}
-{#                <button type="button" class="btn btn-link btn-floating mx-1">#}
-{#                  <i class="fab fa-facebook-f"></i>#}
-{#                </button>#}
-{##}
-{#                <button type="button" class="btn btn-link btn-floating mx-1">#}
-{#                  <i class="fab fa-google"></i>#}
-{#                </button>#}
-{##}
-{#                <button type="button" class="btn btn-link btn-floating mx-1">#}
-{#                  <i class="fab fa-twitter"></i>#}
-{#                </button>#}
-{##}
-{#                <button type="button" class="btn btn-link btn-floating mx-1">#}
-{#                  <i class="fab fa-github"></i>#}
-{#                </button>#}
-{#              </div>#}
-            {% endblock %}
-            </form>
+                <!-- Checkbox -->
+  {#              <div class="form-check d-flex justify-content-center mb-4">#}
+  {#                <input class="form-check-input me-2" type="checkbox" value="" id="form2Example33" checked />#}
+  {#                <label class="form-check-label" for="form2Example33">#}
+  {#                  Subscribe to our newsletter#}
+  {#                </label>#}
+  {#              </div>#}
+
+                <!-- Submit button -->
+                <button type="submit" class="btn btn-primary btn-block mb-4">
+                  Sign in
+                </button>
+
+                <!-- Simple link -->
+                <div class="text-center">
+                  Not a member? <a href="/register">register</a>
+                </div>
+
+                <!-- Register buttons -->
+  {#              <div class="text-center">#}
+  {#                <p>or Sign in with:</p>#}
+  {#                <button type="button" class="btn btn-link btn-floating mx-1">#}
+  {#                  <i class="fab fa-facebook-f"></i>#}
+  {#                </button>#}
+  {##}
+  {#                <button type="button" class="btn btn-link btn-floating mx-1">#}
+  {#                  <i class="fab fa-google"></i>#}
+  {#                </button>#}
+  {##}
+  {#                <button type="button" class="btn btn-link btn-floating mx-1">#}
+  {#                  <i class="fab fa-twitter"></i>#}
+  {#                </button>#}
+  {##}
+  {#                <button type="button" class="btn btn-link btn-floating mx-1">#}
+  {#                  <i class="fab fa-github"></i>#}
+  {#                </button>#}
+  {#              </div>#}
+              {% endblock %}
+              </form>
+            </div>
           </div>
         </div>
       </div>
     </div>
   </div>
-    </div>
 </section>
 <!-- Section: Design Block -->
     <!-- MDB -->
