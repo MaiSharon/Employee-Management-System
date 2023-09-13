@@ -11,7 +11,7 @@ class Photo(models.Model):
 
 class Admin(models.Model):
     """ 用戶註冊 """
-    username = models.CharField(verbose_name="帳號名", max_length=512)
+    username = models.CharField(verbose_name="用戶名", max_length=512)
     password = models.CharField(verbose_name="密碼", max_length=512, null=True)
     email = models.EmailField(verbose_name="信箱", unique=True)
     email_token = models.UUIDField(verbose_name="驗證碼", default=uuid.uuid4, editable=False)
@@ -21,7 +21,7 @@ class Admin(models.Model):
     def update_token_expiration(self):
         """
         更新用戶的email_token和token_expiration字段。
-        這通常在重新發送驗證郵件時調用。
+        這通常在重新發送驗證信時調用。
         """
         self.token_expiration = timezone.now() + timedelta(hours=72)  # 更新驗證期限
         self.email_token = uuid.uuid4()  # 更新驗證碼
