@@ -11,6 +11,13 @@ DEBUG = True
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
+# 台北時區
+TIME_ZONE = 'Asia/Taipei'
+
+# 語言碼
+LANGUAGE_CODE = 'zh-hant'
+
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
