@@ -27,9 +27,7 @@ class AdminModelForm(BootStrapModelForm):
         model = models.Admin
         fields = ["username", "email", "password"]
         widgets = {
-            'username': forms.TextInput(attrs={'render_value': True}),
-            'email': forms.EmailInput(attrs={'render_value': True}),
-            "password": forms.PasswordInput(attrs={'render_value': True}),  # 當密碼不一致不清空，預設會自動清空# *****
+            "password": forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
         }
 
 
