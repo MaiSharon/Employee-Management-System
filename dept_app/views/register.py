@@ -16,7 +16,7 @@ from dept_app.utils.bootstrap import BootStrapModelForm, BootStrapForm
 class AdminModelForm(BootStrapModelForm):
     """
     表單用於管理員註冊，包括用戶名、電子郵件和密碼。
-    這個表單還進行了密碼和用戶名的自定義驗證。
+    用戶名、密碼的自定義驗證。
     """
     confirm_password = forms.CharField(
         label="確認密碼",
@@ -32,7 +32,7 @@ class AdminModelForm(BootStrapModelForm):
 
 
     def clean_username(self):
-        """ 檢查用戶名是否只包含字母、數字、下劃線和點、用戶名不可重複 """
+        """檢查用戶名是否只包含字母、數字、下劃線和點、用戶名不可重複"""
         username = self.cleaned_data.get("username")
         if not all(char.isalnum() or char in {'_', '.'} for char in username):
             raise ValidationError("用戶名只能包含字母、數字、下劃線和點")
@@ -50,7 +50,7 @@ class AdminModelForm(BootStrapModelForm):
         return username
 
     def clean_password(self):
-        """ 檢查密碼是否符合長度8~64、不含空格、含至少1個特殊字符 """
+        """檢查密碼是否符合長度8~64、不含空格、含至少1個特殊字符"""
         password = self.cleaned_data.get("password")
 
         # 最小長度檢查
@@ -71,7 +71,7 @@ class AdminModelForm(BootStrapModelForm):
         return password
 
     def clean_confirm_password(self):
-        """ 檢查密碼確認是否一致、不可為空 """
+        """檢查密碼確認是否一致、不可為空"""
         password = self.cleaned_data.get("password")
         confirm_password = self.cleaned_data.get("confirm_password")
 
@@ -84,7 +84,7 @@ class AdminModelForm(BootStrapModelForm):
         return confirm_password
 
     def clean_email(self):
-        """ 檢查信箱驗證狀態 """
+        """檢查信箱驗證狀態"""
         email = self.cleaned_data.get("email")
         if models.Admin.objects.filter(email=email, is_verified=False).exists():
             raise ValidationError("請至信箱收信完成驗證")
@@ -101,11 +101,10 @@ logger = logging.getLogger(__name__)
 
 def admin_add(request):
     """
-    處理管理員賬戶的創建。
+    處理用戶的創建。
     - GET請求：顯示空的註冊表單。
-    - POST請求：驗證表單數據，創建新的管理員賬戶。
+    - POST請求：驗證表單數據，創建新的用戶。
     """
-
     if request.method == "GET":
         form = AdminModelForm()
         return render(request, "register.html", {"form": form})
@@ -122,7 +121,7 @@ def admin_add(request):
         email_utils.send_email_token(request, admin)
         messages.success(request, '驗證郵件已發送，請檢查您的信箱。')
 
-        # 記錄成功創建的管理員賬戶
+        # 記錄成功創建的用戶
         logger.info(f"Admin account created: {admin.username}, Email: [REDACTED]")
         return redirect("register")
 
@@ -170,10 +169,14 @@ def verify_email(request, token):
 
 
 class ReVerifyForm(BootStrapForm):
+    """
+    表單用於電子信箱的重發驗證信。
+    信箱的自定義驗證。
+    """
     email = forms.EmailField(label='請輸入您的信箱')
 
     def clean_email(self):
-        """ 檢查信箱是否已註冊並且未驗證 """
+        """檢查信箱是否已註冊並且未驗證"""
         email = self.cleaned_data.get("email")
         try:
             admin = models.Admin.objects.get(email=email)
@@ -186,9 +189,11 @@ class ReVerifyForm(BootStrapForm):
         return email
 
 def re_verify(request):
-    """ 重發驗證信 """
-
-    # 輸入信箱
+    """
+    重發驗證信。
+    - GET請求：顯示空的信箱表單。
+    - POST請求：驗證信箱表單數據，更新驗證碼有效期，發送驗證信。
+    """
     if request.method == "GET":
         form = ReVerifyForm
         return render(request, 're-verify.html', {'form': form})
@@ -198,11 +203,11 @@ def re_verify(request):
         email = form.cleaned_data.get("email")
         admin = models.Admin.objects.get(email=email, is_verified=False)
 
-        # 更新驗證碼過期時間
+        # 更新驗證碼有效期
         admin.update_token_expiration()
         admin.save()
 
-        # 重新發送驗證信
+        # 發送驗證信
         email_utils.send_email_token(request, admin)
         messages.success(request, '驗證郵件已重新發送，請檢查您的信箱。')
         return redirect('re-verify')
