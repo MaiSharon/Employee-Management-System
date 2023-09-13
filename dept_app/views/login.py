@@ -1,13 +1,20 @@
 from django.contrib.auth.hashers import check_password, make_password
+from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django import forms
 from dept_app import models
 from dept_app.utils.bootstrap import BootStrapForm
 from dept_app.utils.image_code.image_code import check_code
+import logging
 
+logger = logging.getLogger(__name__)
 
 class LoginForm(BootStrapForm):
+    """
+    表單用於用戶登入，包括用戶名、密碼、圖片驗證碼。
+    用戶名和密碼的自定義驗證，不包含圖片驗證碼的驗證。
+    """
     username = forms.CharField(
         label="用戶名",
         widget=forms.TextInput,
@@ -17,71 +24,75 @@ class LoginForm(BootStrapForm):
         label="密碼",
         widget=forms.PasswordInput(render_value=True),  # 輸入錯密碼但密碼仍保留
         required=True
-
     )
-    # user_code = forms.CharField(
-    #     label="圖片驗證碼",
-    #     widget=forms.TextInput,
-    #     required=True
-    #
-    # )
+    image_captcha_input = forms.CharField(
+        label="圖片驗證碼",
+        widget=forms.TextInput,
+        required=True
+    )
+
+    def clean_username(self):
+        """檢查用戶是否存在"""
+        username = self.cleaned_data.get("username")
+        admin_object = models.Admin.objects.filter(username=username).first()
+        if admin_object is None:
+            raise ValidationError("用戶不存在")
+        return username
+
+    def clean_password(self):
+        """檢查密碼是否跟用戶名匹配"""
+        password = self.cleaned_data.get("password")
+        admin_object = models.Admin.objects.filter(username=self.cleaned_data.get("username")).first()
+        if not check_password(password, admin_object.password):
+            raise ValidationError("密碼錯誤")
+        return password
 
 
 def login(request):
-    """ 登錄功能 """
+    """
+    處理用戶登入。
+    - GET請求：顯示空的註冊表單。
+    - POST請求：驗證表單數據、圖片驗證碼的自定義驗證，登入。
+    """
     if request.method == "GET":
         form = LoginForm()
-
         return render(request, "login.html", {"form": form})
 
     form = LoginForm(data=request.POST)
     if form.is_valid():
-        # 檢查驗證碼是否過期
-        # if 'image_code' not in request.session:
-        #     form.add_error("user_code", "驗證碼已過期，請輸入新驗證碼。")
-        #     return render(request, "login_old.html", {"form": form})
-        #
-        # # 驗證圖片驗證碼
-        # user_input_code = form.cleaned_data.pop('user_code')  # 從字典中先移除圖片驗證碼
-        # code = request.session.get('image_code', "")
-        # if user_input_code.upper() != code.upper():
-        #     form.add_error("user_code", "驗證碼錯誤")
-        #     return render(request, "login.html", {"form": form})
+        # 檢查圖片驗證碼是否過期
+        # 若過期請使用者重新整理
+        if 'image_captcha_entry' not in request.session:
+            form.add_error("image_captcha_input","驗證碼已過期，請重新整理頁面。")
+            logger.warning("image captcha expiration")
+            return render(request, "login_old.html", {"form": form})
 
-        # 查找並驗證管理員對象
-        print("hi")
-        admin_object = models.Admin.objects.filter(username=form.cleaned_data["username"]).first()
-        if not admin_object:
-            """不存在的用戶出現的錯誤提示"""
-            form.add_error("username", "用戶名錯誤")
-            print("Added username error")
+        # 檢查使用者輸入的圖片驗證碼是否與session中儲存的驗證碼相符
+        user_image_captcha_input = form.cleaned_data.get('image_captcha_input')  # 從字典中先移除圖片驗證碼
+        code = request.session.get('image_captcha_entry',"")  # ""用意: 若輸入為空 返回空字串(預設返回None)，後續安全執行.upper()
+        if user_image_captcha_input.upper() != code.upper():
+            form.add_error("image_captcha_input", "驗證碼錯誤")
+            logger.warning("image captcha user input wrong")
             return render(request, "login.html", {"form": form})
 
-        # 驗證密碼
-        pwd = form.cleaned_data["password"]
-        if not check_password(pwd, admin_object.password):
-            print(pwd, admin_object.password)
-            hashed_password = make_password(pwd)
-            print(hashed_password, admin_object.password)
-            form.add_error("password", "密碼錯誤")
-            return render(request, "login.html", {"form": form})
+        # 使用者登入成功，將用戶信息儲存到session
+        # 使用者來訪後網站將生成的隨機字符串，若用戶登入成功此隨機字符串會寫入到session中(Web 伺服器的內存)之後儲存(在資料庫裡叫做django_session)
+        admin_object = models.Admin.objects.filter(username=form.cleaned_data['username']).first()
+        # 'info' 這個session變數將在用戶身份驗證時使用
+        request.session["info"] = {'id': admin_object.id, 'name': admin_object.username}
 
-
-        # 網站會先隨機生成字符串，使用者來訪後給使用者生成的隨機字符串，登入成功再寫入session(在資料庫裡叫做django_session)
-        # 用戶訊息寫入到session中，也就是session概念中特定儲存空間的小格子裡面
-        # request.session["info"] = {'id': admin_object.id, 'name': admin_object.username}
-        # # session的有效時間
-        # request.session.set_expiry(60 * 60 * 24)
-
+        # 設定session到期時間為24小時
+        request.session.set_expiry(60 * 60 * 24) # 60秒*60次*24次 -> 24小時
         return redirect("/admin/list")
 
+    # 日誌顯示登入錯誤用戶名與脫敏密碼
+    sanitized_errors = {k: "[REDACTED]" if k in ["username", "password"] else v for k, v in form.errors.items()}
+    logger.warning(f"Failed admin login attempt: {sanitized_errors}")
     return render(request, "login.html", {"form": form})
 
 
-
-
 def logout(request):
-    """ 登出功能 """
+    """登出"""
     request.session.clear()
     return redirect("/login/")
 
@@ -89,17 +100,16 @@ def logout(request):
 from io import BytesIO
 
 def image_code(request):
-    """ 生成图片验证码 """
-    # 调用pillow函数,生成图片
+    """生成圖片驗證碼"""
+    # 生成圖片、生成驗證碼
     img, code_string = check_code()
 
-    # 登入時的圖片校驗
-    ## 每一位來訪者的session給予圖片驗證碼答案
-    request.session["image_code"] = code_string
-    ## 設定時間定期刷新圖片驗證碼
+    # 驗證碼儲存到session
+    request.session["image_captcha_entry"] = code_string
+    # 定期刷新圖片驗證碼
     request.session.set_expiry(60)
 
-    # 将图片保存到内存
+    # 圖片保存到內存
     stream = BytesIO()  # 相當於創建了個文件
     img.save(stream, 'png')  # 圖片寫入內存文件中
     img_show = stream.getvalue()  # 取圖片
