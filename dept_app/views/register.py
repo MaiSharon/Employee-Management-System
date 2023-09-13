@@ -114,6 +114,7 @@ def admin_add(request):
 
     # 處理POST請求
     form = AdminModelForm(data=request.POST)
+    logger.info("Received GET request for admin registration.")
     if form.is_valid():
         admin = form.save(commit=False)
         admin.password = make_password(form.cleaned_data["password"])
@@ -144,23 +145,28 @@ def verify_email(request, token):
     try:
         # 解碼從URL中獲取的驗證碼
         email_token = force_str(urlsafe_base64_decode(token))
+        if None != email_token:
+            logger.info(f"Attempting to decode email token: {token[:5]}")
         # 查找對應的Admin對象
         admin = models.Admin.objects.get(email_token=email_token)
 
     except ObjectDoesNotExist:
         # 若無對應的Admin對象，可能是已驗證或無效驗證碼都到重新驗證頁面
         messages.success(request, '無效驗證碼或已驗證成功，請重發認證信或登入。')
+        logger.warning(f"Failed email_token: is None")
         return redirect('re_verify')
 
     if timezone.now() > admin.token_expiration:
         # 若驗證碼是否過期，到重新驗證輸入信箱頁面
         messages.success(request, '驗證碼已過期，請重新發送認證信。')
+        logger.warning(f"Token for Admin object with email_token: {email_token[:5]} has expired.")
         return redirect('re_verify')
 
     # 若驗證成功，更新Admin對象的狀態並保存
     admin.is_verified = True
     admin.email_token = None
     admin.save()
+    logger.info(f"Admin object with Username: {admin.username} is verified.")
     # 直接登入，進入管理員列表頁面
     return redirect('admin_list')
 
