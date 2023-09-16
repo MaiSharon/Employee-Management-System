@@ -1,0 +1,66 @@
+{% extends 'layout.html' %}
+{% load static %}
+{% block title %}
+  <title>EMS - {{ page_title }}</title>
+{% endblock %}
+
+<!-- Jumbotron -->
+{% block jumbotron %}
+  <div id="intro" class="p-5 text-center bg-light">
+    <h1 class="mb-0 h4">{{ page_title }}</h1>
+  </div>
+{% endblock %}
+<!-- Jumbotron -->
+
+{% block content %}
+
+<form method="post" novalidate>
+  {% csrf_token %}
+
+  <!-- 手動渲染 mobile 字段 -->
+  <div class="form-outline mb-4">
+    {{ form.mobile }}
+    <label class="form-label" for="{{ form.mobile.id_for_label }}">{{ form.mobile.label }}</label>
+    <span style="color:red">{{ form.mobile.errors.0 }}</span>
+  </div>
+
+  <!-- 手動渲染 price 字段 -->
+  <div class="form-outline mb-4">
+    {{ form.price }}
+    <label class="form-label" for="{{ form.price.id_for_label }}">{{ form.price.label }}</label>
+    <span style="color:red">{{ form.price.errors.0 }}</span>
+  </div>
+
+  <!-- 手動渲染 brand 字段 -->
+  <div class="form-outline mb-4">
+    <div class="form-floating">
+      <select class="form-select" id="{{ form.brand.id_for_label }}" name="{{ form.brand.name }}">
+        {% for value, display in form.fields.brand.choices %}
+          <option value="{{ value }}" {% if form.brand.value == value %}selected{% endif %}>{{ display }}</option>
+        {% endfor %}
+      </select>
+      <label for="{{ form.brand.id_for_label }}">{{ form.brand.label }}</label>
+    </div>
+    <span style="color:red">{{ form.brand.errors.0 }}</span>
+  </div>
+
+  <!-- 手動渲染 status 字段 -->
+  <div class="form-outline mb-4">
+    <div class="form-floating">
+      <select class="form-select" id="{{ form.status.id_for_label }}" name="{{ form.status.name }}">
+        {% for value, display in form.fields.status.choices %}
+          <option value="{{ value }}" {% if form.status.value == value %}selected{% endif %}>{{ display }}</option>
+        {% endfor %}
+      </select>
+      <label for="{{ form.status.id_for_label }}">{{ form.status.label }}</label>
+    </div>
+    <span style="color:red">{{ form.status.errors.0 }}</span>
+  </div>
+
+  <button type="submit" class="btn btn-primary">
+    提交
+  </button>
+</form>
+
+
+{% endblock %}
