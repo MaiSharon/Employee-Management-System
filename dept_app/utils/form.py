@@ -5,7 +5,7 @@ from django.core.validators import RegexValidator
 from dept_app import models
 from dept_app.utils.bootstrap import BootStrapModelForm, BootStrapForm
 
-class UserModelForm(BootStrapForm):
+class UserModelForm(BootStrapModelForm):
     class Meta:
         model = models.UserInfo
         fields = ["name", "birthday", "quota", "create_time", "gender", "depart"]
