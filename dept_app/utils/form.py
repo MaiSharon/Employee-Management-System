@@ -1,22 +1,21 @@
 from django import forms
-from django.forms import ModelForm
 from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 
 from dept_app import models
+from dept_app.utils.bootstrap import BootStrapModelForm, BootStrapForm
 
-
-class UserModelForm(ModelForm):
+class UserModelForm(BootStrapForm):
     class Meta:
         model = models.UserInfo
-        fields = ["name", "password", "birthday", "account", "create_time", "gender", "depart"]
+        fields = ["name", "birthday", "quota", "create_time", "gender", "depart"]
         name = forms.CharField(min_length=3, label="用戶名")
         widgets = {
             "create_time": forms.TextInput(attrs={"autocomplete": "off"})
         }
 
 
-class PrettyModelForm(ModelForm):
+class MobileModelForm(BootStrapModelForm):
     hi = RegexValidator(r'^09', "手機號格式錯誤")
     # 報錯提示方式一：正則表達式
     mobile = forms.CharField(
@@ -27,16 +26,13 @@ class PrettyModelForm(ModelForm):
     )
 
     class Meta:
-        model = models.PrettyNum
-        # fields = ["mobile", "price", "level", "status"]
+        model = models.MobileNum
         fields = "__all__"  # 全部字段
         # exclude = ["level"]  # 排除那些字段
 
-    # 報錯提示方式二：鉤子方法 記得導入from django.core.exceptions import ValidationError
-    # 只在數據新增的pretty_add使用
     def clean_mobile(self):
         txt_mobile = self.cleaned_data["mobile"]
-        exists = models.PrettyNum.objects.filter(mobile=txt_mobile).exists()
+        exists = models.MobileNum.objects.filter(mobile=txt_mobile).exists()
         if exists:
             raise ValidationError("手機號碼已經存在")
 
@@ -44,17 +40,17 @@ class PrettyModelForm(ModelForm):
         return txt_mobile
 
 
-class PrettyEditModelForm(ModelForm):
+class MobileEditModelForm(BootStrapModelForm):
     mobile = forms.CharField(disabled=True, label="mobile")
 
     class Meta:
-        model = models.PrettyNum
-        fields = ["mobile", "price", "level", "status"]
+        model = models.MobileNum
+        fields = ["mobile", "price", "brand", "status"]
 
     def clean_mobile(self):
         txt_mobile = self.cleaned_data["mobile"]
 
-        exists = models.PrettyNum.objects.exclude(id=self.instance.pk).filter(mobile=txt_mobile).exists()
+        exists = models.MobileNum.objects.exclude(id=self.instance.pk).filter(mobile=txt_mobile).exists()
         if exists:
             raise ValidationError("手機號碼已經存在")
 
