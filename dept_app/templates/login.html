@@ -2,10 +2,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Sign Up Form by Colorlib</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Quackersort - Aligning Tasks and Teams</title>
+  <link rel="icon" href="{% static 'logo-64.png' %}" type="image/x-icon">
 
     <!-- Font Awesome -->
     <link
@@ -43,7 +43,7 @@
           hsl(218, 41%, 20%) 75%,
           hsl(218, 41%, 19%) 80%,
           transparent 100%);
-        position: fixed;
+        position: absolute;
           top: 0;
           left: 0;
           right: 0;
@@ -81,20 +81,34 @@
       background-color: hsla(0, 0%, 100%, 0.9) !important;
       backdrop-filter: saturate(200%) blur(25px);
     }
+
+    .logo-align {
+        {#custom#}
+      position: relative;
+      bottom: 5px;
+    }
   </style>
+
   <div class="scrollable-content">
     <div class="container px-4 py-5 px-md-5 text-center text-lg-start my-5">
       <div class="row gx-lg-5 align-items-center mb-5">
         <div class="col-lg-6 mb-5 mb-lg-0" style="z-index: 10">
           <h1 class="my-5 display-5 fw-bold ls-tight" style="color: hsl(218, 81%, 95%)">
-            The best offer <br />
-            <span style="color: hsl(218, 81%, 75%)">for your business</span>
+            <img src="{% static 'logo-64.png' %}" alt="logo" class="logo-align"/>
+            Quackersort
+            <br />
+
+            <span style="color: hsl(218, 81%, 75%)">
+            Aligning Tasks and Teams.</span>
           </h1>
           <p class="mb-4 opacity-70" style="color: hsl(218, 81%, 85%)">
-            Lorem ipsum dolor, sit amet consectetur adipisicing elit.
-            Temporibus, expedita iusto veniam atque, magni tempora mollitia
-            dolorum consequatur nulla, neque debitis eos reprehenderit quasi
-            ab ipsum nisi dolorem modi. Quos?
+            Welcome to Quackersort.
+            We simplify management and care for your team.
+            Why the name Quackersort? It's a play on the sound ducks make—quack!
+            Just as ducks move in an orderly fashion,
+            we hope to bring order to your management tasks.
+            Features include real-time chat, employee lists, and task boards.
+            Here to support your management journey.
           </p>
         </div>
 
@@ -198,6 +212,9 @@
   </div>
 </section>
 <!-- Section: Design Block -->
+
+
+
     <!-- MDB -->
     <script
       type="text/javascript"
