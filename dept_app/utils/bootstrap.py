@@ -1,4 +1,5 @@
 from django import forms
+from django.forms import Select
 
 
 class BootStrap:
@@ -7,16 +8,17 @@ class BootStrap:
 
         # name是指變量名稱可到models.py查看、field是指對象
         for name, field in self.fields.items():
-
-            # 字段中有屬性，保留原有的屬性，沒有屬性，才增加
-            if field.widget.attrs:  # 若字段中有屬性
-                field.widget.attrs["class"] = "form-control"
-                # field.widget.attrs["placeholder"] = field.label
-            else:  # 若字段中沒有屬性
-                field.widget.attrs = {
-                    "class": "form-control",
-                    # "placeholder": field.label
-                }
+            # 檢查widget的類型
+            if isinstance(field.widget, Select):
+                # 自定義select的class
+                field.widget.attrs["class"] = "form-select"
+            else:
+                if field.widget.attrs:
+                    field.widget.attrs["class"] = "form-control"
+                else:
+                    field.widget.attrs = {
+                        "class": "form-control",
+                    }
 
 
 class BootStrapModelForm(BootStrap, forms.ModelForm):
