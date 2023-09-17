@@ -17,11 +17,11 @@ def mobile_list(request):
     from dept_app.utils.pagination import Pagination
 
     # 把調數據傳給分頁組件的類
-    queryset = models.MobileNum.objects.filter(**search_dict).order_by("-brand")
+    queryset = models.MobileNum.objects.filter(**search_dict).order_by("-status")
 
     if not queryset:
         print(search_dict, queryset)
-        queryset = models.MobileNum.objects.all().order_by("-brand")
+        queryset = models.MobileNum.objects.all().order_by("-status")
 
     page_object = Pagination(request, queryset)
 
@@ -43,14 +43,14 @@ def mobile_list(request):
 def mobile_add(request):
     if request.method == "GET":
         form = MobileModelForm()
-        return render(request, "mobile_add.html", {"form": form, "page_title": "Mobiles Add"})
+        return render(request, "mobile_add.html", {"form": form, "page_title": "Mobile Add"})
 
     form = MobileModelForm(data=request.POST)
     if form.is_valid():
         # 如果校驗成功，保存到數據庫
         form.save()
         return redirect("/mobile/list/")
-    return render(request, "mobile_add.html", {"form": form, "page_title": "Mobiles Add"})
+    return render(request, "mobile_add.html", {"form": form, "page_title": "Mobile Add"})
 
 
 
@@ -59,14 +59,14 @@ def mobile_edit(request, nid):
     row_object = models.MobileNum.objects.filter(id=nid).first()
     if request.method == "GET":
         form = MobileEditModelForm(instance=row_object)
-        return render(request, "mobile_edit.html", {"form": form, "page_title": "Mobiles Edit"})
+        return render(request, "mobile_edit.html", {"form": form, "page_title": "Mobile Edit"})
 
     form = MobileEditModelForm(data=request.POST, instance=row_object)
     if form.is_valid():
         # 如果校驗成功，保存到數據庫
         form.save()
         return redirect("/mobile/list/")
-    return render(request, "mobile_edit.html", {"form": form, "page_title": "Mobiles Edit"})
+    return render(request, "mobile_edit.html", {"form": form, "page_title": "Mobile Edit"})
 
 
 def mobile_delete(request, nid):
