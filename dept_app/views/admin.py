@@ -11,7 +11,6 @@ from dept_app.utils.pagination import Pagination
 
 def admin_list(request):
     """ 管理員 """
-
     search_dict = {}
     search = request.GET.get("search", "")  # 預設為空字串，讓input不出現None保持乾淨空的
     if search:  # 0.2.1 True 將會把獲取值新增到字典
@@ -25,6 +24,7 @@ def admin_list(request):
         "search": search,
         "queryset": page_object.page_queryset,  # 分完頁的數據
         "page_string": page_object.html(),  # 頁碼
+        "page_title": "Administrator"
     }
 
     return render(request, "admin_list.html", context)

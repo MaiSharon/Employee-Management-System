@@ -7,26 +7,20 @@ from dept_app.utils.pagination import Pagination
 def depart_list(request):
     """部門列表"""
 
-    # 到數據庫中獲取所有的部門列表(會是queryset的形式)
-    # [對象, 對象, 對象]
     queryset = models.Department.objects.all()
 
-    page_object = Pagination(request, queryset)
-    page = page_object.page
-
     context = {
-        "page": page,
-
-        "queryset": page_object.page_queryset,  # 分完頁的數據條
-        "page_string": page_object.html()  # 頁碼
+        "queryset": queryset,
+        "page_title": "Departments"
     }
+
     return render(request, 'depart_list.html', context)
 
 
 def depart_add(request):
     """新增部門列表"""
     if request.method == "GET":
-        return render(request, 'depart_add.html')
+        return render(request, 'depart_add.html',{"page_title": "Department Add"})
 
     # 獲取
     title = request.POST.get("title")
@@ -38,10 +32,9 @@ def depart_add(request):
     return redirect("/depart/list/")
 
 
-def depart_delete(request):
+def depart_delete(request, nid):
     """ 刪除部門 """
-    # 獲取ID
-    nid = request.GET.get('nid')
+
     # 刪除
     models.Department.objects.filter(id=nid).delete()
 
@@ -49,16 +42,14 @@ def depart_delete(request):
     return redirect("/depart/list/")
 
 
-# nid 是在urls.py的路徑轉換器<int:nid>中的nid
-# 相當於把網址中的 http://127.0.0.1:8000/depart/1/edit/ 的1傳入
 def depart_edit(request, nid):
     """修改部門"""
 
     # 默認頁面與內容
     if request.method == "GET":
         # 根據nid，獲取它的數據
-        row_boject = models.Department.objects.filter(id=nid).first()
-        return render(request, 'depart_edit.html', {'row_object': row_boject})
+        row_object = models.Department.objects.filter(id=nid).first()
+        return render(request, 'depart_edit.html', {'row_object': row_object,"page_title": "Department Edit"})
 
     # 獲取用戶提交的標題
     title = request.POST.get("title")
