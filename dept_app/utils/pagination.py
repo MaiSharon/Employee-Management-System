@@ -2,10 +2,10 @@
 自定義的分頁組件
 
 在視圖函數中:
-    def pretty_list(request):
+    def mobile_list(request):
 
         # 1.根據自己的情況去篩選自己的數據
-        total_count = models.PrettyNum.objects.all()
+        total_count = models.mobileNum.objects.all()
 
         # 2.實力化分頁對象
         page_object = Pagination(request, queryset)
@@ -41,7 +41,7 @@ class Pagination(object):
         :param request: 請求的對象
         :param queryset:  符合條件的數據(根據這個數據給他進行分頁處理)
         :param page_size: 每頁顯示多少條數據
-        :param page_param: 在URL中傳遞的獲取分頁的參數 例如: /pretty/list/?page=12
+        :param page_param: 在URL中傳遞的獲取分頁的參數 例如: /mobile/list/?page=12
         :param plus: 顯示當前頁的 前或後幾頁(頁碼)
         """
         from django.http.request import QueryDict
@@ -107,16 +107,16 @@ class Pagination(object):
         self.query_dict.urlencode()  # page=1
 
         # 10. 頁碼首頁
-        home_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">首頁</a></li>'
-        page_str_list.append(home_page)
+        # home_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">首頁</a></li>'
+        # page_str_list.append(home_page)
 
         # 9. 上一頁
         if self.page > 1:
             self.query_dict.setlist(self.page_param, [self.page - 1])
-            prev_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">上一頁</a></li>'
+            prev_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">Previous</a></li>'
         else:
             self.query_dict.setlist(self.page_param, [1])
-            prev_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">上一頁</a></li>'
+            prev_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">Previous</a></li>'
         page_str_list.append(prev_page)
 
         # 5. 生成頁碼，做成列表且去除換行
@@ -132,10 +132,10 @@ class Pagination(object):
         # 9.1 下一頁
         if self.page < self.total_page_count:
             self.query_dict.setlist(self.page_param, [self.page + 1])
-            next_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">下一頁</a></li>'
+            next_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">Next</a></li>'
         else:
             self.query_dict.setlist(self.page_param, [self.total_page_count])
-            next_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">下一頁</a></li>'
+            next_page = f'<li class="page-item"><a class="page-link" href="?{self.query_dict.urlencode()}">Next</a></li>'
         page_str_list.append(next_page)
 
         page_string = mark_safe(f'{"".join(page_str_list)}{n}')
