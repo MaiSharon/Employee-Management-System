@@ -14,9 +14,10 @@ class Admin(models.Model):
     username = models.CharField(verbose_name="用戶名", max_length=512)
     password = models.CharField(verbose_name="密碼", max_length=512, null=True)
     email = models.EmailField(verbose_name="信箱", unique=True)
-    email_token = models.UUIDField(verbose_name="驗證碼", default=uuid.uuid4, editable=False)
-    is_verified = models.BooleanField(verbose_name="驗證已確認", default=False)
-    token_expiration = models.DateTimeField(verbose_name="驗證碼期限",default=timezone.now() + timedelta(hours=72))
+    email_token = models.UUIDField(verbose_name="電子郵件驗證碼", default=uuid.uuid4, editable=False)
+    is_verified = models.BooleanField(verbose_name="驗證狀態（已驗證/未驗證）", default=False)
+    token_expiration = models.DateTimeField(verbose_name="電子郵件驗證碼期限",default=timezone.now() + timedelta(hours=72))
+    is_online = models.BooleanField(verbose_name="用戶在線狀態（已上線/未上線）", default=False)
 
     def update_token_expiration(self):
         """
@@ -30,8 +31,6 @@ class Admin(models.Model):
     # 輸出對象時，顯示對象文字
     def __str__(self):
         return self.username
-
-
 
 
 class Department(models.Model):
