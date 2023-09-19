@@ -15,6 +15,17 @@
   <!-- MDB -->
   <link rel="stylesheet" href="{% static 'plugins/mdb5-6.4.1/css/mdb.min.css' %}" />
   {% block css %} {% endblock %}
+
+  <!-- Chat CSS -->
+    <style>
+        /* Custom CSS for scrollbar */
+        #message-container {
+            overflow-y: auto;
+            max-height: 400px;
+            height: 480px;
+        }
+    </style>
+
 </head>
 <body>
   <!--Main Navigation-->
