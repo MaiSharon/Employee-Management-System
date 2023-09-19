@@ -30,6 +30,7 @@ ALLOWED_HOSTS = ["127.0.0.1"]
 # Application definition
 
 INSTALLED_APPS = [
+    'daphne',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -211,3 +212,13 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 ASGI_APPLICATION = "prj_dept.asgi.application"  # websocket
+
+# Channel layer settings
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
