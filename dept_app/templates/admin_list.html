@@ -67,8 +67,10 @@
               </div>
             </td>
             <td>
-              <span class="badge badge-success rounded-pill d-inline">Active</span>
+              <span id="user-{{ item.id }}-status" class="badge badge-secondary rounded-pill d-inline">Bye!</span>
             </td>
+
+
           </tr>
         {% endfor %}
         </tbody>
@@ -94,6 +96,35 @@
 
       <!--Chat-->
       <div class="w-100 mt-5">
+          <div class="card" id="chat2">
+              <div class="card-header d-flex justify-content-between align-items-center p-3">
+                  <h5 class="mb-0">Chat</h5>
+              </div>
+<div class="card-body" style="display: flex; flex-direction: column; justify-content: flex-end;" id="message-container">
+                  <!-- Messages will appear here -->
+              </div>
+              <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
+                <img src='{% static 'logo-64.png'%}' alt="" style="width: 55px; height: 55px" class="rounded-circle">
+                  <input type="text" class="ms-2 form-control form-control-lg" id="chat-message-input" placeholder="Type message">
+
+
+
+                  <!-- Emoji Picker Button -->
+      {#              <div id="emoji-picker-wrapper">#}
+      {#                <a class="ms-3 text-muted emoji-button" href="#!"><i class="fas fa-smile"></i></a>#}
+      {#                <emoji-picker id="emoji-picker-element" style="display:none;"></emoji-picker>#}
+      {#              </div>#}
+                  <!-- Emoji Picker Button -->
+                  <a class="ms-2 btn-group-lg px-3" id="chat-message-submit">
+                    <i class="fas fa-paper-plane" ></i>
+                  </a>
+              </div>
+          </div>
+      </div>
+      <!--Chat-->
+
+      <!--Chat-->
+     <!-- <div class="w-100 mt-5">
           <div class="card" id="chat2">
             <div class="card-header d-flex justify-content-between align-items-center p-3">
               <h5 class="mb-0">Chat</h5>
@@ -135,7 +166,7 @@
               <a class="ms-3" href="#!"><i class="fas fa-paper-plane"></i></a>
             </div>
           </div>
-        </div>
+        </div> -->
       <!--Chat-->
 
     </div>
@@ -144,89 +175,137 @@
   </div>
   <!--Grid row-->
 
-   <!--Chat-->
-    <div class="w-100 mt-5">
-        <div class="card" id="chat2">
-            <div class="card-header d-flex justify-content-between align-items-center p-3">
-                <h5 class="mb-0">Chat</h5>
-            </div>
-            <div class="card-body" data-mdb-perfect-scrollbar="true" style="position: relative;" id="message-container">
-                <!-- Messages will appear here -->
-            </div>
-            <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
-                <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp" alt="avatar 3" style="width: 40px; height: 100%;">
-                <input type="text" class="form-control form-control-lg" id="chat-message-input" placeholder="Type message">
-
-              <!-- Emoji Picker Button -->
-{#              <div id="emoji-picker-wrapper">#}
-{#                <a class="ms-3 text-muted emoji-button" href="#!"><i class="fas fa-smile"></i></a>#}
-{#                <emoji-picker id="emoji-picker-element" style="display:none;"></emoji-picker>#}
-{#              </div>#}
-              <!-- Emoji Picker Button -->
-                <a class="ms-3" id="chat-message-submit"><i class="fas fa-paper-plane"></i></a>
-            </div>
-        </div>
-    </div>
-    <!--Chat-->
 
 
 <script>
-    // Initialize variables
-    const chatSocket = new WebSocket('ws://' + window.location.host + '/ws/chat/general/');
-    const messageContainer = document.getElementById('message-container');
-    const messageInputDom = document.getElementById('chat-message-input');
-    const chatMessageSubmit = document.getElementById('chat-message-submit');
-    const currentTime = getCurrentTime();
+// Initialize WebSocket and DOM elements
+const chatSocket = new WebSocket(`ws://${window.location.host}/ws/chat/general/`);
+const messageContainer = document.getElementById('message-container');
+const messageInput = document.getElementById('chat-message-input');
+const chatMessageSubmit = document.getElementById('chat-message-submit');
 
 
-    function getCurrentTime() {
-    const now = new Date();
-    const hours = String(now.getHours()).padStart(2, '0');
-    const minutes = String(now.getMinutes()).padStart(2, '0');
-    return `${hours}:${minutes}`;
+// Scroll to the bottom when the WebSocket connection is opened
+chatSocket.onopen = function(e) {
+  // 其他初始化代碼
+  messageContainer.scrollTop = messageContainer.scrollHeight;
+};
+
+
+// Function to get current time
+function getCurrentTime() {
+  const now = new Date();
+  return `${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+}
+
+// Function to handle heartbeat and user status
+function handleHeartbeatAndStatus(data) {
+  if (data.type === 'heartbeat') return true;
+  if (data.type === 'user_status') {
+    updateUserStatus(data.user_id, data.is_online);
+    return true;
+  }
+  return false;
+}
+
+// Function to update user status and trigger table sorting
+function updateUserStatus(userId, isOnline) {
+  const userIdElement = document.getElementById(`user-${userId}-status`);
+  if (userIdElement) {
+    userIdElement.textContent = isOnline ? 'Online' : 'Bye!';
+    userIdElement.className = isOnline ? 'badge badge-success rounded-pill d-inline' : 'badge badge-secondary rounded-pill d-inline';
+    sortTableRows();
+  }
+}
+
+// Function to sort table rows based on online status and ID
+function sortTableRows() {
+  const table = document.querySelector(".table tbody");
+  const rows = Array.from(table.rows);
+
+  rows.sort((a, b) => {
+    const aStatus = a.querySelector("span").textContent === 'Online' ? 1 : 0;
+    const bStatus = b.querySelector("span").textContent === 'Online' ? 1 : 0;
+
+    const aId = parseInt(a.querySelector("td:first-child").textContent, 10);
+    const bId = parseInt(b.querySelector("td:first-child").textContent, 10);
+
+    if (aStatus === bStatus) {
+      return aId - bId; // If online status is the same, sort by id
     }
+    return bStatus - aStatus; // Sort by online status first
+  });
+
+  // Append the sorted rows back to the table
+  for (let i = 0; i < rows.length; i++) {
+    table.appendChild(rows[i]);
+  }
+}
 
 
-    // On receiving a message
-    chatSocket.onmessage = function(e) {
-        const data = JSON.parse(e.data);
-        const messageDiv = document.createElement('div');
-        messageDiv.classList.add('d-flex', 'flex-row', 'justify-content-start');
-        messageDiv.innerHTML = `
-            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-chat/ava3-bg.webp" alt="avatar 1" style="width: 45px; height: 100%;">
-            <div>
-                <div class="middle ms-3 rounded-3 text-muted">name</div>
-                <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">${data.message}</p>
-                <p class="small ms-3 mb-3 rounded-3 text-muted">${currentTime}</p>
-            </div>
-        `;
-        messageContainer.appendChild(messageDiv);
+// Function to handle chat messages
+function handleChatMessage(data) {
+  if (!data.message || !data.username) return;
+  const currentTime = getCurrentTime();
+  const messageDiv = document.createElement('div');
+  // 假設當前用戶的ID存儲在變量`currentUserId`中
+  const currentUserId = '{{username}}';
 
-        // Auto-scroll to the bottom
-        messageContainer.scrollTop = messageContainer.scrollHeight;
-    };
+  // Check if the message is from the current user
+  if (data.username === currentUserId) {
+    messageDiv.classList.add('d-flex', 'flex-row', 'justify-content-end', 'mb-4', 'pt-1');
+    messageDiv.innerHTML = `
+      <div>
+        <div class="middle ms-3 rounded-3 text-muted">${data.username}</div>
+        <p class="message-text ms-3 rounded-3">${data.message}</p>
+        <p class="small me-3 mb-3 rounded-3 text-muted d-flex justify-content-end">${currentTime}</p>
+      </div>
+      <img src="/static/logo-64.png" alt="" style="width: 55px; height: 55px">
+    `;
+  } else {
+    messageDiv.classList.add('d-flex', 'flex-row', 'justify-content-start');
+    messageDiv.innerHTML = `
+      <img src="/static/icons-user.gif" alt="" class="rounded-circle" style="width: 45px; height: 45px">
+      <div>
+        <div class="middle ms-3 rounded-3 text-muted">${data.username}</div>
+        <p class="message-text ms-3 rounded-3">${data.message}</p>
+        <small class="text-muted ms-3">${currentTime}</small>
+      </div>
+    `;
+  }
 
-    // On WebSocket closure
-    chatSocket.onclose = function(e) {
-        console.error('Chat socket closed unexpectedly');
-    };
+  messageContainer.appendChild(messageDiv);
+}
 
-    // Input and button events
-    messageInputDom.focus();
-    messageInputDom.addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') {
-            chatMessageSubmit.click();
-        }
-    });
+// WebSocket event handlers
+chatSocket.onmessage = function(e) {
+  const data = JSON.parse(e.data);
+  if (!handleHeartbeatAndStatus(data)) {
+    handleChatMessage(data);
+  }
+};
 
-    chatMessageSubmit.addEventListener('click', function(e) {
-        const message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
-        messageInputDom.value = '';
-    });
+chatSocket.onclose = function() {
+  console.error('Chat socket closed unexpectedly');
+};
 
+// Input and button event handlers
+messageInput.addEventListener('keyup', function(e) {
+  if (e.key === 'Enter') chatMessageSubmit.click();
+});
+
+chatMessageSubmit.addEventListener('click', function() {
+  const message = messageInput.value;
+  if (message) {
+    chatSocket.send(JSON.stringify({ 'type': 'chat_message', 'message': message }));
+    messageInput.value = '';
+  }
+});
+
+// Heartbeat to keep connection alive
+setInterval(() => {
+  chatSocket.send(JSON.stringify({ 'type': 'heartbeat', 'heartbeat': 'ping' }));
+}, 30000);
 
 </script>
 
