@@ -1,3 +1,5 @@
+import logging
+
 from django.core.exceptions import ValidationError, ObjectDoesNotExist
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
@@ -12,6 +14,8 @@ from dept_app import models
 from dept_app.utils import email_utils
 from dept_app.utils.bootstrap import BootStrapModelForm, BootStrapForm
 
+
+logger = logging.getLogger(__name__)
 
 class AdminModelForm(BootStrapModelForm):
     """
@@ -94,12 +98,8 @@ class AdminModelForm(BootStrapModelForm):
             # 此信箱未註冊
             return email
 
-import logging
 
-logger = logging.getLogger(__name__)
-
-
-def admin_add(request):
+def register(request):
     """
     處理用戶的創建。
     - GET請求：顯示空的註冊表單。
@@ -147,14 +147,14 @@ def verify_email(request, token):
         # 查找對應的Admin對象
         admin = models.Admin.objects.get(email_token=email_token)
 
-    except ObjectDoesNotExist:
+    except models.Admin.DoesNotExist:
         # 若無對應的Admin對象，可能是已驗證或無效驗證碼都到重新驗證頁面
         messages.success(request, '無效驗證碼或已驗證成功，請重發認證信或登入。')
-        logger.warning(f"Failed email_token: is None")
+        logger.warning(f"not Admin: is None")
         return redirect('re_verify')
 
     if timezone.now() > admin.token_expiration:
-        # 若驗證碼是否過期，到重新驗證輸入信箱頁面
+        # 若驗證碼過期，到重新驗證輸入信箱頁面
         messages.success(request, '驗證碼已過期，請重新發送認證信。')
         logger.warning(f"Token for Admin object with email_token: {email_token[:5]} has expired.")
         return redirect('re_verify')
