@@ -5,13 +5,14 @@ from django.core.validators import RegexValidator
 from dept_app import models
 from dept_app.utils.bootstrap import BootStrapModelForm, BootStrapForm
 
-class UserModelForm(BootStrapModelForm):
+class EmployeeModelForm(BootStrapModelForm):
     class Meta:
         model = models.UserInfo
-        fields = ["name", "birthday", "quota", "create_time", "gender", "depart"]
+        fields = ['name', 'birthday', 'quota', 'create_time', 'gender', 'depart']
         name = forms.CharField(min_length=3, label="用戶名")
         widgets = {
-            "create_time": forms.TextInput(attrs={"autocomplete": "off"})
+            "create_time": forms.TextInput(attrs={'type': 'date', 'autocomplete': 'off'}),
+            "birthday": forms.TextInput(attrs={'type': 'date', 'autocomplete': 'off'})
         }
 
 
