@@ -79,7 +79,7 @@ def task_list(request):
         "search": search,
         "page": page_object.page,
         "queryset": page_object.page_queryset,  # 分完頁的數據條
-        "page_string": page_object.html()  # 頁碼
+        "page_string": page_object.generate_html()  # 頁碼
     }
 
     return render(request, 'task_list.html', context)
