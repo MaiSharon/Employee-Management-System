@@ -41,10 +41,11 @@ class LoginForm(BootStrapForm):
 
     def clean_password(self):
         """檢查密碼是否跟用戶名匹配"""
-        password = self.cleaned_data.get("password")
+        password = self.cleaned_data.get("password","")
         admin_object = models.Admin.objects.filter(username=self.cleaned_data.get("username")).first()
-        if not check_password(password, admin_object.password):
-            raise ValidationError("密碼錯誤")
+        if admin_object:
+            if not check_password(password, admin_object.password):
+                raise ValidationError("密碼錯誤")
         return password
 
 
@@ -65,7 +66,7 @@ def login(request):
         if 'image_captcha_entry' not in request.session:
             form.add_error("image_captcha_input","驗證碼已過期，請重新整理頁面。")
             logger.warning("image captcha expiration")
-            return render(request, "login_old.html", {"form": form})
+            return render(request, "login.html", {"form": form})
 
         # 檢查使用者輸入的圖片驗證碼是否與session中儲存的驗證碼相符
         user_image_captcha_input = form.cleaned_data.get('image_captcha_input')  # 從字典中先移除圖片驗證碼
@@ -75,18 +76,21 @@ def login(request):
             logger.warning("image captcha user input wrong")
             return render(request, "login.html", {"form": form})
 
+
         # 使用者登入成功，將用戶信息儲存到session
         # 使用者來訪後網站將生成的隨機字符串，若用戶登入成功此隨機字符串會寫入到session中(Web 伺服器的內存)之後儲存(在資料庫裡叫做django_session)
+
+        # 為了後續session再調用
         admin_object = models.Admin.objects.filter(username=form.cleaned_data['username']).first()
+
         # 'info' 這個session變數將在用戶身份驗證時使用
         request.session["info"] = {'id': admin_object.id, 'name': admin_object.username}
-
         # 設定session到期時間為24小時
         request.session.set_expiry(60 * 60 * 24) # 60秒*60次*24次 -> 24小時
         return redirect("/admin/list")
 
     # 日誌顯示登入錯誤用戶名與脫敏密碼
-    sanitized_errors = {k: "[REDACTED]" if k in ["username", "password"] else v for k, v in form.errors.items()}
+    sanitized_errors = {k: "[REDACTED]" if k in ["password"] else v for k, v in form.errors.items()}
     logger.warning(f"Failed admin login attempt: {sanitized_errors}")
     return render(request, "login.html", {"form": form})
 
