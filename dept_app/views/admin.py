@@ -7,98 +7,35 @@ from django.contrib.auth.hashers import make_password
 
 from dept_app import models
 from dept_app.utils.pagination import Pagination
+import logging
 
+logger = logging.getLogger(__name__)
 
 def admin_list(request):
     """ 管理員 """
     search_dict = {}
-    search = request.GET.get("search", "")  # 預設為空字串，讓input不出現None保持乾淨空的
+    logger.info(search_dict)
+    search = request.GET.get("search", "")
+
     if search:  # 0.2.1 True 將會把獲取值新增到字典
         search_dict["username__contains"] = search  # 找出 username 欄位中包含特定字串的所有對象"。contains 是一種查詢類型
+    logger.info(search_dict)
+
 
     queryset = models.Admin.objects.filter(**search_dict)
+
 
     page_object = Pagination(request, queryset)
 
     context = {
         "search": search,
         "queryset": page_object.page_queryset,  # 分完頁的數據
-        "page_string": page_object.html(),  # 頁碼
-        "page_title": "Administrator"
+        "page_string": page_object.generate_html(),  # 頁碼
+        "page_title": "Administrator",
     }
 
     return render(request, "admin_list.html", context)
 
-
-class AdminModelForm(ModelForm):
-    """  """
-    confirm_password = forms.CharField(
-        label="確認密碼",
-        widget=forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
-    )
-
-    class Meta:
-        model = models.Admin
-        fields = ["username", "password", "confirm_password"]  #
-        widgets = {
-            "password": forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
-        }
-
-
-    def clean_username(self):
-        """ 驗證用戶名是否只包含字母、數字、下劃線和點 """
-        username = self.cleaned_data.get("username")
-        if not all(char.isalnum() or char in {'_', '.'} for char in username):
-            raise ValidationError("用戶名只能包含字母、數字、下劃線和點")
-
-        if not (any(char.isdigit() for char in username) and any(char.isalpha() for char in username)):
-            raise ValidationError("用戶名必須包含至少一個字母和一個數字")
-
-        if len(username) < 8 or len(username) > 16:
-            raise ValidationError("用戶名必須在8到16個字符之間")
-
-        exists = models.Admin.objects.filter(username=username).exists()
-        if exists:
-            raise ValidationError(f"{username} 此用戶名已經存在")
-
-        return username
-
-    def clean_password(self):
-        password = self.cleaned_data.get("password")
-        if len(password) >= 25:
-            raise ValidationError("密碼長度不可超過24個字符")
-        if ' ' in password:
-            raise ValidationError("密碼不能包含空格")
-        validate_password(password, self.instance)
-        return password
-
-    def clean_confirm_password(self):
-        password = self.cleaned_data.get("password")
-        confirm_password = self.cleaned_data.get("confirm_password")
-
-        if password is None:  # 相較self.errors.get("password")更節省資源
-            return confirm_password
-
-        if password != confirm_password:
-            raise ValidationError("密碼不一致")
-
-        return confirm_password
-
-
-def admin_add(request):
-    title = "新增管理員"
-    if request.method == "GET":
-        form = AdminModelForm()
-        return render(request, "change.html", {"form": form, "title": "新增管理員"})
-
-    form = AdminModelForm(data=request.POST)
-    if form.is_valid():
-        admin = form.save(commit=False)
-        admin.password = make_password(form.cleaned_data["password"])
-        admin.save()
-        return redirect("/admin/list/")
-
-    return render(request, "change.html", {"form": form, "title": title})
 
 
 class AdminResetModelForm(ModelForm):
@@ -205,11 +142,4 @@ def admin_edit(request, nid):
         return redirect("/admin/list/")
 
     return render(request, "change.html", {"title": title, "form": form})
-
-
-def admin_delete(request, nid):
-    """ 刪除管理員 """
-    models.Admin.objects.filter(id=nid).delete()
-
-    return redirect("/admin/list/")
 
