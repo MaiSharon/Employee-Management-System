@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-from dept_app.views import depart, mobile, user, admin, login, task, register,chat
+from dept_app.views import depart, mobile, employee, admin, login, task, register,chat
 
 
 def trigger_error(request):
@@ -27,10 +27,10 @@ urlpatterns = [
     path('depart/<int:nid>/edit/', depart.depart_edit, name='depart_edit'),
     path('depart/<int:nid>/delete/', depart.depart_delete, name='depart_delete'),
 
-    path('user/list/', user.user_list, name='user_list'),
-    path('user/add/', user.user_add, name='user_add'),
-    path('user/<int:nid>/edit/', user.user_edit, name='user_edit'),
-    path('user/<int:nid>/delete/', user.user_delete, name='user_delete'),
+    path('employee/list/', employee.employee_list, name='employee_list'),
+    path('employee/add/', employee.employee_add, name='employee_add'),
+    path('employee/<int:nid>/edit/', employee.employee_edit, name='employee_edit'),
+    path('employee/<int:nid>/delete/', employee.employee_delete, name='employee_delete'),
 
     path('mobile/list/', mobile.mobile_list, name='mobile_list'),
     path('mobile/add/', mobile.mobile_add, name='mobile_add'),
