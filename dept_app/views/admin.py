@@ -1,37 +1,53 @@
+import re
+
 from django.forms import ModelForm
 from django.shortcuts import render, redirect
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
+from django.views.decorators.http import require_GET
 
 from dept_app import models
 from dept_app.utils.pagination import Pagination
+from dept_app.utils.validate_utils import validate_search
+
 import logging
 
 logger = logging.getLogger(__name__)
 
+@require_GET
 def admin_list(request):
-    """ 管理員 """
-    search_dict = {}
-    logger.info(search_dict)
-    search = request.GET.get("search", "")
+    """
+    管理員列表展示和搜尋功能。
 
-    if search:  # 0.2.1 True 將會把獲取值新增到字典
-        search_dict["username__contains"] = search  # 找出 username 欄位中包含特定字串的所有對象"。contains 是一種查詢類型
-    logger.info(search_dict)
+    Main features：
+    - 根據用戶輸入進行搜尋
+    - 分頁顯示結果
+    - 記錄不正常輸入
 
+    Returns:
+        HttpResponse: 渲染後的 admin_list.html 頁面。
 
-    queryset = models.Admin.objects.filter(**search_dict)
+    Usage:
+        使用GET請求。參數 'search' 可用於搜尋管理員名稱。
 
+    """
+    # GET獲取 'search' 參數的值，若無則為空字串。去除頭尾空格
+    search_input = request.GET.get("search", "").strip()
+    is_valid_search = validate_search(search_input)
 
-    page_object = Pagination(request, queryset)
+    # 有搜尋返回搜尋結果，無搜尋返回所有數據
+    search_result = models.Admin.objects.filter(username__icontains=is_valid_search)
+
+    # 數據分頁
+    page_object = Pagination(request, queryset=search_result)
 
     context = {
-        "search": search,
+        "search": is_valid_search,
         "queryset": page_object.page_queryset,  # 分完頁的數據
         "page_string": page_object.generate_html(),  # 頁碼
-        "page_title": "Administrator",
+        "page_title": "Administrators",
     }
 
     return render(request, "admin_list.html", context)
