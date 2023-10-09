@@ -1,12 +1,10 @@
-import re
-
 from django.forms import ModelForm
 from django.shortcuts import render, redirect
 from django import forms
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
-from django.views.decorators.http import require_GET
+from django.views.decorators.http import require_GET, require_http_methods
 
 from dept_app import models
 from dept_app.utils.pagination import Pagination
@@ -19,32 +17,24 @@ logger = logging.getLogger(__name__)
 @require_GET
 def admin_list(request):
     """
-    管理員列表展示和搜尋功能。
-
-    Main features：
-    - 根據用戶輸入進行搜尋
-    - 分頁顯示結果
-    - 記錄不正常輸入
-
-    Returns:
-        HttpResponse: 渲染後的 admin_list.html 頁面。
+    展示管理員列表並分頁、搜尋功能。
 
     Usage:
-        使用GET請求。參數 'search' 可用於搜尋管理員名稱。
-
+    - GET: 展示管理員列表、搜尋。
     """
-    # GET獲取 'search' 參數的值，若無則為空字串。去除頭尾空格
-    search_input = request.GET.get("search", "").strip()
-    is_valid_search = validate_search(search_input)
+    # 接收用戶輸入搜尋內容
+    search_input = request.GET.get("search", "").strip()  # 獲取 'search' 參數的值，若無則為空字串。去除頭尾空格
+    # 驗證搜尋輸入內容
+    is_valid_search_input = validate_search(search_input)
 
-    # 有搜尋返回搜尋結果，無搜尋返回所有數據
-    search_result = models.Admin.objects.filter(username__icontains=is_valid_search)
+    # 搜尋或返回所有數據
+    all_queryset_or_search_result = models.Admin.objects.filter(username__icontains=is_valid_search_input)
 
-    # 數據分頁
-    page_object = Pagination(request, queryset=search_result)
+    # 分頁處理
+    page_object = Pagination(request, queryset=all_queryset_or_search_result, page_size=15)
 
     context = {
-        "search": is_valid_search,
+        "search": is_valid_search_input,
         "queryset": page_object.page_queryset,  # 分完頁的數據
         "page_string": page_object.generate_html(),  # 頁碼
         "page_title": "Administrators",
@@ -87,7 +77,7 @@ class AdminResetModelForm(ModelForm):
 
         return confirm_password
 
-
+@require_http_methods(["GET", "POST"])
 def admin_reset(request, nid):
     """ 重設密碼 """
     row_object = models.Admin.objects.filter(id=nid).first()
@@ -107,7 +97,6 @@ def admin_reset(request, nid):
         admin.save()
         return redirect("/admin/list/")
 
-    # 不跟之前的密碼一樣
     return render(request, "change.html", {"title": title, "form": form})
 
 
