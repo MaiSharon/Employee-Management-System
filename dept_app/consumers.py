@@ -101,7 +101,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         1. 將用戶從聊天室群組中移除
         2. 取消心跳機制任務
 
-         Args:
+        Args:
             close_code (int): 斷開連線原因的狀態代碼
 
         Returns:
