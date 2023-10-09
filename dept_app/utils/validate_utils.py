@@ -15,10 +15,10 @@ def validate_search(search_input):
     - 日誌: 記錄輸入字符串包含驗證未通過與通過的。
 
     Args:
-        search_input (str): 從用戶接收的搜尋輸入字符串。
+        search_input (str): 接收用戶輸入的字符串。
 
     Returns:
-        str: 如果輸入通過驗證，返回原始輸入；否則返回空字符串。
+        str: 當輸入通過驗證->返回原始輸入字符串；否->返回空字符串。
 
     """
     # 記錄調用此函數的文件和行號
