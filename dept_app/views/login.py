@@ -3,6 +3,8 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django import forms
+from django.urls import reverse
+
 from dept_app import models
 from dept_app.utils.bootstrap import BootStrapForm
 from dept_app.utils.image_code.image_code import check_code
@@ -87,7 +89,7 @@ def login(request):
         request.session["info"] = {'id': admin_object.id, 'name': admin_object.username}
         # 設定session到期時間為24小時
         request.session.set_expiry(60 * 60 * 24) # 60秒*60次*24次 -> 24小時
-        return redirect("/admin/list")
+        return redirect(reverse('admin_list'))
 
     # 日誌顯示登入錯誤用戶名與脫敏密碼
     sanitized_errors = {k: "[REDACTED]" if k in ["password"] else v for k, v in form.errors.items()}
@@ -98,7 +100,7 @@ def login(request):
 def logout(request):
     """登出"""
     request.session.clear()
-    return redirect("/login/")
+    return redirect(reverse('logout'))
 
 
 from io import BytesIO
