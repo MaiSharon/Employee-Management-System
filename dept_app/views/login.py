@@ -64,7 +64,7 @@ def login(request):
         # 檢查圖片驗證碼是否過期
         # 若過期請使用者重新整理
         if 'image_captcha_entry' not in request.session:
-            form.add_error("image_captcha_input","驗證碼已過期，請重新整理頁面。")
+            form.add_error("image_captcha_input","驗證碼已過期")
             logger.warning("image captcha expiration")
             return render(request, "login.html", {"form": form})
 
