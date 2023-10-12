@@ -2,18 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-from dotenv import load_dotenv
 
-
-def load_env_file():
-    """Get now .env file need use docker compose"""
-    if os.environ.get('DJANGO_ENV') == 'dev':
-        dotenv_path = '.env.dev'
-    elif 'runserver' or 'migrate' in sys.argv:
-        dotenv_path = '.env.dev'
-    else:
-        dotenv_path = '.env.dev'
-    load_dotenv(dotenv_path)
 
 def main():
     """Run administrative tasks."""
@@ -30,5 +19,4 @@ def main():
 
 
 if __name__ == '__main__':
-    load_env_file()
     main()
