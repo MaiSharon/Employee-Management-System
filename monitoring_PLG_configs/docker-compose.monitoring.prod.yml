@@ -1,0 +1,66 @@
+version: "3.8"
+
+networks:
+  loki:
+
+services:
+  loki:
+    image: grafana/loki:2.8.4
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./monitoring_PLG_configs/testfile:/loki
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:2.8.4
+    volumes:
+      - mysql-logs:/var/log/mysql
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./promtail-config.prod.yaml:/etc/promtail/docker-config.yaml
+    command: -config.file=/etc/promtail/docker-config.yaml
+    networks:
+      - loki
+
+  grafana:
+    image: grafana/grafana-enterprise:10.1.4
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-board:/var/lib/grafana
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          access: proxy 
+          orgId: 1
+          url: http://loki:3100
+          basicAuth: false
+          isDefault: true
+          version: 1
+          editable: false
+        EOF
+        /run.sh
+    networks:
+      - loki
+
+
+volumes:
+  mysql-logs:
+    external: true
+    name: mysql-logs
+  grafana-board:
+    external: true
+    name: grafana-board
