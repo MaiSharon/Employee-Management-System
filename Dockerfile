@@ -4,9 +4,8 @@ FROM python:3.9-alpine
 # 設置工作目錄
 WORKDIR /data/prj_dept
 
-# 設置環境變量
-ENV server_params=
-ARG DJANGO_SETTINGS_MODULE
+# 設置環境變量，ARG只在建構過程中使用
+ARG DJANGO_SETTINGS_MODULE=default_value
 
 # 複製 requirements.txt 並安裝必要的包和庫，然後清理
 COPY requirements.txt ./
@@ -23,19 +22,9 @@ RUN apk update && \
 # 創建非root用戶和組
 RUN addgroup -S uwsgi && adduser -S uwsgiuser -G uwsgi
 
-# 將當前目錄（即 Dockerfile 所在的目錄）下的所有文件和子目錄複製到 WORKDIR 路徑中
 COPY . .
 
-RUN chown -R uwsgiuser:uwsgi /data/prj_dept
-
-
-# 設定日誌文件和靜態文件的權限
-RUN touch /data/prj_dept/dept_app.performance.log && \
-    touch /data/prj_dept/dept_app.task.log && \
-    touch /data/prj_dept/dept_app.log && \
-    chown uwsgiuser:uwsgi /data/prj_dept/dept_app.*
-
-# 保護敏感文件的暫時變量
+# 保護敏感文件的暫時變量，ARG只在建構過程中使用
 ARG SECRET_KEY=default_value
 ARG ALLOWED_HOSTS=default_value
 ARG MYSQL_NAME=default_value
