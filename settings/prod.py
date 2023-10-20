@@ -1,11 +1,17 @@
-# dev.py
+# prod.py
+from dotenv import load_dotenv
 from .base import *
 import os
 
+
+load_dotenv('./.env.prod')
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+
+# 台北時區
+TIME_ZONE = 'Asia/Taipei'
 
 DATABASES = {
     'default': {
@@ -18,6 +24,8 @@ DATABASES = {
     }
 }
 
+
+# 緩存
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -30,6 +38,7 @@ CACHES = {
     }
 }
 
+
 # Celery Configuration Options
 CELERY_TASK_TRACK_STARTED = True
 CELERY_TASK_TIME_LIMIT = 30 * 60
@@ -41,24 +50,73 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Taipei'
 
 
-STATIC_URL = 'static/'
-
-INSTALLED_APPS += {
+INSTALLED_APPS += [
     # your apps here
+]
+
+
+# websocket---------
+CORS_ORIGIN_WHITELIST = [
+    "http://192.168.1.103",
+]
+
+# Channel layer settings for Websocket use
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [(os.getenv('REDIS_LOCATION'))],
+        },
+    },
 }
+
 
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
     'formatters': {
-        # 日志格式
         'standard': {
-            'format': '[trace_id:%(correlation_id)s][timestamp:%(asctime)s] [file_info:%(filename)s:%(lineno)d] [func_info:%(module)s:%(funcName)s] '
+            'format': '[WEB_LOG] [timestamp:%(asctime)s] [file_info:%(filename)s:%(lineno)d] [func_info:%(module)s:%(funcName)s] '
                       '[level:%(levelname)s]- message:%(message)s',
             'datefmt': '%Y-%m-%dT%H:%M:%S+08:00'},
-        'simple': {  # 简单格式
-            'format': '%(levelname)s %(message)s'
+        'simple': {
+            'format': '[WEB_LOG] %(levelname)s %(message)s'
         },
     },
-
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'standard',
+        },
+        'error_console': {
+            'class': 'logging.StreamHandler',
+            'level': 'ERROR',
+            'formatter': 'standard',
+        },
+        'performance_console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    },
+    'loggers': {
+        'dept_app': {
+            'handlers': ['console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'dept_app.errors': {
+            'handlers': ['error_console'],
+            'level': 'ERROR',
+            'propagate': False,
+        },
+        'dept_app.performance': {
+            'handlers': ['performance_console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
 }

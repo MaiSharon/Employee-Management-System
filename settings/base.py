@@ -22,7 +22,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'ppp300a@gmail.com'
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST')
 EMAIL_HOST_PASSWORD = os.getenv('EMAIL_PWD')
 
 
@@ -38,14 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'dept_app.apps.DeptAppConfig',
-    'debug_toolbar',
     'channels',  # websocket
     'rest_framework',
     'celery',
 ]
 
 MIDDLEWARE = [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",  # django debug toolbar
     'dept_app.performance.performance_logger_middleware',  # 性能紀錄要放在最上面，下面執行時才能抓到紀錄
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -58,14 +56,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'dept_app.middleware.auth.AuthMiddleware',
 ]
-INTERNAL_IPS = [
-    # ...
-    "127.0.0.1",
-    # ...
-]
-
-
-
 
 ROOT_URLCONF = 'prj_dept.urls'
 
@@ -212,13 +202,3 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 
 ASGI_APPLICATION = "prj_dept.asgi.application"  # websocket
-
-# Channel layer settings
-CHANNEL_LAYERS = {
-    'default': {
-        'BACKEND': 'channels_redis.core.RedisChannelLayer',
-        'CONFIG': {
-            "hosts": [('127.0.0.1', 6379)],
-        },
-    },
-}

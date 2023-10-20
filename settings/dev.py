@@ -1,14 +1,13 @@
 # dev.py
+from dotenv import load_dotenv
 from .base import *
 import os
 
+
+load_dotenv('./.env.dev')
+
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = True
-# if DEBUG:
-#     import socket  # only if you haven't already imported this
-#     hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
-#     INTERNAL_IPS = [ip[: ip.rfind(".")] + ".1" for ip in ips] + ["127.0.0.1", "10.0.2.2"]
-
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 
 # 台北時區
@@ -18,6 +17,17 @@ TIME_ZONE = 'Asia/Taipei'
 LANGUAGE_CODE = 'zh-hant'
 
 
+# Debug Toolbar settings
+INSTALLED_APPS += ['debug_toolbar']
+
+MIDDLEWARE = ["debug_toolbar.middleware.DebugToolbarMiddleware"] + MIDDLEWARE
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+]
+
+
+# MySQL setting
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -29,6 +39,8 @@ DATABASES = {
     }
 }
 
+
+# 緩存使用 redis 當緩存
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -52,11 +64,21 @@ CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'Asia/Taipei'
 
 
-STATIC_URL = 'static/'
+# Channel layer settings for Websocket use
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('127.0.0.1', 6379)],
+        },
+    },
+}
 
 INSTALLED_APPS += {
     # your apps here
 }
+
+# sentry setting
 # import sentry_sdk
 # from sentry_sdk.integrations.django import DjangoIntegration
 # sentry_sdk.init(
