@@ -1,0 +1,39 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+# Positions
+positions:
+  filename: /tmp/positions.yaml
+
+# Loki服务器的地址，修改IP和端口即可，后面Grafana要从这个地方取数据
+clients:
+  - url: http://loki:3100/loki/api/v1/push  # 因使用docker-compose啟動故修改為服務器名稱
+
+# Promtail 的配置文件
+scrape_configs:
+  - job_name: docker_container
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      - source_labels: [ '__meta_docker_container_name' ]
+        regex: '/(.*)'
+        target_label: 'container'
+
+  # 定義一個名為 devops 的抓取任務
+  - job_name: devops
+    # 靜態配置，用於定義目標和標籤
+    static_configs:
+      # 目標是 mysql 容器
+      - targets: ['mysql']
+        labels:
+          job: mysql_logs  # 標籤名
+          __path__: /var/log/mysql/*.log  # mysql 容器內的日誌路徑
+
+    pipeline_stages:
+      - multiline:  # 用於處理多行日誌
+          firstline: '^\[[a-f0-9]{32}]'  # 用正則表達式識別每個新日誌條目的第一行，這裡是匹配以32位的十六進制數字開頭的行
+          max_wait_time: 3s  # 最長等待時間（秒），用於收集完整的多行日誌條目。如果在這段時間內沒有新的行，則將當前收集到的行作為一個日誌條目發送。
+
+
