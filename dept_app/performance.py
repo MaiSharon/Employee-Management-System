@@ -12,6 +12,11 @@ def performance_logger_middleware(get_response):
     # 定義一個名為middleware的內部函數，
     # 這個函數接收一個名為request的參數，代表一個HTTP請求。
     def middleware(request):
+        # 健康檢查的訪問 http://localhost:8001，訪問成功不輸出為日誌
+        if "8001" in request.get_host():
+            response = get_response(request)
+            return response
+
         # 獲取當前時間，並將它存儲到start_time變數中
         start_time = time.time()
 
@@ -25,7 +30,7 @@ def performance_logger_middleware(get_response):
         response["X-Page-Duration-ms"] = int(duration * 1000)
 
         # 將一條包含處理時間、請求路徑和請求的GET參數的訊息添加到日誌中
-        logger.info("%s %s %s",
+        logger.info("[performance] %s %s %s",
                     duration,
                     request.path,
                     request.GET.dict()
