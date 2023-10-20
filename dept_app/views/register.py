@@ -210,6 +210,7 @@ def re_verify(request):
         # 發送驗證信
         email_utils.send_email_token(request, admin)
         messages.success(request, '驗證郵件已重新發送，請檢查您的信箱。')
+        logger.info(f're-verify email send agine, email:{email[3:]}')
         return redirect('re-verify')
     # 表單驗證失敗，顯示提示訊息
     return render(request, 're-verify.html', {'form': form})
