@@ -13,14 +13,14 @@ RUN apk update && \
     apk add --no-cache gcc musl-dev libffi-dev mariadb-connector-c-dev gettext && \
     python3 -m pip install --upgrade pip && \
     pip install -r requirements.txt && \
-    pip install uwsgi && \
+#    pip install uwsgi && \
     apk del gcc musl-dev libffi-dev && \
     rm -rf /var/cache/apk/* && \
     ln -sf /usr/share/zoneinfo/Asia/Taipei /etc/localtime && \
     echo 'Asia/Taipei' >/etc/timezone
 
 # 創建非root用戶和組
-RUN addgroup -S uwsgi && adduser -S uwsgiuser -G uwsgi
+RUN addgroup -S daphne && adduser -S daphneuser -G daphne
 
 COPY . .
 
@@ -49,4 +49,4 @@ RUN chmod +x /data/prj_dept/start.prod.sh
 EXPOSE 8000
 
 # 使用非root用戶運行容器
-USER uwsgiuser
+USER daphneuser
