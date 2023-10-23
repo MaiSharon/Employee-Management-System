@@ -10,7 +10,7 @@ services:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
     volumes:
-      - ./monitoring_PLG_configs/testfile:/loki
+      - ./testfile:/loki
     networks:
       - loki
 
