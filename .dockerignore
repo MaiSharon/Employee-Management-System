@@ -1,6 +1,18 @@
 # 環境配置文件
 .env.*
 
+# 文檔
+README.md
+*NotUse.
+
+# 靜態文件
+staticfiles/
+
+#監控系統
+monitoring_PLG_configs/
+sentry/
+prometheus_grafana
+
 # 版本控制系統
 .git
 
@@ -14,7 +26,6 @@
 slides
 snapshot
 media
-staticfiles
 
 # 其他常見的忽略項目
 *.log
@@ -22,3 +33,5 @@ staticfiles
 *.bak
 .DS_Store
 node_modules/
+
+

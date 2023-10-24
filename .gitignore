@@ -9,6 +9,13 @@ __pycache__/
 # CICD stuff
 .jenkins-ngrok.yml
 
+# not use file
+*NotUse
+
+
+# monitoring
+monitoring_PLG_configs/testfile/
+
 # Django stuff
 .env.*
 *.log
