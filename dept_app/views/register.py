@@ -1,6 +1,7 @@
 import logging
+import re
 
-from django.core.exceptions import ValidationError, ObjectDoesNotExist
+from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
 from django.contrib import messages
@@ -23,52 +24,57 @@ class AdminModelForm(BootStrapModelForm):
     用戶名、密碼的自定義驗證。
     """
     confirm_password = forms.CharField(
-        label="確認密碼",
+        label='確認密碼',
         widget=forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
     )
 
     class Meta:
         model = models.Admin
-        fields = ["username", "email", "password"]
+        fields = ['username', 'email', 'password']
         widgets = {
-            "password": forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
+            'password': forms.PasswordInput(render_value=True),  # 當密碼不一致不清空，預設會自動清空# *****
         }
 
-
     def clean_username(self):
-        """檢查用戶名是否只包含字母、數字、下劃線和點、用戶名不可重複"""
-        username = self.cleaned_data.get("username")
-        if not all(char.isalnum() or char in {'_', '.'} for char in username):
-            raise ValidationError("用戶名只能包含字母、數字、下劃線和點")
+        """檢查用戶名是否只包含英文字母、數字、下劃線和點，並且用戶名不可重複"""
+        username = self.cleaned_data.get('username')
 
-        if not (any(char.isdigit() for char in username) and any(char.isalpha() for char in username)):
-            raise ValidationError("用戶名必須包含至少一個字母和一個數字")
+        # 檢查用戶名是否只包含英文字母、數字、下劃線和點
+        if not re.match(r'^[a-zA-Z0-9_.]+$', username):
+            raise ValidationError('用戶名只能包含英文字母、數字、下劃線和點')
 
+        # 檢查用戶名必須包含至少一個字母和一個數字
+        if not (re.search(r'\d', username) and re.search(r'[a-zA-Z]', username)):
+            raise ValidationError('用戶名必須包含至少一個字母和一個數字')
+
+        # 檢查用戶名長度
         if len(username) < 8 or len(username) > 16:
-            raise ValidationError("用戶名必須在8到16個字符之間")
+            raise ValidationError('用戶名必須在8到16個字符之間')
 
+        # 檢查用戶名是否已存在
         exists = models.Admin.objects.filter(username=username).exists()
         if exists:
-            raise ValidationError(f"{username} 此用戶名已經存在")
+            raise ValidationError(f'{username} 此用戶名已經存在')
 
         return username
 
+
     def clean_password(self):
         """檢查密碼是否符合長度8~64、不含空格、含至少1個特殊字符"""
-        password = self.cleaned_data.get("password")
+        password = self.cleaned_data.get('password')
 
         # 最小長度檢查
         if len(password) < 8:
-            raise ValidationError("密碼長度必須至少為8個字符")
+            raise ValidationError('密碼長度必須至少為8個字符')
 
         if len(password) >= 65:
-            raise ValidationError("密碼長度不可超過64個字符")
+            raise ValidationError('密碼長度不可超過64個字符')
 
         if ' ' in password:
-            raise ValidationError("密碼不能包含空格")
+            raise ValidationError('密碼不能包含空格')
 
-        if not any(char in "!@#$%^&*()-+_=<>?/[]" for char in password):
-            raise ValidationError("密碼必須包含至少一個特殊字符")
+        if not any(char in '!@#$%^&*()-+_=<>?/[]' for char in password):
+            raise ValidationError('密碼必須包含至少一個特殊字符')
 
         # Django內建的密碼強度檢查，已含最小長度檢查不可<8
         validate_password(password, self.instance)
@@ -76,24 +82,24 @@ class AdminModelForm(BootStrapModelForm):
 
     def clean_confirm_password(self):
         """檢查密碼確認是否一致、不可為空"""
-        password = self.cleaned_data.get("password")
-        confirm_password = self.cleaned_data.get("confirm_password")
+        password = self.cleaned_data.get('password')
+        confirm_password = self.cleaned_data.get('confirm_password')
 
         if password is None:
             return confirm_password
 
         if password != confirm_password:
-            raise ValidationError("密碼不一致")
+            raise ValidationError('密碼不一致')
 
         return confirm_password
 
     def clean_email(self):
         """檢查信箱驗證狀態"""
-        email = self.cleaned_data.get("email")
+        email = self.cleaned_data.get('email')
         if models.Admin.objects.filter(email=email, is_verified=False).exists():
-            raise ValidationError("請至信箱收信完成驗證")
+            raise ValidationError('請至信箱收信完成驗證')
         elif models.Admin.objects.filter(email=email, is_verified=True).exists():
-            raise ValidationError("此信箱已註冊，請直接登入。")
+            raise ValidationError('此信箱已註冊，請直接登入。')
         else:
             # 此信箱未註冊
             return email
@@ -105,16 +111,16 @@ def register(request):
     - GET請求：顯示空的註冊表單。
     - POST請求：驗證表單數據，創建新的用戶。
     """
-    if request.method == "GET":
+    if request.method == 'GET':
         form = AdminModelForm()
-        return render(request, "register.html", {"form": form})
+        return render(request, 'register.html', {'form': form})
 
     # 處理POST請求
     form = AdminModelForm(data=request.POST)
-    logger.info("Received GET request for admin registration.")
+    logger.info('Received GET request for admin registration.')
     if form.is_valid():
         admin = form.save(commit=False)
-        admin.password = make_password(form.cleaned_data["password"])
+        admin.password = make_password(form.cleaned_data['password'])
         admin.save()
 
         # 發送驗證郵件
@@ -122,14 +128,14 @@ def register(request):
         messages.success(request, '驗證郵件已發送，請檢查您的信箱。')
 
         # 記錄成功創建的用戶
-        logger.info(f"Admin account created: {admin.username}, Email: [REDACTED]")
-        return redirect("register")
+        logger.info(f'Admin account created: {admin.username}, Email: [REDACTED]')
+        return redirect('register')
 
     # 記錄失敗的註冊嘗試（敏感信息已脫敏）
-    sanitized_errors = {k: "[REDACTED]" if k in ["password", "email"] else v for k, v in form.errors.items()}
-    logger.warning(f"Failed admin account creation attempt: {sanitized_errors}")
+    sanitized_errors = {k: '[REDACTED]' if k in ['password', 'email'] else v for k, v in form.errors.items()}
+    logger.warning(f'Failed admin account creation attempt: {sanitized_errors}')
     # 表單驗證失敗，顯提示信息
-    return render(request, "register.html", {"form": form})
+    return render(request, 'register.html', {'form': form})
 
 
 
@@ -143,28 +149,32 @@ def verify_email(request, token):
         # 解碼從URL中獲取的驗證碼
         email_token = force_str(urlsafe_base64_decode(token))
         if None != email_token:
-            logger.info(f"Attempting to decode email token: {token[:5]}")
+            logger.info(f'Attempting to decode email token: {token[:5]}')
         # 查找對應的Admin對象
         admin = models.Admin.objects.get(email_token=email_token)
 
     except models.Admin.DoesNotExist:
         # 若無對應的Admin對象，可能是已驗證或無效驗證碼都到重新驗證頁面
         messages.success(request, '無效驗證碼或已驗證成功，請重發認證信或登入。')
-        logger.warning(f"not Admin: is None")
+        logger.warning(f'not Admin: is None')
         return redirect('re_verify')
 
     if timezone.now() > admin.token_expiration:
         # 若驗證碼過期，到重新驗證輸入信箱頁面
         messages.success(request, '驗證碼已過期，請重新發送認證信。')
-        logger.warning(f"Token for Admin object with email_token: {email_token[:5]} has expired.")
+        logger.warning(f'Token for Admin object with email_token: {email_token[:5]} has expired.')
         return redirect('re_verify')
 
     # 若驗證成功，更新Admin對象的狀態並保存
     admin.is_verified = True
     admin.email_token = None
     admin.save()
-    logger.info(f"Admin object with Username: {admin.username} is verified.")
+    logger.info(f'Admin object with Username: {admin.username} is verified.')
+
     # 直接登入，進入管理員列表頁面
+    request.session['info'] = {'id': admin.id, 'name': admin.username}
+    # 設定session到期時間為24小時
+    request.session.set_expiry(60 * 60 * 24)
     return redirect('admin_list')
 
 
