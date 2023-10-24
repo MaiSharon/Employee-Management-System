@@ -3,15 +3,27 @@ from dotenv import load_dotenv
 from .base import *
 import os
 
+USE_HTTPS = True
 
 load_dotenv('./.env.prod')
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
 
 # 台北時區
 TIME_ZONE = 'Asia/Taipei'
+
+
+# 錯誤提示的語言
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGES = [
+    ('zh-hant', _('Traditional Chinese')),
+]
+# 語言碼
+LANGUAGE_CODE = 'zh-hant'
+
 
 DATABASES = {
     'default': {
@@ -54,12 +66,10 @@ INSTALLED_APPS += [
     # your apps here
 ]
 
+# for https
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # websocket---------
-CORS_ORIGIN_WHITELIST = [
-    "http://192.168.1.103",
-]
-
 # Channel layer settings for Websocket use
 CHANNEL_LAYERS = {
     'default': {
