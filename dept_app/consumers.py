@@ -48,12 +48,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         3. 啟動心跳機制用於保持用戶在線
         4. 標記用戶為在線
         """
-        # 從session中提取用戶信息，如果沒有則設為"匿名"
+        # 從session中提取用戶信息，如果沒有則設為"匿名"並停止連線
         session_info = self.scope.get('session', {}).get('info')
         try:
             self.user_id = session_info['id']
             self.username = session_info['name']
-            logger.info('get session id and name')
         except KeyError as e:
             self.user_id = 'Anonymous'
             logger.warning(f'Key not found: {e}, not get session setting user_id to Anonymous')
@@ -264,7 +263,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
         try:
             user_id = event['user_id']
             is_online = event['is_online']
-            logger.info(f'Received event: user_id={user_id}, is_online={is_online}')
         except KeyError:
             logger.warning(f'user_id or is_online not found')
             return
