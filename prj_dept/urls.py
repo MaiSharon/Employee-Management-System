@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-from dept_app.views import depart, mobile, employee, admin, login, task, register,chat
+from dept_app.views import department, mobile, employee, admin, login, task, register,chat
 
 
 def trigger_error(request):
@@ -14,42 +14,36 @@ def trigger_error(request):
   #   # ...
   # ]
 urlpatterns = [
-    path('about/', TemplateView.as_view(template_name="no_js.html")),
 
-    # asgi test
-    path("chat/", chat.index, name="index"),
-    path("chat/<str:room_name>/", chat.room, name="room"),
+    path('sentry-debug/', trigger_error),
+    path('departments/', department.DepartmentListView.as_view(), name='department_list'),
+    path('departments/create/', department.DepartmentCreateView.as_view(), name='department_create'),
+    path('departments/<int:nid>/edit/', department.DepartmentUpdateView.as_view(), name='department_edit'),
+    path('departments/<int:nid>/delete/', department.DepartmentDeleteView.as_view(), name='department_delete'),
 
-    # path('sentry-debug/', trigger_error),
-    # path('admin/', admin.site.urls),
-    path('depart/list/', depart.depart_list, name='depart_list'),
-    path('depart/add/', depart.depart_add, name='depart_add'),
-    path('depart/<int:nid>/edit/', depart.depart_edit, name='depart_edit'),
-    path('depart/<int:nid>/delete/', depart.depart_delete, name='depart_delete'),
+    path('employees/', employee.employee_list, name='employee_list'),
+    path('employees/create/', employee.employee_add, name='employee_create'),
+    path('employees/<int:nid>/edit/', employee.employee_edit, name='employee_edit'),
+    path('employees/<int:nid>/delete/', employee.employee_delete, name='employee_delete'),
 
-    path('employee/list/', employee.employee_list, name='employee_list'),
-    path('employee/add/', employee.employee_add, name='employee_add'),
-    path('employee/<int:nid>/edit/', employee.employee_edit, name='employee_edit'),
-    path('employee/<int:nid>/delete/', employee.employee_delete, name='employee_delete'),
+    path('mobiles/', mobile.mobile_list, name='mobile_list'),
+    path('mobiles/create/', mobile.mobile_add, name='mobile_create'),
+    path('mobiles/<int:nid>/edit/', mobile.mobile_edit, name='mobile_edit'),
+    path('mobiles/<int:nid>/delete/', mobile.mobile_delete, name='mobile_delete'),
 
-    path('mobile/list/', mobile.mobile_list, name='mobile_list'),
-    path('mobile/add/', mobile.mobile_add, name='mobile_add'),
-    path('mobile/<int:nid>/edit/', mobile.mobile_edit, name='mobile_edit'),
-    path('mobile/<int:nid>/delete/', mobile.mobile_delete, name='mobile_delete'),
+    path('administrators/', admin.admin_list, name='admin_list'),
+    # path('administrators/<int:nid>/edit/', admin.admin_edit, name='admin_edit'),
+    # path('administrators/<int:nid>/reset/', admin.admin_reset, name='admin_reset'),
 
-    path('admin/list/', admin.admin_list, name="admin_list"),
-    path('admin/<int:nid>/edit/', admin.admin_edit, name="admin_edit"),
-    path('admin/<int:nid>/reset/', admin.admin_reset, name="admin_reset"),
-
-    path('register/', register.register, name="register"),
+    path('register/', register.register, name='register'),
     path('verify/<str:token>/', register.verify_email, name='verify_email'),
     path('re-verify/', register.re_verify, name='re_verify'),
 
-    path('login/', login.login, name="login"),
-    path('logout/', login.logout, name="logout"),
-    path('image/code/', login.image_code, name="image_code"),
+    path('login/', login.login, name='login'),
+    path('logout/', login.logout, name='logout'),
+    path('image/code/', login.image_code, name='image_code'),
 
-    path('task/', task.task_list),
+    path('task/', task.task_list, name='task'),
     path('task/ajax/', task.task_sayhi),
     path('task/add/', task.task_add),
     # path('task/<int:nid>/edit/', task.task_edit),
