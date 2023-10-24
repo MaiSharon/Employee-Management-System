@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 from .base import *
 import os
 
+USE_HTTPS = False
 
 load_dotenv('./.env.dev')
 
@@ -13,6 +14,12 @@ ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(' ')
 # 台北時區
 TIME_ZONE = 'Asia/Taipei'
 
+# 錯誤提示的語言
+from django.utils.translation import gettext_lazy as _
+
+LANGUAGES = [
+    ('zh-hant', _('Traditional Chinese')),
+]
 # 語言碼
 LANGUAGE_CODE = 'zh-hant'
 
