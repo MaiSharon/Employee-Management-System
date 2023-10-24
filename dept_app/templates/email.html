@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Quacqkersort - Verification</title>
+  <link rel="icon" href="{{ logo_link }}" type="image/x-icon">
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .text-center {
+      text-align: center;
+    }
+    .inline-elements img{
+      display: inline;
+      vertical-align: middle;
+    }
+    .rounded-button {
+      background-color: #efefef;
+      padding: 14px 20px;
+      margin: 8px 0;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+      border-radius: 12px;
+      border: 2px solid #5871dc;
+    }
+    .rounded-wrapper {
+      border-radius: 20px;
+      padding: 10px ;
+      background-color: #fdfdfd;
+      margin: 10px auto;
+      display: inline-block;  /* 使框靠近內容 */
+    }
+  </style>
+</head>
+<body>
+  <div class="rounded-wrapper">
+    <div class="text-center inline-elements">
+      <img src="{{ logo_link }}" alt="logo" />
+    </div>
+    <div class="text-center">
+      <a href="{{ verification_link }}" class="rounded-button">
+        Verification
+    </div>
+  </div>
+</body>
+</html>
