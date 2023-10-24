@@ -1,7 +1,7 @@
 FROM mysql:8.0
 
 # Copy the init script
-COPY custom-init.sh /custom-init.sh
+COPY mysql8-init.sh /usr/local/bin/mysql8-init.sh
 
 # Make it executable
-RUN chmod +x /custom-init.sh
+RUN chmod +x /usr/local/bin/mysql8-init.sh
