@@ -1,0 +1,23 @@
+{% extends 'layout.html' %}
+
+<!--Main layout-->
+{% block content %}
+
+<!-- department_create.html -->
+<form method="post" novalidate>
+    {% csrf_token %}
+    {% for item in form %}
+      <div class="form-group mb-2">
+        <label>{{item.label}}</label>
+        {{ item }}
+        <span style="color:red">{{ item.errors.0 }}</span>
+      </div>
+    {% endfor %}
+
+    <button type="submit" class="btn btn-primary mt-2">
+      提交
+    </button>
+</form>
+
+{% endblock %}
+<!--Main layout-->

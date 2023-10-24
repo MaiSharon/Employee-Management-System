@@ -9,7 +9,7 @@
 
     <!-- Add Button -->
     <div class="mb-3">
-    <a href="/depart/add/">
+    <a href="{% url 'department_create' %}">
       <button type="button" class="btn btn-primary">
         <i class="fas fa-user-plus"></i> Add
       </button>
@@ -31,13 +31,21 @@
         </tr>
       </thead>
       <tbody>
-      {% for item in queryset %}
+      {% for department in departments %}
         <tr>
-          <td>{{ item.id }}</td>
-          <td>{{ item.title }}</td>
-          <td>
-            <a type="button" class="btn btn-primary btn-sm" href="/depart/{{ item.id }}/edit/">編輯</a>
-            <a type="button" class="btn btn-danger btn-sm" href="/depart/{{ item.id }}/delete/">刪除</a>
+          <td>{{ department.id }}</td>
+          <td>{{ department.title }}</td>
+          <td style="white-space: nowrap;">
+            <div class="d-inline-flex">
+              <form method="post" action="{% url 'department_edit' nid=department.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm me-1">Edit</button>
+              </form>
+              <form method="post" action="{% url 'department_delete' nid=department.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </div>
           </td>
         </tr>
       {% endfor %}
