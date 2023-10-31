@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # 加載.env文件
-source .env
+source .env.prod
 
 # 定義其他變數
 TIMESTAMP=$(date +"%Y%m%d%H%M%S")
