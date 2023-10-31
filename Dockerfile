@@ -36,8 +36,8 @@ ARG MYSQL_PORT=default_value
 ARG REDIS_LOCATION=default_value
 ARG CELERY_BROKER_URL=default_value
 ARG CELERY_RESULT_BACKEND=default_value
-ARG LINE_CHANNEL_ACCESS_TOKEN=default_value
-ARG LINE_CHANNEL_SECRET=default_value
+ARG NGROK_AUTHTOKEN=default_value
+
 
 # 收集靜態文件
 RUN python manage.py collectstatic --noinput
