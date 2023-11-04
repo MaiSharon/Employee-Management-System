@@ -8,7 +8,6 @@ services:
 #      dockerfile: Dockerfile.mysql8
     volumes:
       - mysql-data:/var/lib/mysql
-      - mysql-logs:/var/log/mysql
     env_file: .env.prod
     entrypoint: ["/usr/local/bin/mysql8-init.sh"]
     command:
@@ -43,7 +42,7 @@ services:
       - redis
 #      - celery
     healthcheck:
-      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000')" ]
+      test: [ "CMD", "python", "-c", "import http.client; conn = http.client.HTTPConnection('localhost', 8000); conn.request('HEAD', '/'); res = conn.getresponse();" ]
       interval: 60s
       timeout: 15s
       retries: 5
@@ -98,9 +97,6 @@ volumes:
   mysql-data:
     external: true
     name: mysql-data
-  mysql-logs:
-    external: true
-    name: mysql-logs
 
 networks:
   web_network:
