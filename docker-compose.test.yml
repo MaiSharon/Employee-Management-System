@@ -1,5 +1,22 @@
 version: "3.8"
+
 services:
+  ngrok_jenkins:
+    image: ngrok/ngrok
+    container_name: jenkins_ngrok
+    command:
+      - "tunnel"
+      - "--region=us"
+      - "--label"
+      - "edge=edghts_2SNk363rvTx8UIR6Rbj9eF0oq7G"
+      - "http://nginx:80"
+    env_file: .env.test
+    environment:
+      - ${NGROK_AUTHTOKEN}
+    ports:
+      - 4040:4040
+
+
   mysql:
     build:
       context: .
