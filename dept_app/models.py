@@ -8,16 +8,30 @@ class Photo(models.Model):
     image = models.ImageField(upload_to='image/', blank=False, null=False)
     upload_data = models.DateField(default=timezone.now)
 
+def one_minute_from_now():
+    return timezone.now() + timedelta(minutes=1)
 
+def three_days_from_now():
+    return timezone.now() + timedelta(hours=72)
 class Admin(models.Model):
     """ 用戶註冊 """
     username = models.CharField(verbose_name="用戶名", max_length=512)
-    password = models.CharField(verbose_name="密碼", max_length=512, null=True)
-    email = models.EmailField(verbose_name="信箱", unique=True)
+    password = models.CharField(verbose_name="密碼", max_length=512)
+    email = models.EmailField(verbose_name="信箱")
+    email_send_time = models.DateTimeField(
+        verbose_name="寄信期限",
+        default=one_minute_from_now,
+        help_text="設定電子郵件發送的時間點，預設為創建記錄的當下時間加一分鐘。"
+    )
     email_token = models.UUIDField(verbose_name="電子郵件驗證碼", default=uuid.uuid4, editable=False, null=True)
     is_verified = models.BooleanField(verbose_name="驗證狀態（已驗證/未驗證）", default=False)
-    token_expiration = models.DateTimeField(verbose_name="電子郵件驗證碼期限",default=timezone.now() + timedelta(hours=72))
+    token_expiration = models.DateTimeField(verbose_name="電子郵件驗證碼期限",default=three_days_from_now)
     is_online = models.BooleanField(verbose_name="用戶在線狀態（已上線/未上線）", default=False)
+
+
+    def update_send_time(self):
+        self.email_send_time = timezone.now() + timedelta(minutes=1)  # 更新寄信時間
+        self.save()
 
     def update_token_expiration(self):
         """
