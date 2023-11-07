@@ -128,10 +128,8 @@
 <script>
 // Initialize WebSocket and DOM elements
 const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-if (window.location.hostname !== 'grafana.quacqkersort.be') {
-    const wsURL = `${protocol}//${window.location.host}/ws/chat/general/`;
-    const chatSocket = new WebSocket(wsURL);
-}
+const wsURL = `${protocol}//${window.location.host}/ws/chat/general/`;
+const chatSocket = new WebSocket(wsURL);
 
 const messageContainer = document.getElementById('message-container');
 const messageInput = document.getElementById('chat-message-input');
@@ -160,6 +158,9 @@ function handleHeartbeatAndStatus(data) {
   }
   return false;
 }
+
+
+
 
 // Function to update user status and trigger table sorting
 function updateUserStatus(userId, isOnline) {
