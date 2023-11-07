@@ -3,7 +3,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Quackersort - {{ page_title }}</title>
+  <title>Quacqkersort - {{ page_title }}</title>
   <link rel="icon" href="{% static 'logo-64.png' %}" type="image/x-icon">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
   <meta http-equiv="x-ua-compatible" content="ie=edge" />
@@ -80,7 +80,7 @@
         <!-- Collapsible wrapper -->
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
           <!-- Navbar brand -->
-          <a class="navbar-brand mt-2 mt-lg-0" href="#" style="margin-left: 10px;margin-right: 5px" >
+          <a class="navbar-brand mt-2 mt-lg-0" href="{% url 'admin_list' %}" style="margin-left: 10px;margin-right: 5px" >
             <img
               src="{% static 'logo-100.png' %}"
               height="40"
@@ -91,19 +91,19 @@
           <!-- Left links -->
           <ul class="navbar-nav me-auto mb-2 mb-lg-0">
             <li class="nav-item">
-              <a class="nav-link" href="/admin/list">Administrator</a>
+              <a class="nav-link" href="{% url 'admin_list' %}">Administrator</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/depart/list/">Departments</a>
+              <a class="nav-link" href="{% url 'department_list' %}">Departments</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/user/list/">Employees</a>
+              <a class="nav-link" href="{% url 'employee_list' %}">Employees</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/mobile/list/">Mobiles</a>
+              <a class="nav-link" href="{% url 'mobile_list' %}">Mobiles</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="/task/">Tasks</a>
+              <a class="nav-link" href="{% url 'task' %}">Tasks</a>
             </li>
           </ul>
           <!-- Left links -->
@@ -112,16 +112,11 @@
 
         <!-- Right elements -->
         <div class="d-flex align-items-center">
-          <!-- Icon -->
-{#          <a class="link-secondary me-3" href="#">#}
-{#            <i class="fas fa-shopping-cart"></i>#}
-{#          </a>#}
-
           <!-- Avatar -->
           <div class="dropdown">
             <a
               class="dropdown-toggle d-flex align-items-center hidden-arrow"
-              href="#"
+{#              href="#"#}
               id="navbarDropdownMenuAvatar"
               role="button"
               data-mdb-toggle="dropdown"
@@ -146,7 +141,7 @@
 {#                <a class="dropdown-item" href="#">Settings</a>#}
 {#              </li>#}
               <li>
-                <a class="dropdown-item" href="/logout/">Logout</a>
+                <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
               </li>
             </ul>
           </div>
@@ -186,7 +181,7 @@
   <!-- Custom Content for Sticky Footer-->
 
   <!-- Footer -->
-  {#  Sticky Footer#}
+  {#  Sticky Footer #}
   <footer
           class="footer text-center text-lg-start text-white"
           style="background-color: rgb(190,192,201)"
@@ -200,8 +195,9 @@
         <!-- Instagram -->
         <a
            class="btn btn-outline-light btn-floating m-1"
-           href="#!"
+           href="https://www.instagram.com/sharon___mai/"
            role="button"
+           target="_blank"
            ><i class="fab fa-instagram"></i
           ></a>
 
@@ -210,14 +206,16 @@
            class="btn btn-outline-light btn-floating m-1"
            href="#!"
            role="button"
+           target="_blank"
            ><i class="fab fa-linkedin-in"></i
           ></a>
 
         <!-- Github -->
         <a
            class="btn btn-outline-light btn-floating m-1"
-           href="#!"
+           href="https://github.com/MaiSharon"
            role="button"
+           target="_blank"
            ><i class="fab fa-github"></i
           ></a>
       </section>
@@ -246,9 +244,7 @@
     type="text/javascript"
     src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.4.1/mdb.min.js"
   ></script>
-{#<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>#}
-{#<script src="{% static 'js\jquery-3.6.1.min.js' %}"></script>#}
-{#<script src="{% static 'plugins\bootstrap-4.6.2-dist\js\bootstrap.js' %}"></script>#}
+
 {% block js %}{% endblock %}
 
 </body>
