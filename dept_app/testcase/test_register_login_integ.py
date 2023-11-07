@@ -1,8 +1,7 @@
-from unittest import mock
 from unittest.mock import patch
 
 from django.test import TestCase, Client
-from django.urls import reverse, resolve
+from django.urls import reverse
 from dept_app import models
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
@@ -71,8 +70,6 @@ class TestRegisterAndLoginIntegration(TestCase):
         print(f"first token: {user.email_token}")
 
         # 3. verification link
-
-
         email_token = urlsafe_base64_encode(force_bytes(user.email_token))
 
         print(f"second token: {email_token}")
@@ -92,12 +89,12 @@ class TestRegisterAndLoginIntegration(TestCase):
         print(user.password)
 
         # Step 5: Simulate user login
+        # 透過follow來跟隨login跳轉後的路由位置
         login_response = self.client.post(reverse('login'), {
             'username': self.valid_username,
             'password': self.valid_password,
             'image_captcha_input': 'abcd',
         },follow=True)
-        # 透過follow來跟隨login跳轉後的路由位置
 
         # 檢查最終 URL 是否在業務邏輯的特定 URL 上
-        self.assertRedirects(login_response, '/admin/list/')
+        self.assertRedirects(login_response, '/administrators/')
