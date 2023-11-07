@@ -66,6 +66,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         # 設定聊天室名稱(從URL中提取)和群組名稱
         self.room_name = self.scope['url_route']['kwargs']['room_name']
         self.room_group_name = f'chat_{self.room_name}'
+        print(self.room_group_name)
 
         # 將用戶加入聊天室群組(使用channel_layer)
         await self.channel_layer.group_add(
@@ -162,6 +163,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
             }
         )
         logger.info(f'Forwarded message: {message}')
+
+    # 從這裡發送新管理員的訊息到前端
+    async def new_admin(self, event):
+        # Extract the admin information from the event
+        admin_info = event['user']
+
+        # Prepare a message to send to the WebSocket client
+        message = {
+            'type': 'new_admin',
+            'user': {
+                'id': admin_info['id'],
+                'username': admin_info['username'],
+                'is_online': False  # You can change this depending on your logic
+            },
+            'message': 'A new admin account has been created.'
+        }
+
+        # Send the message to the WebSocket
+        await self.send(text_data=json.dumps(message))
 
     async def chat_message(self, event):
         """

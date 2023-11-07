@@ -1,6 +1,8 @@
 import logging
 import re
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
@@ -127,6 +129,19 @@ def register(request):
         # 發送驗證郵件
         email_utils.send_email_token(request, admin)
         messages.success(request, '驗證郵件已發送，請檢查您的信箱。')
+
+        # Prepare the user data to send
+        user_data = {
+            'type': 'new_admin',
+            'user': {
+                'id': admin.id,
+                'username': admin.username,
+            },
+        }
+
+        # Send message to the WebSocket
+        channel_layer = get_channel_layer()
+        async_to_sync(channel_layer.group_send)('chat_general', user_data)
 
         # 記錄創建的用戶
         logger.info(f'Admin account created: {admin.username}, Email: [REDACTED]')

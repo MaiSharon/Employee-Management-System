@@ -151,15 +151,26 @@ function getCurrentTime() {
 
 // Function to handle heartbeat and user status
 function handleHeartbeatAndStatus(data) {
-  if (data.type === 'heartbeat') return true;
+  if (data.type === 'heartbeat') {
+    return true;
+  }
   if (data.type === 'user_status') {
     updateUserStatus(data.user_id, data.is_online);
     return true;
   }
+  if (data.type === 'new_admin') {
+    // Check if the user object is valid before adding to the table
+  if (!data.user || data.user.id === 'Anonymous') {
+    console.error('Invalid user object:', data.user);
+    return false; // Invalid user object, do not add to the table
+  }
+    // Add valid user to the table and update status
+    addUserToTable(data.user);
+    updateUserStatus(data.user.id, data.user.is_online);
+    return true;
+  }
   return false;
 }
-
-
 
 
 // Function to update user status and trigger table sorting
@@ -171,6 +182,57 @@ function updateUserStatus(userId, isOnline) {
     sortTableRows();
   }
 }
+
+
+// Function to add a new user to the table without refreshing the page
+function addUserToTable(user) {
+  // Debug: Log the user object to see what is being passed
+  console.log('Attempting to add user:', user);
+
+  // Check if user object and its id property exist
+  if (!user || typeof user.id === 'undefined' || user.id === 'Anonymous' || user.username === 'Anonymous') {
+    console.error('Invalid or anonymous user object:', user);
+    return false; // If user is invalid or anonymous, do not proceed
+  }
+
+  const tableBody = document.querySelector(".table tbody");
+    if (!tableBody) {
+    console.error('Table body not found');
+    return false; // If table body is not found, do not proceed
+  }
+  // Create new row and cells for the new user
+  const row = tableBody.insertRow();
+  const cellId = row.insertCell(0);
+  const cellName = row.insertCell(1);
+  const cellStatus = row.insertCell(2);
+
+  // Set the new cells' content
+  cellId.textContent = user.id;
+  cellName.innerHTML = `
+    <div class="d-flex align-items-center">
+      <img src="{% static 'icons-user.gif' %}" alt="" style="width: 45px; height: 45px" class="rounded-circle" />
+      <div class="ms-3">
+        <p class="fw-bold mb-1">${user.username}</p>
+      </div>
+    </div>
+  `;
+
+    // Initialize status based on whether user ID is 'Anonymous'
+  const statusContent = user.id === 'Anonymous' ? 'Offline' : user.is_online ? 'Online' : 'Offline';
+  const statusClass = user.id === 'Anonymous' || !user.is_online ? 'badge badge-secondary rounded-pill d-inline' : 'badge badge-success rounded-pill d-inline';
+  cellStatus.innerHTML = `<span id="user-${user.id}-status" class="${statusClass}">${statusContent}</span>`;
+
+  // 如果用户不是匿名的，则可以调用更新状态的函数
+  if (user.id !== 'Anonymous') {
+    updateUserStatus(user.id, user.is_online);
+  }
+
+  // Sort the table after adding the new row
+  sortTableRows();
+
+  return true; // User added successfully
+}
+
 
 // Function to sort table rows based on online status and ID
 function sortTableRows() {
