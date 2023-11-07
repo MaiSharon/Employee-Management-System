@@ -1,15 +1,17 @@
 {% extends 'login.html' %}
 {% block form_content %}
 {% if messages %}
-  <ul class="messages">
+  <div class="messages">
     {% for message in messages %}
-      <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      <div{% if message.tags %} class="text-center"{% endif %}>
+        {{ message }}
+      </div>
     {% endfor %}
-  </ul>
+  </div>
 {% endif %}
 
 
-    {% for field in form %}
+{% for field in form %}
   <div class="form-outline mb-4">
     <div class="form-outline">
       {{ field }}
@@ -24,6 +26,6 @@
 
   <!-- Simple link -->
   <div class="text-center">
-    <a href="/register">Register?</a> / <a href="/login">Login?</a>
+    <a href="{% url 'register' %}">Register?</a> / <a href="{% url 'login' %}">Login?</a>
   </div>
 {% endblock %}

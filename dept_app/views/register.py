@@ -10,6 +10,8 @@ from django.utils.http import urlsafe_base64_decode
 from django.utils.encoding import force_str
 from django import forms
 from django.shortcuts import render, redirect
+from django.views.decorators.http import require_GET, require_http_methods, require_POST
+
 
 from dept_app import models
 from dept_app.utils import email_utils
@@ -20,8 +22,7 @@ logger = logging.getLogger(__name__)
 
 class AdminModelForm(BootStrapModelForm):
     """
-    表單用於管理員註冊，包括用戶名、電子郵件和密碼。
-    用戶名、密碼的自定義驗證。
+    表單用於管理員註冊: 用戶名、密碼和信箱的自定義驗證。
     """
     confirm_password = forms.CharField(
         label='確認密碼',
@@ -52,10 +53,10 @@ class AdminModelForm(BootStrapModelForm):
             raise ValidationError('用戶名必須在8到16個字符之間')
 
         # 檢查用戶名是否已存在
-        exists = models.Admin.objects.filter(username=username).exists()
+        exists = models.Admin.objects.filter(username=username, is_verified=True).exists()
         if exists:
             raise ValidationError(f'{username} 此用戶名已經存在')
-
+        print(username)
         return username
 
 
@@ -90,21 +91,23 @@ class AdminModelForm(BootStrapModelForm):
 
         if password != confirm_password:
             raise ValidationError('密碼不一致')
-
         return confirm_password
 
     def clean_email(self):
         """檢查信箱驗證狀態"""
         email = self.cleaned_data.get('email')
+
+        # 如果已有信箱但尚未通過驗證
         if models.Admin.objects.filter(email=email, is_verified=False).exists():
-            raise ValidationError('請至信箱收信完成驗證')
+            raise ValidationError('此信箱尚未通過驗證，請點擊下方重發驗證信。')
+        # 如果已有信箱和驗證
         elif models.Admin.objects.filter(email=email, is_verified=True).exists():
-            raise ValidationError('此信箱已註冊，請直接登入。')
+            raise ValidationError('此信箱已經註冊')
         else:
-            # 此信箱未註冊
             return email
 
 
+@require_http_methods(['GET', 'POST'])
 def register(request):
     """
     處理用戶的創建。
@@ -115,19 +118,17 @@ def register(request):
         form = AdminModelForm()
         return render(request, 'register.html', {'form': form})
 
-    # 處理POST請求
     form = AdminModelForm(data=request.POST)
     logger.info('Received GET request for admin registration.')
     if form.is_valid():
         admin = form.save(commit=False)
         admin.password = make_password(form.cleaned_data['password'])
         admin.save()
-
         # 發送驗證郵件
         email_utils.send_email_token(request, admin)
         messages.success(request, '驗證郵件已發送，請檢查您的信箱。')
 
-        # 記錄成功創建的用戶
+        # 記錄創建的用戶
         logger.info(f'Admin account created: {admin.username}, Email: [REDACTED]')
         return redirect('register')
 
@@ -137,13 +138,12 @@ def register(request):
     # 表單驗證失敗，顯提示信息
     return render(request, 'register.html', {'form': form})
 
-
-
+@require_GET
 def verify_email(request, token):
     """
     驗證用戶的電子郵件。
-    這個函數會解碼URL中的驗證碼，並查找對應的Admin對象。
-    如果驗證成功，它會更新Admin對象的狀態。
+    這個函數會解碼 URL 中的驗證碼，並查找對應的 Admin 對象。
+    如果驗證成功，將會更新 Admin 對象的狀態。
     """
     try:
         # 解碼從URL中獲取的驗證碼
@@ -158,8 +158,8 @@ def verify_email(request, token):
         messages.success(request, '無效驗證碼或已驗證成功，請重發認證信或登入。')
         logger.warning(f'not Admin: is None')
         return redirect('re_verify')
-
-    if timezone.now() > admin.token_expiration:
+    current_time = timezone.now()
+    if current_time > admin.token_expiration:
         # 若驗證碼過期，到重新驗證輸入信箱頁面
         messages.success(request, '驗證碼已過期，請重新發送認證信。')
         logger.warning(f'Token for Admin object with email_token: {email_token[:5]} has expired.')
@@ -186,21 +186,27 @@ class ReVerifyForm(BootStrapForm):
     email = forms.EmailField(label='請輸入您的信箱')
 
     def clean_email(self):
-        """檢查信箱是否已註冊並且未驗證"""
+        """檢查信箱是否已註冊或是否未驗證"""
         email = self.cleaned_data.get("email")
-        try:
-            admin = models.Admin.objects.get(email=email)
-        except models.Admin.DoesNotExist:
-            raise ValidationError("此信箱未註冊，請重新輸入。")
 
-        if admin.is_verified:
+        # 如果已有信箱但尚未通過驗證
+        if models.Admin.objects.filter(email=email, is_verified=False).exists():
+            admin_object = models.Admin.objects.get(email=email)
+            current_time = timezone.now()
+            if current_time > admin_object.email_send_time:
+                return email
+            else:
+                raise ValidationError('請一分鐘後再嘗試註冊。')
+        elif models.Admin.objects.filter(email=email, is_verified=True).exists():
             raise ValidationError("您已驗證成功，請直接登入。")
-
+        else:
+            raise ValidationError("此信箱未註冊，請重新輸入。")
         return email
 
+@require_http_methods(['GET', 'POST'])
 def re_verify(request):
     """
-    重發驗證信。
+    驗證信件過期，重發驗證信。
     - GET請求：顯示空的信箱表單。
     - POST請求：驗證信箱表單數據，更新驗證碼有效期，發送驗證信。
     """
@@ -210,18 +216,20 @@ def re_verify(request):
 
     form = ReVerifyForm(data=request.POST)
     if form.is_valid():
-        email = form.cleaned_data.get("email")
+        email = form.cleaned_data.get('email')
+        # 獲取未通過驗證的信箱
         admin = models.Admin.objects.get(email=email, is_verified=False)
-
         # 更新驗證碼有效期
         admin.update_token_expiration()
+        # 更新寄信紀錄時間
+        admin.update_send_time()
         admin.save()
 
         # 發送驗證信
         email_utils.send_email_token(request, admin)
         messages.success(request, '驗證郵件已重新發送，請檢查您的信箱。')
         logger.info(f're-verify email send agine, email:{email[3:]}')
-        return redirect('re-verify')
+        return redirect('re_verify')
     # 表單驗證失敗，顯示提示訊息
     return render(request, 're-verify.html', {'form': form})
 
