@@ -12,8 +12,8 @@ def performance_logger_middleware(get_response):
     # 定義一個名為middleware的內部函數，
     # 這個函數接收一個名為request的參數，代表一個HTTP請求。
     def middleware(request):
-        # 健康檢查的訪問 http://localhost:8001，訪問成功不輸出為日誌
-        if "8001" in request.get_host():
+        # 健康檢查的訪問 http://localhost:8000，訪問成功不輸出為日誌
+        if "8000" in request.get_host():
             response = get_response(request)
             return response
 
