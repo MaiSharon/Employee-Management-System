@@ -1,5 +1,10 @@
+import re
+import logging
+
 from django.utils.deprecation import MiddlewareMixin
 from django.shortcuts import redirect
+
+logger = logging.getLogger(__name__)
 
 
 class AuthMiddleware(MiddlewareMixin):
@@ -9,27 +14,24 @@ class AuthMiddleware(MiddlewareMixin):
         # 如果沒有返回值(返回None)，繼續往後走
         # 如果有返回值 HttpResponse, render, redirect，則直接在此中間件中斷不繼續向後執行
 
-        # 0.排除不需要登入即可到訪的頁面
-        if request.path_info.startswith('/__debug__/') or request.path_info in ["/login/","/user/list/","/task/", "/image/code/", "/callback/","/about/"]:
+        exclude_paths = [
+            '/sentry-debug/',
+            '/re-verify/',
+            '/login/',
+            '/register/',
+            '/image/code/',
+            r'^/verify/.+/$',
+
+        ]
+
+        exclude_paths_regex = [re.compile(pattern) for pattern in exclude_paths]
+
+        # 加入正則表達式以匹配動態路由
+        if request.path_info.startswith('/__debug__/') or any(
+                pattern.match(request.path_info) for pattern in exclude_paths_regex):
             return
-        # 1.(未登入時會有死循環，需要做排除)讀取當前session訊息，若有才能進入，若沒有則返回
-        info_dic = request.session.get("info")
-        if info_dic:
-            print("M1, Coming")
-            return
-        # 2.若沒有則返回登入夜面
-        else:
-            print("M1, Out")
-            return redirect("/login/")
-
-
-    # def process_response(self, request, response):
-    #     print("M1, Outing")
-    #
-    #     return response
-
-
-
-
-
-
+        # 檢查用戶session，如果用戶未登錄且訪問的不是排除路徑，則重定向到登錄頁面
+        info_dic = request.session.get('info')
+        if not info_dic and not any(pattern.match(request.path_info) for pattern in exclude_paths_regex):
+            logger.info(f"Non-verify user from {request.path_info} to login page")
+            return redirect('/login/')
