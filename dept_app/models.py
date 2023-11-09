@@ -17,7 +17,7 @@ class Admin(models.Model):
     """ 用戶註冊 """
     username = models.CharField(verbose_name="用戶名", max_length=512)
     password = models.CharField(verbose_name="密碼", max_length=512)
-    email = models.EmailField(verbose_name="信箱")
+    email = models.EmailField(verbose_name="信箱",unique=True)
     email_send_time = models.DateTimeField(
         verbose_name="寄信期限",
         default=one_minute_from_now,
