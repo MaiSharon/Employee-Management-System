@@ -7,6 +7,7 @@ from dept_app import models
 from dept_app.utils.bootstrap import BootStrapModelForm
 
 from dept_app.utils.pagination import Pagination  # 分頁組件
+from dept_app.utils.validate_utils import validate_search
 
 
 class TaskModelForm(BootStrapModelForm):
@@ -54,34 +55,28 @@ logger = logging.getLogger('views_task')
 
 def task_list(request):
     form = TaskModelForm
+    # 接收用戶輸入搜尋內容
+    search_input = request.GET.get('search', '').strip()  # 獲取 'search' 參數的值，若無則為空字串。去除頭尾空格
+    # 驗證搜尋輸入內容
+    is_valid_search_input = validate_search(search_input)
 
-    # 搜尋
-    search_dict = {}
-    search = request.GET.get("search", "")
+    # 搜尋或返回所有數據
+    all_queryset_or_search_result = models.Task.objects.filter(title__icontains=is_valid_search_input)
 
-    if search:
-        search_dict["mobile__contains"] = search
-
-    # 把搜尋的數據傳給分頁組件的類
-    queryset = models.Task.objects.filter(**search_dict).order_by("-level")
-
-    if not queryset:
-        print(search_dict, queryset)
-        queryset = models.Task.objects.all().order_by("-level")
-
-    page_object = Pagination(request, queryset, page_size=3)
+    # 分頁處理
+    paginator = Pagination(request, queryset=all_queryset_or_search_result, page_size=3)
 
     # log
-    logger.error("task info fetched from database page: %s", page_object.page)
+    logger.error("task info fetched from database page: %s", paginator.page)
 
     context = {
-        "form": form,
-        "search": search,
-        "page": page_object.page,
-        "queryset": page_object.page_queryset,  # 分完頁的數據條
-        "page_string": page_object.generate_html()  # 頁碼
-    }
+        'form': form,
+        'search': is_valid_search_input,
+        'tasks': paginator.page_queryset,  # 分完頁的數據
+        'page_string': paginator.generate_html(),  # 頁碼
+        'page_title': 'Tasks'
 
+    }
     return render(request, 'task_list.html', context)
 
 
