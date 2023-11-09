@@ -4,7 +4,7 @@
 <div class="container">
 
     <div class="container">
-        <h1>任務管理</h1>
+
         <!-- 跟AJAX串接data需要form標籤使用id -->
         <form id="formAdd" novalidate>
             <div class="row">
@@ -41,14 +41,14 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% for item in queryset %}
+                    {% for task in tasks %}
                     <tr>
-                        <th scope="row">{{ item.id }}</th>
-                        <td>{{ item.get_level_display }}</td>
-                        <td>{{ item.title }}</td>
-                        <td>{{ item.detail }}</td>
-<!--                        <td>{{ item.user }}</td>-->
-
+                        <th scope="row">{{ task.id }}</th>
+                        <td>{{ task.get_level_display }}</td>
+                        <td>{{ task.title }}</td>
+                        <td>{{ task.detail }}</td>
+<!--                        <td>{{ task.user }}</td>-->
+                        {# need fix #}
                         <td>
                             <a class="btn btn-primary btn-sm" href="" role="button">編輯</a>
                             <a class="btn btn-danger btn-sm" href="" role="button">刪除</a>
