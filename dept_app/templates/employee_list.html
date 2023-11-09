@@ -9,7 +9,7 @@
 
     <!-- Add Button -->
     <div class="mb-3">
-    <a href="/employee/add/">
+    <a href="{% url 'employee_create' %}">
       <button type="button" class="btn btn-primary">
         <i class="fas fa-user-plus"></i> Add
       </button>
@@ -52,7 +52,7 @@
       </tr>
     </thead>
     <tbody>
-    {% for item in queryset %}
+    {% for employee in employees %}
       <tr>
         <td>
           <div class="d-flex align-items-center">
@@ -63,17 +63,25 @@
               class="rounded-circle"
             />
             <div class="ms-3">
-              <p class="fw-bold mb-1">{{ item.name }}</p>
+              <p class="fw-bold mb-1">{{ employee.name }}</p>
             </div>
           </div>
         </td>
-        <td>{{ item.get_gender_display }}</td>
-        <td style="white-space: nowrap;">{{ item.birthday|date:"Y-m-d" }}</td>
-        <td style="white-space: nowrap;">{{ item.depart }}</td>
-        <td style="white-space: nowrap;">{{ item.create_time|date:"Y-m-d"}}</td>
+        <td>{{ employee.get_gender_display }}</td>
+        <td style="white-space: nowrap;">{{ employee.birthday|date:"Y-m-d" }}</td>
+        <td style="white-space: nowrap;">{{ employee.depart }}</td>
+        <td style="white-space: nowrap;">{{ employee.create_time|date:"Y-m-d"}}</td>
         <td style="white-space: nowrap;">
-          <a type="button" class="btn btn-primary btn-sm" href="/user/{{ item.id }}/edit/">Edit</a>
-          <a type="button" class="btn btn-danger btn-sm" href="/user/{{item.id}}/delete/">Delete</a>
+          <div class="d-inline-flex">
+            <form method="post" action="{% url 'employee_edit' nid=employee.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-primary btn-sm me-1">Edit</button>
+            </form>
+            <form method="post" action="{% url 'employee_delete' nid=employee.id %}">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </div>
         </td>
       </tr>
     {% endfor %}
