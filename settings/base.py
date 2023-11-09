@@ -47,6 +47,7 @@ MIDDLEWARE = [
     'dept_app.performance.performance_logger_middleware',  # 性能紀錄要放在最上面，下面執行時才能抓到紀錄
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',  # 語言選擇: 強制錯誤提示為繁體中文，其他設定在.prod
     # "django.middleware.cache.UpdateCacheMiddleware",  # redis
     "django.middleware.common.CommonMiddleware",
     # "django.middleware.cache.FetchFromCacheMiddleware",  # redis
