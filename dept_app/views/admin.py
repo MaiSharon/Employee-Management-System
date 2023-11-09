@@ -128,7 +128,7 @@ class AdminEditModelForm(ModelForm):
 
         return username
 
-
+@require_http_methods(["GET", "POST"])
 def admin_edit(request, nid):
     title = "編輯管理員"
     row_object = models.Admin.objects.filter(id=nid).first()
