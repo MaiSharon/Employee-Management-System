@@ -21,15 +21,6 @@ scrape_configs:
         regex: '/(.*)'
         target_label: 'container'
 
-  # 定義一個名為 devops 的抓取任務
-  - job_name: devops
-    # 靜態配置，用於定義目標和標籤
-    static_configs:
-      # 目標是 mysql 容器
-      - targets: ['mysql']
-        labels:
-          job: mysql_logs  # 標籤名
-          __path__: /var/log/mysql/*.log  # mysql 容器內的日誌路徑
 
     pipeline_stages:
       - multiline:  # 用於處理多行日誌
