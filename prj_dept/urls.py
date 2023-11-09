@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-from dept_app.views import department, mobile, employee, admin, login, task, register,chat
+from dept_app.views import department, mobile, employee, admin, login, task, register
 
 
 def trigger_error(request):
