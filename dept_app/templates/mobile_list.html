@@ -9,7 +9,7 @@
 
     <!-- Add Button -->
     <div class="mb-3">
-    <a href="/mobile/add/">
+    <a href="{% url 'mobile_create' %}">
       <button type="button" class="btn btn-primary">
         <i class="fas fa-user-plus"></i> Add
       </button>
@@ -47,15 +47,23 @@
         </tr>
       </thead>
       <tbody>
-      {% for item in queryset %}
+      {% for mobile in mobiles %}
         <tr>
-          <td>{{ item.id }}</td>
-          <td>{{ item.mobile }}</td>
-          <td style="white-space: nowrap;">{{ item.get_status_display }}</td>
-          <td style="white-space: nowrap;">{{ item.get_brand_display }}</td>
+          <td>{{ mobile.id }}</td>
+          <td>{{ mobile.mobile }}</td>
+          <td style="white-space: nowrap;">{{ mobile.get_status_display }}</td>
+          <td style="white-space: nowrap;">{{ mobile.get_brand_display }}</td>
           <td style="white-space: nowrap;">
-            <a type="button" class="btn btn-primary btn-sm" href="/mobile/{{ item.id }}/edit/">編輯</a>
-            <a type="button" class="btn btn-danger btn-sm" href="/mobile/{{ item.id }}/delete/">刪除</a>
+            <div class="d-inline-flex">
+              <form method="post" action="{% url 'mobile_edit' nid=mobile.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary btn-sm me-1">Edit</button>
+              </form>
+              <form method="post" action="{% url 'mobile_delete' nid=mobile.id %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+              </form>
+            </div>
           </td>
         </tr>
       {% endfor %}
