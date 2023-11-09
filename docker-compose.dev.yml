@@ -1,4 +1,5 @@
 version: "3.2"
+
 services:
   mysql:
     image: "mysql:8.0"
@@ -7,32 +8,37 @@ services:
       - /c/Users/SharonMai/mysql_data:/var/lib/mysql
       - ./monitoring_PLG_configs/logs/mysql:/var/log/mysql
     env_file: .env.dev
-    command: --general-log=1 --general-log-file=/var/log/mysql/general.log
+    command:
+      - "--max-connections=100"
+      - "--slow-query-log=1"
+      - "--long-query-time=1"
+      - "--log-error=/var/log/mysql/mysql_error.log"
+      - "--slow-query-log-file=/var/log/mysql/mysql_slow.log"
+      - "--general-log=1"  # 開啟一般查詢日誌，學習SQL語句執行順序
     ports:
       - "3306:3306"
     networks:
       - shared-network
 
 
-#  web:
-#    image: ppp300a/prj_dept-dev:1.0.0
-#    container_name: dev-web
-#    build:
-#      context: .  # Dockerfile的位置
-#      dockerfile: Dockerfile.dev
-#    env_file: .env.dev  # 從.env文件加載環境變量
-#    environment:
-#      - DJANGO_SETTINGS_MODULE=settings.dev
-#      - DJANGO_ENV=dev
-#    command: [ "/bin/sh", "/data/prj_dept/start.dev.sh" ]  # 容器啟動後執行的命令
-#    volumes:
-#      - .:/data/prj_dept  # 映射當前本機路徑，達到自動更新加載改過的代碼
-#      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
-#    ports:
-#      - "8000:8000"
-#    depends_on:
-#      - mysql
-#      - redis
+  web:
+    image: ppp300a/prj_dept-dev:1.0.0
+    container_name: dev-web
+    build:
+      context: .  # Dockerfile的位置
+      dockerfile: Dockerfile.dev
+    env_file: .env.dev  # 從.env文件加載環境變量
+    environment:
+      - DJANGO_SETTINGS_MODULE=settings.dev
+    command: [ "/bin/sh", "/data/prj_dept/start.dev.sh" ]  # 容器啟動後執行的命令
+    volumes:
+      - .:/data/prj_dept  # 映射當前本機路徑，達到自動更新加載改過的代碼
+      - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+      - redis
 #      - celery
 #      - flower
 
