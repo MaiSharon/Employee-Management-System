@@ -1,19 +1,17 @@
-# prod.py
 from dotenv import load_dotenv
 from .base import *
 import os
 
-USE_HTTPS = True
-
 load_dotenv('./.env.prod')
+
+# Enable HTTPS
+USE_HTTPS = True
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Django settings
 SECRET_KEY = os.getenv('SECRET_KEY')
 DEBUG = False
-
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS').split(',')
-
-# 台北時區
-TIME_ZONE = 'Asia/Taipei'
-
 
 # 錯誤提示的語言
 from django.utils.translation import gettext_lazy as _
@@ -23,8 +21,20 @@ LANGUAGES = [
 ]
 # 語言碼
 LANGUAGE_CODE = 'zh-hant'
+# 台北時區
+TIME_ZONE = 'Asia/Taipei'
 
+# **************************
+# * Install apps *
+# **************************
+INSTALLED_APPS += [
+    # your apps here
+]
 
+# **************************
+# * Database Config *
+# * Use MySQL *
+# **************************
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
@@ -36,8 +46,10 @@ DATABASES = {
     }
 }
 
-
-# 緩存
+# **************************
+# * Cache Config *
+# * Use Redis *
+# **************************
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",
@@ -50,27 +62,9 @@ CACHES = {
     }
 }
 
-
-# Celery Configuration Options
-CELERY_TASK_TRACK_STARTED = True
-CELERY_TASK_TIME_LIMIT = 30 * 60
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
-CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
-CELERY_ACCEPT_CONTENT = ['application/json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'Asia/Taipei'
-
-
-INSTALLED_APPS += [
-    # your apps here
-]
-
-# for https
-SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
-
-# websocket---------
-# Channel layer settings for Websocket use
+# **************************
+# * Channels(websocket) Config *
+# **************************
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
@@ -80,7 +74,22 @@ CHANNEL_LAYERS = {
     },
 }
 
+# **************************
+# * Celery Config *
+# * For asynchronous task processing and scheduled tasks *
+# **************************
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'Asia/Taipei'
 
+# **************************
+# * Log Config *
+# **************************
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
