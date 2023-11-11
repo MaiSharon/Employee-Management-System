@@ -6,15 +6,21 @@ __pycache__/
 # C extensions
 *.so
 
-# CICD stuff
-.jenkins-ngrok.yml
-
 # not use file
 *NotUse
 
+# CICD stuff
+.jenkins-ngrok.yml
+
+# sentry
+sentry/
 
 # monitoring
 monitoring_PLG_configs/testfile/
+monitoring_PLG_configs/logs/
+
+# Prometheus and Grafana Config
+prometheus_grafana/
 
 # Django stuff
 .env.*
@@ -23,11 +29,6 @@ local_settings.py
 db.sqlite3
 db.sqlite3-journal
 staticfiles/
-
-# Image code files
-../xxx.py
-code.png
-color.png
 
 # Distribution / packaging
 .Python
@@ -115,6 +116,3 @@ cython_debug/
 # JetBrains specific (optional)
 # .idea/xxx.py
 
-# test file
-prometheus_k8s/
-sentry/
