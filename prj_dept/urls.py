@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-from dept_app.views import department, mobile, employee, admin, login, task, register
+from dept_app.views import department, mobile, employee, administrator, login, task, register
 
 
 def trigger_error(request):
@@ -31,9 +31,9 @@ urlpatterns = [
     path('mobiles/<int:nid>/edit/', mobile.mobile_edit, name='mobile_edit'),
     path('mobiles/<int:nid>/delete/', mobile.mobile_delete, name='mobile_delete'),
 
-    path('administrators/', admin.admin_list, name='admin_list'),
-    # path('administrators/<int:nid>/edit/', admin.admin_edit, name='admin_edit'),
-    # path('administrators/<int:nid>/reset/', admin.admin_reset, name='admin_reset'),
+    path('administrators/', administrator.admin_list, name='admin_list'),
+    # path('administrators/<int:nid>/edit/', administrator.admin_edit, name='admin_edit'),
+    # path('administrators/<int:nid>/reset/', administrator.admin_reset, name='admin_reset'),
 
     path('register/', register.register, name='register'),
     path('verify/<str:token>/', register.verify_email, name='verify_email'),

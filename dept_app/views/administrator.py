@@ -40,7 +40,7 @@ def admin_list(request):
         "page_title": "Administrators",
     }
 
-    return render(request, "admin_list.html", context)
+    return render(request, "administrator.html", context)
 
 
 

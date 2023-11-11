@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.contrib.auth.hashers import make_password
 from django.urls import reverse
 from dept_app import models
-from dept_app.views.admin import AdminEditModelForm
+from dept_app.views.administrator import AdminEditModelForm
 
 
 class TestAdminModelForm(TestCase):
