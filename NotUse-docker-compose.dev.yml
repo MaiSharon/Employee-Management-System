@@ -26,11 +26,11 @@ services:
     container_name: dev-web
     build:
       context: .  # Dockerfile的位置
-      dockerfile: Dockerfile.dev
+      dockerfile: NotUse-Dockerfile.dev
     env_file: .env.dev  # 從.env文件加載環境變量
     environment:
       - DJANGO_SETTINGS_MODULE=settings.dev
-    command: [ "/bin/sh", "/data/prj_dept/start.dev.sh" ]  # 容器啟動後執行的命令
+    command: [ "/bin/sh", "/data/prj_dept/NotUse-start.dev.sh" ]  # 容器啟動後執行的命令
     volumes:
       - .:/data/prj_dept  # 映射當前本機路徑，達到自動更新加載改過的代碼
       - /data/logs/prj_dept/:/data/logs/prj_dept/  # 把日誌映射到主機的指定路徑以便查看和持久化

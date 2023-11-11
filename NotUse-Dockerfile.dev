@@ -22,7 +22,7 @@ RUN apk update && \
 #COPY . .
 
 # 設置執行權限
-RUN chmod +x /data/prj_dept/start.dev.sh
+RUN chmod +x /data/prj_dept/NotUse-start.dev.sh
 
 # 暴露端口
 EXPOSE 8000
