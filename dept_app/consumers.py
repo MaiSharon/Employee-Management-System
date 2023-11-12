@@ -18,6 +18,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     - 用戶加入/離開聊天室
     - 接收和發送消息
     - 實時更新用戶在線狀態
+    - 實時更新新註冊的用戶
 
     Attributes:
     user_id (str): 用戶ID。
