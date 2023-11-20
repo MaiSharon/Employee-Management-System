@@ -15,10 +15,23 @@
     <a href="https://github.com/MaiSharon/Employee-Management-System/issues">Report Bug</a>
 </p>
 
-
 <p align="center">
-待補截圖 電腦版 手機板
+  <img src="screenshot/login.png" alt="login" style="margin-bottom: 0;">
+  <img src="screenshot/admin.png" alt="admin" style="margin-bottom: 0;">
 </p>
+<details>
+  <p align="center">
+    <summary>查看更多細節截圖</summary>
+    <img src="screenshot/login.png" alt="login" style="margin-bottom: 0;">
+    <img src="screenshot/register.png" alt="register" style="margin-bottom: 0;">
+    <img src="screenshot/email-resend.png" alt="email-resend" style="margin-bottom: 0;">
+    <img src="screenshot/admin.png" alt="admin" style="margin-bottom: 0;">
+    <img src="screenshot/add-before.png" alt="CURD-normal" style="margin-bottom: 0;">
+    <img src="screenshot/add.png" alt="CURD-add" style="margin-bottom: 0;">
+    <img src="screenshot/task.png" alt="task" style="margin-bottom: 0;">
+  </p>
+</details>
+
 
 ## 專案介紹
 
