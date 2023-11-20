@@ -14,7 +14,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     """
     負責管理聊天室的WebSocket連接。
 
-    主要功能：
+    Main features:
     - 用戶加入/離開聊天室
     - 接收和發送消息
     - 實時更新用戶在線狀態
@@ -31,6 +31,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         connect: 處理新的 WebSocket 連接。
         disconnect: 斷開 WebSocket 連接。
         receive: 處理來自客戶端的訊息。
+        new_admin: 更新新註冊用戶給前端
         chat_message: 處理聊天室群組的訊息。
         start_heartbeat: 心跳機制
         user_status: 更新用戶狀態給前端
@@ -167,6 +168,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     # 從這裡發送新管理員的訊息到前端
     async def new_admin(self, event):
+        """
+        處理新管理員創建事件，並通過 WebSocket 向客戶端發送有新的管理員帳號被創建。
+
+        Step:
+        1. 從事件中提取管理員信息。
+        2. 通過 WebSocket 向客戶端發送該消息。
+
+        Args:
+            event (dict): 包含新管理員信息的事件對象。
+
+        Returns:
+            None: 這個函數不返回任何值，但會通過 WebSocket 像客端發送消息。
+        """
         # Extract the admin information from the event
         admin_info = event['user']
 
