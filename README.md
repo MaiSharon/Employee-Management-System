@@ -16,27 +16,27 @@
     <a href="https://github.com/MaiSharon/Employee-Management-System/issues">Report Bug</a>
 </p>
 
-<p align="center" style="display: flex; justify-content: space-between;">
-  <img src="screenshot/phone-login.png" alt="login" width="30%" style="margin-left: 0;">
+<p align="center">
+  <img src="screenshot/phone-login.png" alt="login" width="30%">
   <img src="screenshot/phone-admin-1.png" alt="admin 1" width="30%">
-  <img src="screenshot/phone-admin-2.png" alt="admin 2" width="30%" style="margin-right: 0;">
+  <img src="screenshot/phone-admin-2.png" alt="admin 2" width="30%">
 </p>
 
 <p align="center">
-  <img src="screenshot/login.png" alt="login" style="margin-bottom: 0;">
-  <img src="screenshot/admin.png" alt="admin" style="margin-bottom: 0;">
+  <img src="screenshot/login.png" alt="login">
+  <img src="screenshot/admin.png" alt="admin">
 </p>
 
 <details>
   <p align="center">
     <summary>查看更多細節截圖</summary>
-    <img src="screenshot/login.png" alt="login" style="margin-bottom: 0;">
-    <img src="screenshot/register.png" alt="register" style="margin-bottom: 0;">
-    <img src="screenshot/email-resend.png" alt="email-resend" style="margin-bottom: 0;">
-    <img src="screenshot/admin.png" alt="admin" style="margin-bottom: 0;">
-    <img src="screenshot/add-before.png" alt="CURD-normal" style="margin-bottom: 0;">
-    <img src="screenshot/add.png" alt="CURD-add" style="margin-bottom: 0;">
-    <img src="screenshot/task.png" alt="task" style="margin-bottom: 0;">
+    <img src="screenshot/login.png" alt="login">
+    <img src="screenshot/register.png" alt="register">
+    <img src="screenshot/email-resend.png" alt="email-resend">
+    <img src="screenshot/admin.png" alt="admin">
+    <img src="screenshot/add-before.png" alt="CURD-normal">
+    <img src="screenshot/add.png" alt="CURD-add">
+    <img src="screenshot/task.png" alt="task">
   </p>
 </details>
 
