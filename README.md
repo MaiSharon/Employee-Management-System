@@ -121,7 +121,13 @@ Quacqkersort 是專為公司內部管理層設計的開源專案，提供專屬�
 - **開發環境**: 使用實體文件存儲日誌，方便開發時的查詢和調試。
 - **生產環境**: 使用 Docker Volume 存儲日誌，確保日誌的持久性。
 
-
+## TODO List
+- task 任務新增的BUG
+- task 寫單元測試
+- admin的搜尋不影響聊天室
+- 加入 celery 配置提升用戶體驗
+- 加入 redis 配置加快載入速度
+- 加入 jenkins 實現 CI/CD
 
 
 
