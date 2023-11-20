@@ -8,11 +8,11 @@
 </h3>
 
 <p align="center">
-    <a href="https://Quacqkersort.be/">View Quacqkersort Web</a>
+    <a href="https://quacqkersort.be/login/">View Quacqkersort Web</a>
     ·
-    <a href="https://github.com//issues">View Grafana Dashboard</a>
+    <a href="https://grafana.quacqkersort.be">View Grafana Dashboard</a>
     ·
-    <a href="https://github.com//issues">Report Bug</a>
+    <a href="https://github.com/MaiSharon/Employee-Management-System/issues">Report Bug</a>
 </p>
 
 
