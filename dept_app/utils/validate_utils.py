@@ -8,7 +8,7 @@ def validate_search(search_input):
     """
     驗證用戶輸入的搜尋字符串，並記錄相關的日誌信息。
 
-    Main features：
+    Main features:
     - 檢查輸入長度不可超過20個字符。
     - 只允許包含大小寫字母、數字、下劃線和點。
     - 日誌: 記錄調用此函數的文件和行號
