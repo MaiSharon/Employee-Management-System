@@ -40,7 +40,10 @@
   </p>
 </details>
 
-
+## 架構圖
+<p align="center">
+  <img src="screenshot/ems-ArchitectureDiagram-v1.png" alt="architecture">
+</p>
 ## 專案介紹
 
 Quacqkersort 是專為公司內部管理層設計的開源專案，提供專屬管理層對話空間、記錄員工行政事務、管理手機設備，以及任務分配。  
