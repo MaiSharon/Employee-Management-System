@@ -3,41 +3,48 @@ from django.shortcuts import HttpResponse, render
 from django.views.decorators.csrf import csrf_exempt
 from django import forms
 
-from dept_app import models
 from dept_app.utils.bootstrap import BootStrapModelForm
 
 from dept_app.utils.pagination import Pagination  # 分頁組件
 from dept_app.utils.validate_utils import validate_search
 
+from rest_framework import viewsets
+from dept_app import models
+from dept_app.views.serializers import TaskSerializer
 
-class TaskModelForm(BootStrapModelForm):
-    class Meta:
-        model = models.Task
-        fields = "__all__"
-        widgets = {
-            "detail": forms.TextInput
-        }
-
+class TaskViewSet(viewsets.ModelViewSet):
+    queryset = models.Task.objects.all()
+    serializer_class = TaskSerializer
 
 
-@csrf_exempt  # 他是免除CSRF Token認證
-def task_add(request):
-    """ AJAX返回值 """
+# class TaskModelForm(BootStrapModelForm):
+#     class Meta:
+#         model = models.Task
+#         fields = "__all__"
+#         widgets = {
+#             "detail": forms.TextInput
+#         }
 
-    form = TaskModelForm(data=request.POST)
 
-    if form.is_valid():
-        logger.info("user: %s add task title: %s, pd: %s",
-                    request.session["info"]["name"],
-                    form.cleaned_data['title'],
-                    form.cleaned_data['user']
-                    )
-        form.save()
-        dict_data = {"status": True}
-        return JsonResponse(dict_data)
 
-    dict_data = {"status": False, "error": form.errors}
-    return JsonResponse(dict_data)
+# @csrf_exempt  # 他是免除CSRF Token認證
+# def task_add(request):
+#     """ AJAX返回值 """
+#
+#     form = TaskModelForm(data=request.POST)
+#
+#     if form.is_valid():
+#         logger.info("user: %s add task title: %s, pd: %s",
+#                     request.session["info"]["name"],
+#                     form.cleaned_data['title'],
+#                     form.cleaned_data['user']
+#                     )
+#         form.save()
+#         dict_data = {"status": True}
+#         return JsonResponse(dict_data)
+#
+#     dict_data = {"status": False, "error": form.errors}
+#     return JsonResponse(dict_data)
 
 # def task_edit(request, nid):
 #     form = models.Task.objects.filter(id=nid).order_by("-level")
@@ -54,7 +61,7 @@ import logging
 logger = logging.getLogger('views_task')
 
 def task_list(request):
-    form = TaskModelForm
+    # form = TaskModelForm
     # 接收用戶輸入搜尋內容
     search_input = request.GET.get('search', '').strip()  # 獲取 'search' 參數的值，若無則為空字串。去除頭尾空格
     # 驗證搜尋輸入內容
@@ -70,7 +77,7 @@ def task_list(request):
     logger.error("task info fetched from database page: %s", paginator.page)
 
     context = {
-        'form': form,
+        # 'form': form,
         'search': is_valid_search_input,
         'tasks': paginator.page_queryset,  # 分完頁的數據
         'page_string': paginator.generate_html(),  # 頁碼
@@ -80,9 +87,9 @@ def task_list(request):
     return render(request, 'task_list.html', context)
 
 
-@csrf_exempt
-def task_sayhi(request):
-    """ 給JS的返回值 """
-    print(request.POST)
-    data_dict = {"status": True, 'data': [11, 33, 44, 22]}
-    return HttpResponse(JsonResponse(data_dict))
+# @csrf_exempt
+# def task_sayhi(request):
+#     """ 給JS的返回值 """
+#     print(request.POST)
+#     data_dict = {"status": True, 'data': [11, 33, 44, 22]}
+#     return HttpResponse(JsonResponse(data_dict))

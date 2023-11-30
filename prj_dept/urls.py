@@ -5,6 +5,9 @@ from django.views.generic import TemplateView
 
 from dept_app.views import department, mobile, employee, administrator, login, task, register
 
+from rest_framework import routers
+
+
 
 def trigger_error(request):
   division_by_zero = 1 / 0
@@ -13,7 +16,12 @@ def trigger_error(request):
   #   path('sentry-debug/', trigger_error),
   #   # ...
   # ]
+
+router = routers.DefaultRouter()
+router.register(r'tasks', task.TaskViewSet)
+
 urlpatterns = [
+    path('api/', include(router.urls)),
 
     path('sentry-debug/', trigger_error),
     path('departments/', department.DepartmentListView.as_view(), name='department_list'),
@@ -43,9 +51,9 @@ urlpatterns = [
     path('logout/', login.logout, name='logout'),
     path('image/code/', login.image_code, name='image_code'),
 
-    path('task/', task.task_list, name='task'),
-    path('task/ajax/', task.task_sayhi),
-    path('task/add/', task.task_add),
+    path('tasks/', task.task_list, name='tasks'),
+    # path('task/ajax/', task.task_sayhi),
+    # path('task/add/', task.task_add),
     # path('task/<int:nid>/edit/', task.task_edit),
 
 ]

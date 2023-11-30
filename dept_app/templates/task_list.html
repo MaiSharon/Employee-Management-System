@@ -4,26 +4,23 @@
 <div class="container">
 
     <div class="container">
-
-        <!-- 跟AJAX串接data需要form標籤使用id -->
-        <form id="formAdd" novalidate>
-            <div class="row">
-
-                {% for item in form %}
-                <div class="col-md-6">
-                    <div class="form-group" style="position: relative;margin-bottom: 22px">
-
-                        <label>{{item.label}}</label>
-                        {{ item }}
-                        <!--    跟AJAX串接使用class命名串    -->
-                         <span class="error_msg" style="font-size: 15px;color: red;position: absolute;margin-top: -3px"></span>
-                    </div>
-                </div>
-                {% endfor %}
-            </div>
-        </form>
-
-        <input id="add" type="button" class="btn btn-primary btn-sm" value="點擊" >
+      <form id="formAdd" novalidate>
+          <div class="mb-3">
+              <label for="taskTitle" class="form-label">任務名稱</label>
+              <input type="text" class="form-control" id="taskTitle" placeholder="輸入任務名稱">
+          </div>
+          <div class="mb-3">
+              <label for="taskDetail" class="form-label">詳細說明</label>
+              <textarea class="form-control" id="taskDetail" rows="4" placeholder="輸入詳細說明"></textarea>
+          </div>
+          <div class="mb-3">
+              <label for="taskLevel" class="form-label">任務順序</label>
+              <select id="taskLevel" class="form-select">
+                  <!-- 選項將通過 JavaScript 動態添加 -->
+              </select>
+          </div>
+      </form>
+          <button id="add" type="button" class="btn btn-primary">新增任務</button>
     </div>
 
 
@@ -40,21 +37,8 @@
                         <th scope="col"></th>
                     </tr>
                 </thead>
-                <tbody>
-                    {% for task in tasks %}
-                    <tr>
-                        <th scope="row">{{ task.id }}</th>
-                        <td>{{ task.get_level_display }}</td>
-                        <td>{{ task.title }}</td>
-                        <td>{{ task.detail }}</td>
-<!--                        <td>{{ task.user }}</td>-->
-                        {# need fix #}
-                        <td>
-                            <a class="btn btn-primary btn-sm" href="" role="button">編輯</a>
-                            <a class="btn btn-danger btn-sm" href="" role="button">刪除</a>
-                        </td>
-                    </tr>
-                    {% endfor %}
+                <tbody id="taskTableBody">
+                <!-- 任務數據將通過 JavaScript 動態添加 -->
                 </tbody>
             </table>
         </div>
@@ -62,133 +46,195 @@
     <nav aria-label="...">
         <ul class="pagination">
             {{page_string}}
-
         </ul>
     </nav>
-
-<!--    <h3>示範1</h3>-->
-<!--    &lt;!&ndash;    DOM的綁定事件    &ndash;&gt;-->
-<!--&lt;!&ndash;    <input type="button" class="btn btn-primary btn-sm" value="點擊" onclick="clickMe();" />&ndash;&gt;-->
-
-<!--    &lt;!&ndash;    jQuery的綁定事件    &ndash;&gt;-->
-<!--    <input id="btn1" type="button" class="btn btn-primary btn-sm" value="點擊" >-->
-
-<!--    <h3>示範2</h3>-->
-<!--    <input type="text" id="txtuser" placeholder="姓名">-->
-<!--    <input type="text" id="txtage" placeholder="年齡">-->
-<!--    <input id="btn2" type="button" class="btn btn-primary btn-sm" value="點擊" >-->
-
-<!--    <h3>示範3-當輸入框很多可以使用form</h3>-->
-<!--    <form id="form3">-->
-<!--        <input type="text" name="user" placeholder="姓名">-->
-<!--        <input type="text" name="age" placeholder="年齡">-->
-<!--        <input type="text" name="pwd" placeholder="密碼">-->
-<!--        <input type="text" name="mobile" placeholder="手機">-->
-<!--    </form>-->
-<!--        <input id="btn3" type="button" class="btn btn-primary btn-sm" value="點擊" >-->
-
 </div>
 
 {% endblock %}
 
 {% block js %}
-    <script type="text/javascript">
-        $(function () {
-            // 當頁面框架加載完成後，程式碼會自動執行
-            bindBtn1Event();
-            bindBtn2Event();
-            bindBtn3Event();
-            bindaddEvent();
-        })
+<script>
+function loadTasksAndChoices() {
+    fetch('/api/tasks/')
+    .then(response => response.json())
+    .then(tasks => {
+        // 檢查是否有任務數據
+        if (tasks && tasks.length > 0) {
+            // 添加任務到表格
+            tasks.forEach(task => addTaskToTable(task));
 
-        function bindBtn1Event() {
-            $("#btn1").click(function () {
-                $.ajax({
-                    url: '/task/ajax/',
-                    type: "get",
-                    data: {
-                        n1: 123,
-                        n2: 456
-
-                    },
-                    dataType: "JSON",
-                    success: function (res) {
-                        console.log(res);
-                        console.log(res.status);
-                        console.log(res.data);
-                    }
-                })
-            })
+            // 從第一個任務對象中提取選項並添加到下拉選單
+            const select = document.getElementById('taskLevel');
+            tasks[0].level_display.forEach(choice => {
+                let option = document.createElement('option');
+                option.value = choice[0];
+                option.textContent = choice[1];
+                select.appendChild(option);
+            });
         }
-
-        function bindBtn2Event() {
-            $("#btn2").click(function () {
-                $.ajax({
-                    url: '/task/ajax/',
-                    type: "post",
-                    <!--        獲取示範2的標籤，得到裡面的內容            -->
-                    data: {
-                        name: $("#txtuser").val(),
-                        age: $("#txtage").val(),
+    })
+    .catch(error => console.error('Error:', error));
+}
 
 
-                    },
-                    dataType: "JSON",
-                    success: function (res) {
-                        console.log(res);
-                        console.log(res.status);
-                        console.log(res.data);
-                    }
-                })
-            })
-        }
+// 在頁面加載時調用
+loadTasksAndChoices();
 
-        function bindBtn3Event() {
-            $("#btn3").click(function () {
-                $.ajax({
-                    url: '/task/ajax/',
-                    type: "post",
-                    <!--        獲取示範3的標籤，得到裡面的內容            -->
-                    data: $("#form3").serialize(),
-                    dataType: "JSON",
-                    success: function (res) {
-                        console.log(res);
-                    }
-                })
-            })
-        }
+document.getElementById('add').addEventListener('click', function() {
+    const taskTitle = document.getElementById('taskTitle').value;
+    const taskDetail = document.getElementById('taskDetail').value;
+    const taskLevel = document.getElementById('taskLevel').value;
 
-        function bindaddEvent() {
-            $("#add").click(function () {
+    if (!taskTitle || !taskDetail) {
+        alert('任務名稱和詳細說明不可為空！');
+        return;
+    }
 
-                // 每次點擊，將以前的錯誤訊息清空
-                $(".error_msg").empty();
+    fetch('/api/tasks/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ title: taskTitle, detail: taskDetail, level: taskLevel })
 
-                $.ajax({
-                    url: '/task/add/',
-                    type: "post",
-                    data: $("#formAdd").serialize(),
-                    dataType: "JSON",
-                    success: function (res) {
-                        // 若數據校驗正確
-                        if(res.status){
-                            alert("添加成功");
-                            // 用JS 實現頁面的刷新
-                            location.reload();
-                        } else {
-                            // 否則將錯誤信息顯示在輸入框下
-                            console.log(res);
-                            $.each(res.error, function(name,data){
-                                $("#id_" + name).next().text(data[0]);
-                            })
-                        }
-                    }
-                })
-            })
-        }
+    })
+    .then(response => response.json())
+    .then(task => {
+        addTaskToTable(task);
+        document.getElementById('formAdd').reset();
+    })
+    .catch(error => console.error('Error:', error));
+});
+
+function addTaskToTable(task) {
+    const tableBody = document.getElementById('taskTableBody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <th scope="row">${task.id}</th>
+        <td>${task.level}</td>
+        <td>${task.title}</td>
+        <td>${task.detail}</td>
+        <td>
+            <button onclick="editTask(${task.id})" class="btn btn-primary btn-sm">編輯</button>
+            <button onclick="deleteTask(${task.id})" class="btn btn-danger btn-sm">刪除</button>
+        </td>`;
+    tableBody.appendChild(row);
+}
 
 
-    </script>
+function editTask(taskId) {
+    // 實現編輯任務的邏輯
+}
+
+function deleteTask(taskId) {
+    fetch(`/api/tasks/${taskId}/`, {
+        method: 'DELETE'
+    })
+    .then(() => {
+        // 從表格中移除該任務
+        document.querySelector(`#taskTableBody tr:nth-child(${taskId})`).remove();
+    });
+}
+</script>
+
+
+{#    <script type="text/javascript">#}
+{#        $(function () {#}
+{#            // 當頁面框架加載完成後，程式碼會自動執行#}
+{#            bindBtn1Event();#}
+{#            bindBtn2Event();#}
+{#            bindBtn3Event();#}
+{#            bindaddEvent();#}
+{#        })#}
+{##}
+{#        function bindBtn1Event() {#}
+{#            $("#btn1").click(function () {#}
+{#                $.ajax({#}
+{#                    url: '/task/ajax/',#}
+{#                    type: "get",#}
+{#                    data: {#}
+{#                        n1: 123,#}
+{#                        n2: 456#}
+{##}
+{#                    },#}
+{#                    dataType: "JSON",#}
+{#                    success: function (res) {#}
+{#                        console.log(res);#}
+{#                        console.log(res.status);#}
+{#                        console.log(res.data);#}
+{#                    }#}
+{#                })#}
+{#            })#}
+{#        }#}
+{##}
+{#        function bindBtn2Event() {#}
+{#            $("#btn2").click(function () {#}
+{#                $.ajax({#}
+{#                    url: '/task/ajax/',#}
+{#                    type: "post",#}
+{#                    <!--        獲取示範2的標籤，得到裡面的內容            -->#}
+{#                    data: {#}
+{#                        name: $("#txtuser").val(),#}
+{#                        age: $("#txtage").val(),#}
+{##}
+{##}
+{#                    },#}
+{#                    dataType: "JSON",#}
+{#                    success: function (res) {#}
+{#                        console.log(res);#}
+{#                        console.log(res.status);#}
+{#                        console.log(res.data);#}
+{#                    }#}
+{#                })#}
+{#            })#}
+{#        }#}
+{##}
+{#        function bindBtn3Event() {#}
+{#            $("#btn3").click(function () {#}
+{#                $.ajax({#}
+{#                    url: '/task/ajax/',#}
+{#                    type: "post",#}
+{#                    <!--        獲取示範3的標籤，得到裡面的內容            -->#}
+{#                    data: $("#form3").serialize(),#}
+{#                    dataType: "JSON",#}
+{#                    success: function (res) {#}
+{#                        console.log(res);#}
+{#                    }#}
+{#                })#}
+{#            })#}
+{#        }#}
+{##}
+{#        function bindaddEvent() {#}
+{#            $("#add").click(function () {#}
+{##}
+{#                // 每次點擊，將以前的錯誤訊息清空#}
+{#                $(".error_msg").empty();#}
+{##}
+{#                $.ajax({#}
+{#                    url: '/task/add/',#}
+{#                    type: "post",#}
+{#                    data: $("#formAdd").serialize(),#}
+{#                    dataType: "JSON",#}
+{#                    success: function (res) {#}
+{#                        // 若數據校驗正確#}
+{#                        if(res.status){#}
+{#                            alert("添加成功");#}
+{#                            // 用JS 實現頁面的刷新#}
+{#                            location.reload();#}
+{#                        } else {#}
+{#                            // 否則將錯誤信息顯示在輸入框下#}
+{#                            console.log(res);#}
+{#                            $.each(res.error, function(name,data){#}
+{#                                $("#id_" + name).next().text(data[0]);#}
+{#                            })#}
+{#                        }#}
+{#                    }#}
+{#                })#}
+{#            })#}
+{#        }#}
+{##}
+{##}
+{#    </script>#}
 
 {% endblock %}
 
