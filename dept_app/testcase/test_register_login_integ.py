@@ -31,8 +31,8 @@ class TestRegisterAndLoginIntegration(TestCase):
         session['image_captcha_entry'] = 'abcd'  # 事先設置一個有效的驗證碼
         session.save()
 
-    @patch('dept_app.utils.email_utils.send_email_token')  # 驗證信件發送
-    def test_register_and_login_integration(self, mock_send_email_token):
+    @patch('dept_app.utils.email_utils.send_async_email_token')  # 驗證信件發送
+    def test_register_and_login_integration(self, mock_send_async_email_token):
         """
         Executes the integration test for registration, email verification, and login.
 
@@ -51,7 +51,7 @@ class TestRegisterAndLoginIntegration(TestCase):
             AssertionError: If the response status codes, database records, or session data don't match expectations.
         """
         # Make middleware always pass in test
-        mock_send_email_token.return_value = True
+        mock_send_async_email_token.return_value = True
 
         # Step 1: Simulate user registration
         response = self.client.post(reverse('register'), {

@@ -1,4 +1,4 @@
-version: "3.8"
+version: "3.11"
 
 services:
   ngrok_jenkins:
@@ -11,59 +11,15 @@ services:
       - "edge=edghts_2SNk363rvTx8UIR6Rbj9eF0oq7G"
       - "http://nginx:80"
     env_file: .env.test
-    environment:
-      - ${NGROK_AUTHTOKEN}
     ports:
-      - 4040:4040
+      - "4040:4040"
 
-
-  mysql:
-    build:
-      context: .
-      dockerfile: Dockerfile.mysql8
-    image: ppp300a/prj_dept-mysql8:1.0.0
-    container_name: dept-mysql8
-    ports:
-      - "3306:3306"
-#    volumes:
-#      - "/c/Users/SharonMai/mysql_data:/var/lib/mysql"
-    command: [ "/bin/sh", "/mysql8-init.sh" ] # Use the init script as the command
-    env_file: .env.test
-    restart: always
-
-
-  web:
-    build:
-      context: .  # Dockerfile的位置
-      args:
-        DJANGO_SETTINGS_MODULE: settings.local
-    image: ppp300a/prj_dept-web:1.0.0
-    container_name: dept-web
-    env_file: .env.test  # 從.env文件加載環境變量
-    environment:
-      - PYTHONPATH=/data/prj_dept  # 當項目結構非django預設時需要使用
-      - DJANGO_SETTINGS_MODULE=settings.local  # 告诉 Django 和 uWSGI 使用哪个设置文件
-#      - server_params=--settings=settings.local  # 给 manage.py 命令用的
-    entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
-    volumes:
-      - staticfiles-data:/data/prj_dept/staticfiles
-    ports:
-      - "8000:8000"
-    depends_on:
-      - mysql
-      - redis
-      - celery
-    healthcheck:
-      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8001')" ]
-      interval: 10s
-      timeout: 5s
-      retries: 10
 
   nginx:
+    image: ppp300a/prj_dept-nginx-test:1.0.1
     build:
       context: .
-      dockerfile: Dockerfile.nginx
-    image: ppp300a/prj_dept-nginx:1.0.0
+      dockerfile: Dockerfile.nginx.test
     entrypoint: [ "nginx", "-g", "daemon off;" ]
     volumes:
       - staticfiles-data:/var/prj_dept/staticfiles
@@ -71,24 +27,80 @@ services:
       web:
         condition: service_healthy
     ports:
-      - "192.168.1.103:80:80"
+      - "80:80"
+
+
+  mysql:
+    image: ppp300a/prj_dept-mysql8-test:1.0.1
+    container_name: dept-mysql
+    build:
+      context: .
+      dockerfile: Dockerfile.mysql8
+    volumes:
+      - "/c/Users/SharonMai/mysql_data:/var/lib/mysql"
+    env_file: .env.prod
+    entrypoint: ["/usr/local/bin/mysql8-init.sh"]
+    ports:
+      - "3306:3306"
+
+
+  web:
+    image: ppp300a/prj_dept-web-test:1.0.1
+    build:
+      context: .  # Dockerfile的位置
+      dockerfile: Dockerfile.test
+    env_file: .env.test  # 從.env文件加載環境變量
+    environment:
+      - PYTHONPATH=/data/prj_dept  # 當項目結構非django預設時需要使用
+      - DJANGO_SETTINGS_MODULE=settings.prod  # 告诉 Django 使用哪个设置文件
+    entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
+    volumes:
+      - staticfiles-data:/data/prj_dept/staticfiles
+    depends_on:
+      - mysql
+      - redis
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import http.client; conn = http.client.HTTPConnection('localhost', 8000); conn.request('HEAD', '/'); res = conn.getresponse();" ]
+      interval: 60s
+      timeout: 15s
+      retries: 5
+    ports:
+      - "8000:8000"
+
 
   redis:
-    image: "redis:alpine"
+    image: "redis:7.2.2-alpine3.18"
     env_file: .env.test
     ports:
       - "6379:6379"
 
-  celery:
-    image: ppp300a/prj_dept-web:1.0.0
-    env_file: .env.test
+
+  celery_worker:
+    image: ppp300a/prj_dept-celery-test:1.0.1
+    build:
+      context: .  # Dockerfile的位置
+      dockerfile: Dockerfile.test
+    env_file:
+      - .env.test
     environment:
-      - DJANGO_SETTINGS_MODULE=settings.dev
-    command: ["celery", "-A", "prj_dept", "worker", "-l", "INFO", "-P", "solo"]
+      - PYTHONPATH=/data/prj_dept  # 當項目結構非django預設時需要使用
+      - DJANGO_SETTINGS_MODULE=settings.prod  # 告诉 Django 使用哪个设置文件
+    command: celery -A prj_dept.celery:app worker --loglevel=info
+    depends_on:
+      - redis
+      - web
+
+
+  flower:
+    image: mher/flower
+    command: celery --broker=redis://redis:6379/1 flower --port=5555
+    ports:
+      - "5555:5555"
     depends_on:
       - redis
 
 
 volumes:
   staticfiles-data:
+    external: true
     name:  staticfiles-data

@@ -1,14 +1,16 @@
-from django.contrib.sites.shortcuts import get_current_site
+import logging
+
 from django.conf import settings
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode
-import logging
+
+from dept_app.tasks import send_async_email
 
 logger = logging.getLogger(__name__)
 
-def send_email_token(request, admin):
+def send_async_email_token(admin, domain):
     """
     發送帶有驗證連結的電子郵件。(模板樣式使用 stripo 製作)
 
@@ -22,16 +24,14 @@ def send_email_token(request, admin):
     try:
         # 從設定獲取當前是否為https
         protocol = 'https' if settings.USE_HTTPS else 'http'
-        # 獲取當前網站的域名
-        current_site = get_current_site(request).domain
 
         # 生成有加密的驗證連結
-        verification_link = f'{protocol}://{current_site}/verify/{urlsafe_base64_encode(force_bytes(admin.email_token))}'
-        logo_link = f'{protocol}://{current_site}/static/logo-100.png'
-        icon_linkedin_link = f'{protocol}://{current_site}/static/linkedin-circle-black-bordered.png'
-        icon_github_link = f'{protocol}://{current_site}/static/github-circle-black-bordered.png'
-        icon_instagram_link = f'{protocol}://{current_site}/static/instagram-circle-black-bordered.png'
-        icon_email_link = f'{protocol}://{current_site}/static/icon-email.png'
+        verification_link = f'{protocol}://{domain}/verify/{urlsafe_base64_encode(force_bytes(admin.email_token))}'
+        logo_link = f'{protocol}://{domain}/static/logo-100.png'
+        icon_linkedin_link = f'{protocol}://{domain}/static/linkedin-circle-black-bordered.png'
+        icon_github_link = f'{protocol}://{domain}/static/github-circle-black-bordered.png'
+        icon_instagram_link = f'{protocol}://{domain}/static/instagram-circle-black-bordered.png'
+        icon_email_link = f'{protocol}://{domain}/static/icon-email.png'
         content = {
             'verification_link': verification_link,
             'logo_link': logo_link,
@@ -49,7 +49,7 @@ def send_email_token(request, admin):
         mail_subject = 'Quacqkersort.be - 【Email Verification】'
 
         # 發送郵件
-        send_mail(
+        send_async_email.delay(
             mail_subject,  # 主題
             message,  # 內容
             'ppp300a@gmail.com',  # 發件人

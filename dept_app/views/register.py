@@ -1,11 +1,10 @@
 import logging
 import re
 
-from asgiref.sync import async_to_sync
-from channels.layers import get_channel_layer
 from django.core.exceptions import ValidationError
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth.hashers import make_password
+from django.contrib.sites.shortcuts import get_current_site
 from django.contrib import messages
 from django.utils import timezone
 from django.utils.http import urlsafe_base64_decode
@@ -14,10 +13,13 @@ from django import forms
 from django.shortcuts import render, redirect
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
+from asgiref.sync import async_to_sync
+from channels.layers import get_channel_layer
 
 from dept_app import models
 from dept_app.utils import email_utils
 from dept_app.utils.bootstrap import BootStrapModelForm, BootStrapForm
+
 
 
 logger = logging.getLogger(__name__)
@@ -126,8 +128,11 @@ def register(request):
         admin = form.save(commit=False)
         admin.password = make_password(form.cleaned_data['password'])
         admin.save()
+
+        # 獲取當前域名
+        current_site_domain = get_current_site(request).domain
         # 發送驗證郵件
-        email_utils.send_email_token(request, admin)
+        email_utils.send_async_email_token(admin, current_site_domain)
         messages.success(request, '驗證郵件已發送，請檢查您的信箱。')
 
         # Prepare the user data to send
@@ -186,7 +191,7 @@ def verify_email(request, token):
     admin.save()
     logger.info(f'Admin object with Username: {admin.username} is verified.')
 
-    # 直接登入，進入管理員列表頁面
+    # 驗證成功後直接登入，進入管理員列表頁面
     request.session['info'] = {'id': admin.id, 'name': admin.username}
     # 設定session到期時間為24小時
     request.session.set_expiry(60 * 60 * 24)
@@ -240,8 +245,10 @@ def re_verify(request):
         admin.update_send_time()
         admin.save()
 
+        # 獲取當前域名
+        current_site_domain = get_current_site(request).domain
         # 發送驗證信
-        email_utils.send_email_token(request, admin)
+        email_utils.send_async_email_token(admin, current_site_domain)
         messages.success(request, '驗證郵件已重新發送，請檢查您的信箱。')
         logger.info(f're-verify email send agine, email:{email[3:]}')
         return redirect('re_verify')
