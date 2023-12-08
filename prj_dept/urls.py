@@ -3,7 +3,7 @@ from django.conf.urls.static import static
 from django.urls import path, include
 from django.views.generic import TemplateView
 
-from dept_app.views import department, mobile, employee, administrator, login, task, register
+from dept_app.views import department, mobile, employee, administrator, login, tasks, register
 
 from rest_framework import routers
 
@@ -18,7 +18,7 @@ def trigger_error(request):
   # ]
 
 router = routers.DefaultRouter()
-router.register(r'tasks', task.TaskViewSet)
+router.register(r'tasks', tasks.TaskViewSet)
 
 urlpatterns = [
     path('api/', include(router.urls)),
@@ -51,7 +51,8 @@ urlpatterns = [
     path('logout/', login.logout, name='logout'),
     path('image/code/', login.image_code, name='image_code'),
 
-    path('tasks/', task.task_list, name='tasks'),
+    path('tasks/', tasks.task_list, name='tasks'),
+    path('api/task-choices/', tasks.TaskChoicesView.as_view(), name='task-choices'),
     # path('task/ajax/', task.task_sayhi),
     # path('task/add/', task.task_add),
     # path('task/<int:nid>/edit/', task.task_edit),

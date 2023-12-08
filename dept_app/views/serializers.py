@@ -18,4 +18,4 @@ class TaskSerializer(serializers.ModelSerializer):
         Example:
             返回值示例：[(1, "重要"), (2, "普通"), (3, "閒置")]
         """
-        return models.Task.task_choices
+        return obj.get_level_display()
