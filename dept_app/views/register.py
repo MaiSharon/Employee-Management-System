@@ -20,8 +20,6 @@ from dept_app import models
 from dept_app.utils import email_utils
 from dept_app.utils.bootstrap import BootStrapModelForm, BootStrapForm
 
-
-
 logger = logging.getLogger(__name__)
 
 class AdminModelForm(BootStrapModelForm):
