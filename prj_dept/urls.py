@@ -1,13 +1,13 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.urls import path, include
-from django.views.generic import TemplateView
+
+from drf_yasg.views import get_schema_view
+from drf_yasg import openapi
+from rest_framework import routers
+from rest_framework.permissions import AllowAny
 
 from dept_app.views import department, mobile, employee, administrator, login, tasks, register
-
-from rest_framework import routers
-
-
 
 def trigger_error(request):
   division_by_zero = 1 / 0
@@ -16,6 +16,16 @@ def trigger_error(request):
   #   path('sentry-debug/', trigger_error),
   #   # ...
   # ]
+
+schema_view = get_schema_view(
+    openapi.Info(
+        title="Your API",
+        default_version='v1',
+        description="API documentation",
+    ),
+    public=True,
+    permission_classes=(AllowAny,),
+)
 
 router = routers.DefaultRouter()
 router.register(r'tasks', tasks.TaskViewSet)
@@ -40,8 +50,6 @@ urlpatterns = [
     path('mobiles/<int:nid>/delete/', mobile.mobile_delete, name='mobile_delete'),
 
     path('administrators/', administrator.admin_list, name='admin_list'),
-    # path('administrators/<int:nid>/edit/', administrator.admin_edit, name='admin_edit'),
-    # path('administrators/<int:nid>/reset/', administrator.admin_reset, name='admin_reset'),
 
     path('register/', register.register, name='register'),
     path('verify/<str:token>/', register.verify_email, name='verify_email'),
@@ -53,15 +61,14 @@ urlpatterns = [
 
     path('tasks/', tasks.task_list, name='tasks'),
     path('api/task-choices/', tasks.TaskChoicesView.as_view(), name='task-choices'),
-    # path('task/ajax/', task.task_sayhi),
-    # path('task/add/', task.task_add),
-    # path('task/<int:nid>/edit/', task.task_edit),
 
 ]
 
 # 在生產環境下這個URL是無法訪問的
 if settings.DEBUG:
     urlpatterns += [
-                       path('__debug__/', include('debug_toolbar.urls')),
+                    path('__debug__/', include('debug_toolbar.urls')),
+                    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+                    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
                    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
