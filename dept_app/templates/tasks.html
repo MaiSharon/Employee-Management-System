@@ -29,20 +29,7 @@
     <!-- Add Button -->
 
     <!-- Search -->
-    <div class="mb-3">
-      <form method="get">
-        <div class="input-group rounded">
-          <form method="GET">
-            <div class="input-group">
-              <input type="search" class="form-control rounded" placeholder="Search" name="search" aria-label="Search" aria-describedby="search-addon" value="{{ search }}" />
-              <button type="submit" class="input-group-text border-0" id="search-addon">
-                  <i class="fas fa-search"></i>
-              </button>
-            </div>
-          </form>
-        </div>
-      </form>
-    </div>
+
     <!-- Search -->
   </div>
   <!-- Add Button and Search -->
@@ -68,15 +55,6 @@
   </div>
   <!-- Table -->
 
-  <!-- Pagination -->
-  <section class="p-2 d-flex justify-content-start">
-    <nav aria-label="...">
-      <ul class="pagination">
-        {{page_string}}
-      </ul>
-    </nav>
-  </section>
-  <!-- Pagination -->
 {% endblock %}
 
 {% block js %}
