@@ -6,10 +6,11 @@ from django import forms
 from django.urls import reverse
 from django.views.decorators.http import require_GET, require_http_methods
 
+import logging
+
 from dept_app import models
 from dept_app.utils.bootstrap import BootStrapForm
 from dept_app.utils.image_code.image_code import check_code
-import logging
 
 logger = logging.getLogger(__name__)
 
