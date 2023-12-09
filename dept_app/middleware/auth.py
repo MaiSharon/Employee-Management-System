@@ -15,13 +15,14 @@ class AuthMiddleware(MiddlewareMixin):
         # 如果有返回值 HttpResponse, render, redirect，則直接在此中間件中斷不繼續向後執行
 
         exclude_paths = [
+            '/swagger/',
             '/sentry-debug/',
             '/re-verify/',
             '/login/',
             '/register/',
             '/image/code/',
             r'^/verify/.+/$',
-
+            '/api/task-choices/'
         ]
 
         exclude_paths_regex = [re.compile(pattern) for pattern in exclude_paths]
