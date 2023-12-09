@@ -1,12 +1,4 @@
-from django.http import JsonResponse
 from django.shortcuts import HttpResponse, render
-from django.views.decorators.csrf import csrf_exempt
-from django import forms
-
-from dept_app.utils.bootstrap import BootStrapModelForm
-
-from dept_app.utils.pagination import Pagination  # 分頁組件
-from dept_app.utils.validate_utils import validate_search
 
 from rest_framework import viewsets
 from rest_framework.views import APIView
@@ -19,13 +11,16 @@ class TaskViewSet(viewsets.ModelViewSet):
     serializer_class = TaskSerializer
 
 class TaskChoicesView(APIView):
+    """
+    get:
+    獲取任務優先級選項文字。
+
+    返回 Task模型中任務優先級選項文字。
+    """
     def get(self, request):
         return Response(models.Task.task_choices)
 
 
 def task_list(request):
-
-    context = {
-        'page_title': 'Tasks'
-    }
-    return render(request, 'tasks.html', context)
+    """提供 layout.html網頁標題名稱"""
+    return render(request, 'tasks.html', {'page_title': 'Tasks'})

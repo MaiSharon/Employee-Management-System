@@ -5,7 +5,7 @@ from django.urls import path, include
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 from rest_framework import routers
-from rest_framework.permissions import AllowAny
+from rest_framework import permissions
 
 from dept_app.views import department, mobile, employee, administrator, login, tasks, register
 
@@ -18,13 +18,16 @@ def trigger_error(request):
   # ]
 
 schema_view = get_schema_view(
-    openapi.Info(
-        title="Your API",
-        default_version='v1',
-        description="API documentation",
-    ),
-    public=True,
-    permission_classes=(AllowAny,),
+   openapi.Info(
+      title="Task Management API",
+      default_version='v1',
+      description="提供任務的 CRUD 操作的 RESTful API 服務。",
+      terms_of_service="https://quacqksort.be",
+      contact=openapi.Contact(email="ppp300a@gmail.com"),
+      license=openapi.License(name="BSD License"),
+   ),
+   public=True,
+   permission_classes=(permissions.AllowAny,),
 )
 
 router = routers.DefaultRouter()
@@ -68,6 +71,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns += [
                     path('__debug__/', include('debug_toolbar.urls')),
+                    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
                     path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
                     path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
                    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
