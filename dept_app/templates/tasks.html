@@ -29,7 +29,6 @@
     <!-- Add Button -->
 
     <!-- Search -->
-
     <!-- Search -->
   </div>
   <!-- Add Button and Search -->
@@ -105,6 +104,24 @@ document.getElementById('add').addEventListener('click', function() {
     // 確保所有欄位都已填寫
     if (!taskTitle || !taskDetail || !taskLevel) {
         alert('任務名稱、詳細說明和等級均為必填！');
+        return;
+    }
+
+    // 檢查任務名稱長度
+    if (taskTitle.length < 3) {
+        alert('任務名稱太短');
+        return;
+    }
+
+    // 檢查詳細說明長度
+    if (taskDetail.length > 50) {
+        alert('詳細訊息太長');
+        return;
+    }
+
+    // 特定標題與等級的驗證
+    if (taskTitle === '請款' && taskLevel !== '1') {
+        alert("請款的任務級別必須為 '重要'");
         return;
     }
 
@@ -200,7 +217,25 @@ function saveTask(taskId) {
 
     // 確保所有欄位都已填寫
     if (!levelSelect.value.trim() || !titleInput.value.trim() || !detailInput.value.trim()) {
-        alert('錯誤：所有欄位都必須填寫！');
+        alert('任務名稱、詳細說明和等級均為必填！');
+        return;
+    }
+
+    // 檢查任務名稱長度
+    if (titleInput.value.trim().length < 3) {
+        alert('任務名稱太短');
+        return;
+    }
+
+    // 檢查詳細說明長度
+    if (detailInput.value.trim().length > 50) {
+        alert('詳細訊息太長');
+        return;
+    }
+
+    // 特定標題與等級的驗證
+    if (titleInput.value.trim().includes('請款') && levelSelect.value.trim() !== '1') {
+        alert("請款的任務級別必須為 '重要'");
         return;
     }
 
