@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect
-from django.urls import reverse
 from django.views.decorators.http import require_GET, require_http_methods, require_POST
 
 from dept_app import models
@@ -45,7 +44,7 @@ def employee_add(request):
     form = EmployeeModelForm(data=request.POST)
     if form.is_valid():
         form.save()
-        return redirect(reverse('employee_list'))
+        return redirect('employee_list')
     return render(request, "employee_add.html", {"form": form, "page_title": "Employee Add"})
 
 
@@ -63,11 +62,11 @@ def employee_edit(request, nid):
     form = EmployeeModelForm(data=request.POST, instance=row_object)
     if form.is_valid():
         form.save()
-        return redirect(reverse('employee_list'))
+        return redirect('employee_list')
     return render(request, 'employee_edit.html', {'form': form, 'page_title': 'Employee Edit'})
 
 @require_POST
 def employee_delete(request, nid):
     """刪除用戶"""
     models.UserInfo.objects.filter(id=nid).delete()
-    return redirect(reverse('employee_list'))
+    return redirect('employee_list')
