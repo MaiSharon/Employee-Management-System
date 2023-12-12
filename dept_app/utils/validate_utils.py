@@ -1,6 +1,6 @@
 import inspect
-import re
 import logging
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -8,8 +8,7 @@ def validate_search(search_input):
     """
     驗證用戶輸入的搜尋字符串，並記錄相關的日誌信息。
 
-    Main features:
-    - 驗證輸入長度不可超過 20個字符。
+    - 驗證輸入長度不可超過 20 個字符。
     - 驗證輸入只包含大小寫字母、數字、下劃線和點。
     - 日誌: 記錄調用此函數的文件和行號。
     - 日誌: 記錄輸入字符串包含驗證未通過與通過的。
@@ -17,9 +16,9 @@ def validate_search(search_input):
     Args:
         search_input (str): 接收用戶輸入的字符串。
 
-    Returns:
-        str: 當輸入通過驗證->返回原始輸入字符串；否->返回空字符串。
-
+    Returns str:
+        - 字符串通過驗證，返回原始輸入字符串
+        - 字符串未通過驗證，返回空字符串。
     """
     if search_input:
         # 記錄調用此函數的文件和行號
