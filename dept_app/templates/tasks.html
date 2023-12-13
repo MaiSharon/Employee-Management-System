@@ -101,6 +101,7 @@ document.getElementById('add').addEventListener('click', function() {
     const taskDetail = document.getElementById('taskDetail').value;
     const taskLevel = document.getElementById('taskLevel').value;
 
+
     // 確保所有欄位都已填寫
     if (!taskTitle || !taskDetail || !taskLevel) {
         alert('任務名稱、詳細說明和等級均為必填！');
@@ -120,7 +121,7 @@ document.getElementById('add').addEventListener('click', function() {
     }
 
     // 特定標題與等級的驗證
-    if (taskTitle === '請款' && taskLevel !== '1') {
+    if (taskTitle.includes('請款') && taskLevel !== '1') {
         alert("請款的任務級別必須為 '重要'");
         return;
     }
