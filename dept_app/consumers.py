@@ -12,27 +12,26 @@ logger = logging.getLogger(__name__)
 
 class ChatConsumer(AsyncWebsocketConsumer):
     """
-    負責管理聊天室的WebSocket連接。
+    負責管理聊天室的 WebSocket連接。
 
-    Main features:
     - 用戶加入/離開聊天室
     - 接收和發送消息
     - 實時更新用戶在線狀態
     - 實時更新新註冊的用戶
 
     Attributes:
-    user_id (str): 用戶ID。
-    username (str): 用戶名。
-    room_name (str): 聊天室名稱。
-    room_group_name (str): 聊天室群組名稱。
-    is_connected (bool): 用戶是否已連接。
+        user_id (str): 用戶ID
+        username (str): 用戶名
+        room_name (str): 聊天室名稱
+        room_group_name (str): 聊天室群組名稱
+        is_connected (bool): 用戶是否已連接
 
     Methods:
-        connect: 處理新的 WebSocket 連接。
-        disconnect: 斷開 WebSocket 連接。
-        receive: 處理來自客戶端的訊息。
+        connect: 處理新的 WebSocket 連接
+        disconnect: 斷開 WebSocket 連接
+        receive: 處理來自客戶端的訊息
         new_admin: 更新新註冊用戶給前端
-        chat_message: 處理聊天室群組的訊息。
+        chat_message: 處理聊天室群組的訊息
         start_heartbeat: 心跳機制
         user_status: 更新用戶狀態給前端
         mark_user_online: 標記用戶為在線
@@ -43,10 +42,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
         """
         處理 WebSocket 連接
 
-        Steps：
+        Steps:
         1. 從session中提取用戶信息
             1.1 若有未認證用戶 'Anonymous' 則中斷連接
-        2. 將用戶加入聊天室群組（這裡只有一個公開群)
+        2. 將用戶加入聊天室群組(這裡只有一個公開群)
         3. 啟動心跳機制用於保持用戶在線
         4. 標記用戶為在線
         """
@@ -129,20 +128,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def receive(self, text_data):
         """
-        接收與處理客戶端發來的消息。
+        接收與處理客戶端發來的消息
 
         Steps:
         1. 解析收到的 JSON 格式的訊息。
-        2. 如果訊息包含 'message' 這個鍵，則將其轉發到聊天室群組。
+        2. 如果訊息包含 'message' 這個鍵，則將其轉發到聊天室群組
 
         Args:
-            text_data (str): 客戶端發來的 JSON 格式的文本數據。
+            text_data (str): 客戶端發來的 JSON 格式的文本數據
 
         Returns:
-            None: 訊息將會被轉發到聊天室群組。
+            None: 訊息將會被轉發到聊天室群組
 
         Raises:
-            json.JSONDecodeError: 當JSON格式不正確。
+            json.JSONDecodeError: 當JSON格式不正確
         """
         try:
             text_data_json = json.loads(text_data)
@@ -169,17 +168,17 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # 從這裡發送新管理員的訊息到前端
     async def new_admin(self, event):
         """
-        處理新管理員創建事件，並通過 WebSocket 向客戶端發送有新的管理員帳號被創建。
+        處理新管理員創建事件，並通過 WebSocket 向客戶端發送有新的管理員帳號被創建
 
         Step:
-        1. 從事件中提取管理員信息。
-        2. 通過 WebSocket 向客戶端發送該消息。
+        1. 從事件中提取管理員信息
+        2. 通過 WebSocket 向客戶端發送該消息
 
         Args:
-            event (dict): 包含新管理員信息的事件對象。
+            event (dict): 包含新管理員信息的事件對象
 
         Returns:
-            None: 這個函數不返回任何值，但會通過 WebSocket 像客端發送消息。
+            None: 這個函數不返回任何值，但會通過 WebSocket 像客端發送消息
         """
         # Extract the admin information from the event
         admin_info = event['user']
@@ -200,20 +199,20 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def chat_message(self, event):
         """
-        處理從聊天室群組接收到的消息。
+        處理從聊天室群組接收到的消息
 
         Steps:
-        1. 從事件中提取消息內容和發送者的用戶名。
-        2. 將消息以 JSON 格式發送到 WebSocket 。
+        1. 從事件中提取消息內容和發送者的用戶名
+        2. 將消息以 JSON格式發送到 WebSocket
 
         Args:
-            event (dict): 包含 message (發送的文本內容)和 username (發送者的用戶名)的信息。
+            event (dict): 包含 message(發送的文本內容)和 username(發送者的用戶名)的信息。
 
         Returns:
             None: 消息將被發送到 WebSocket。
 
         Raises:
-            KeyError: 當 event 的 'message' 或 'username' 不存在。
+            KeyError: 當 event的 'message' 或 'username' 不存在。
         """
         try:
             message = event['message']
@@ -234,19 +233,19 @@ class ChatConsumer(AsyncWebsocketConsumer):
         進行心跳機制以維護用戶的在線狀態。如果心跳機制中斷，將觸發其他方法以標記用戶為離線。
 
         Steps:
-        1. 每隔段時間（30秒）發送一個心跳包到前端。
-        2. 確認 WebSocket 連接沒斷開（self.is_connected 為 True）。
+        1. 每隔段時間（30秒）發送一個心跳包到前端
+        2. 確認 WebSocket 連接沒斷開（self.is_connected 為 True）
 
         Args:
             無
 
         Returns:
-            None: 此函數不返回任何值。
+            None: 此函數不返回任何值
 
         Raises:
-            KeyError: 當 'user_id' 不存在。
-            json.JSONDecodeError: 當JSON格式不正確。
-            Exception: 其他未指定的錯誤。
+            KeyError: 當 'user_id' 不存在
+            json.JSONDecodeError: 當JSON格式不正確
+            Exception: 其他未指定的錯誤
         """
         while True:
             await asyncio.sleep(30)  # Sleep for 30 seconds
@@ -281,12 +280,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
     async def user_status(self, event):
         """
-        更新用戶的在線狀態並發送到前端。
+        更新用戶的在線狀態並發送到前端
 
         Args:
-            event (dict): 包含用戶 ID 和在線狀態的事件字典。
-                - user_id (str): 用戶的唯一識別符。
-                - is_online (bool): 用戶的在線狀態。
+            event (dict): 包含用戶 ID 和在線狀態的事件字典
+                - user_id (str): 用戶的唯一識別符
+                - is_online (bool): 用戶的在線狀態
 
         Returns:
             None: 此方法不返回任何值。
@@ -315,21 +314,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def mark_user_online(self, user_id):
         """
-        將指定的用戶標記為上線狀態並向前端發送更新。
+        將指定的用戶標記為上線狀態並向前端發送更新
 
         Steps：
-        1. 根據提供的 user_id 查找對應的 Admin 對象。
-        2. 將 Admin 對象的 is_online 屬性設置為 True。
-        3. 通過 WebSocket 向前端發送更新後的在線狀態。
+        1. 根據提供的 user_id 查找對應的 Admin 對象
+        2. 將 Admin 對象的 is_online 屬性設置為 True
+        3. 通過 WebSocket 向前端發送更新後的在線狀態
 
         Args:
-            user_id (str): 要標記為上線的用戶的 ID。
+            user_id (str): 要標記為上線的用戶的 ID
 
         Returns:
-            None: 此方法不返回任何值。
+            None: 此方法不返回任何值
 
         Raises:
-            Admin.DoesNotExist: 如果 user_id 在 Admin 對象中不存在。
+            Admin.DoesNotExist: 如果 user_id 在 Admin 對象中不存在
         """
         try:
             user = Admin.objects.get(id=user_id)
@@ -354,12 +353,12 @@ class ChatConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def mark_user_offline(self, user_id):
         """
-        將指定的用戶標記為離線狀態並向前端發送更新。
+        將指定的用戶標記為離線狀態並向前端發送更新
 
-        步驟：
-        1. 根據提供的 user_id 查找對應的 Admin 對象。
-        2. 將 Admin 對象的 is_online 屬性設置為 False。
-        3. 通過 WebSocket 向前端發送更新後的在線狀態。
+        Steps:
+            1. 根據提供的 user_id 查找對應的 Admin 對象
+            2. 將 Admin 對象的 is_online 屬性設置為 False
+            3. 通過 WebSocket 向前端發送更新後的在線狀態
 
         Args:
             user_id (str): 要標記為離線的用戶的 ID。
@@ -389,8 +388,4 @@ class ChatConsumer(AsyncWebsocketConsumer):
             )
         except Admin.DoesNotExist:
             logger.warning('User ID does not exist in Admin model')
-
-
-
-
 
