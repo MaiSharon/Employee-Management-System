@@ -51,8 +51,8 @@ def mobile_add(request):
     """
     處理新增手機設備的請求。
 
-    - GET: 返回空白新增手機設備表單(MobileModelForm)。
-    - POST: 處理提交的手機設備數據以創建新手機設備。
+    - GET: 返回空白的新增手機設備表單(MobileModelForm)。
+    - POST: 處理提交的手機設備數據，並添加到手機設備列表中。
 
     Steps for GET: 創建並顯示空的 MobileModelForm。
 
@@ -70,8 +70,8 @@ def mobile_add(request):
     Returns HttpResponse:
         - GET: 渲染過的手機設備頁面，含空白 MobileModelForm。
         - POST:
-            - 成功，重定向到手機設備列表頁面。
-            - 失敗，重渲染新增手機設備頁面，含錯誤信息和空白 MobileModelForm。
+            - 成功，重定向手機設備列表頁面。
+            - 失敗，重渲染新增手機設備頁面，含錯誤信息和已填寫的 MobileModelForm。
     """
     if request.method == 'GET':
         form = MobileModelForm()
@@ -89,7 +89,7 @@ def mobile_edit(request, nid):
     處理編輯手機設備的請求。
 
     - GET: 返回用於編輯特定手機設備的表單(MobileEditModelForm)。
-    - POST: 處理提交編輯的手機設備，更新特定手機設備。
+    - POST: 處理提交編輯的手機設備數據，更新特定手機設備。
 
     Steps for GET:
         1. 根據提供的 ID(nid)獲取特定手機設備數據。
@@ -99,7 +99,7 @@ def mobile_edit(request, nid):
         1. 驗證編輯表單。
         2. 若驗證成功
             2.1. 更新並保存當前手機數據到特定 Mobile 對象
-            2.2. 重定向到手機設備列表頁面。
+            2.2. 重定向手機設備列表頁面。
         3. 若驗證失敗
             3.1 顯示錯誤信息並重渲染表單。
 
@@ -132,12 +132,12 @@ def mobile_delete(request, nid):
     - POST: 刪除指定的手機設備。
 
     Steps for POST:
-    1. 根據提供的 ID(（)nid)獲取並刪除特定手機設備對象。
-    2. 返回手機設備列表。
+        1. 根據提供的 ID(nid)獲取並刪除特定 Mobile 對象。
+        2. 返回手機設備列表頁面。
 
     Args:
         request (HttpRequest): 客戶端的 HTTP 請求。
-        nid (int): 要刪除的手機設備的 ID。
+        nid (int): 要刪除手機設備的 ID。
 
     Returns HttpResponse:
         - POST: 重定向手機設備列表頁面。
