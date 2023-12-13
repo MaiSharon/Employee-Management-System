@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from dept_app import models
 
 class TaskSerializer(serializers.ModelSerializer):
