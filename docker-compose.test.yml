@@ -4,13 +4,13 @@ services:
   ngrok_jenkins:
     image: ngrok/ngrok
     container_name: jenkins_ngrok
+    env_file: .env.test
     command:
       - "tunnel"
       - "--region=us"
       - "--label"
       - "edge=edghts_2SNk363rvTx8UIR6Rbj9eF0oq7G"
       - "http://nginx:80"
-    env_file: .env.test
     ports:
       - "4040:4040"
 
@@ -20,9 +20,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile.nginx.test
-    entrypoint: [ "nginx", "-g", "daemon off;" ]
     volumes:
       - staticfiles-data:/var/prj_dept/staticfiles
+    entrypoint: [ "nginx", "-g", "daemon off;" ]
     depends_on:
       web:
         condition: service_healthy
@@ -32,13 +32,12 @@ services:
 
   mysql:
     image: ppp300a/prj_dept-mysql8-test:1.0.1
-    container_name: dept-mysql
     build:
       context: .
       dockerfile: Dockerfile.mysql8
+    env_file: .env.test
     volumes:
       - "/c/Users/SharonMai/mysql_data:/var/lib/mysql"
-    env_file: .env.prod
     entrypoint: ["/usr/local/bin/mysql8-init.sh"]
     ports:
       - "3306:3306"
@@ -53,9 +52,9 @@ services:
     environment:
       - PYTHONPATH=/data/prj_dept  # 當項目結構非django預設時需要使用
       - DJANGO_SETTINGS_MODULE=settings.prod  # 告诉 Django 使用哪个设置文件
-    entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
     volumes:
       - staticfiles-data:/data/prj_dept/staticfiles
+    entrypoint: [ "/bin/sh", "/data/prj_dept/start.prod.sh" ]  # 容器啟動後執行的命令
     depends_on:
       - mysql
       - redis
@@ -80,8 +79,7 @@ services:
     build:
       context: .  # Dockerfile的位置
       dockerfile: Dockerfile.test
-    env_file:
-      - .env.test
+    env_file: .env.test
     environment:
       - PYTHONPATH=/data/prj_dept  # 當項目結構非django預設時需要使用
       - DJANGO_SETTINGS_MODULE=settings.prod  # 告诉 Django 使用哪个设置文件
