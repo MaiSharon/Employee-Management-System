@@ -2,7 +2,7 @@ version: "3.8"
 
 services:
   nginx:
-    image: ppp300a/prj_dept-nginx:1.0.0
+    image: ppp300a/prj_dept-nginx:1.0.1
     build:
       context: .
       dockerfile: Dockerfile.nginx
@@ -21,10 +21,10 @@ services:
 
 
   mysql:
-    image: ppp300a/prj_dept-mysql8:1.0.0
-#    build:
-#      context: .  # Dockerfile的位置
-#      dockerfile: Dockerfile.mysql8
+    image: ppp300a/prj_dept-mysql8:1.0.1
+    build:
+      context: .  # Dockerfile的位置
+      dockerfile: Dockerfile.mysql8
     env_file: .env.prod
     volumes:
       - mysql-data:/var/lib/mysql
@@ -42,7 +42,7 @@ services:
 
 
   web:
-    image: ppp300a/prj_dept-web:1.0.0
+    image: ppp300a/prj_dept-web:1.0.1
     container_name: dept-web
     build:
       context: .  # Dockerfile的位置
@@ -80,7 +80,7 @@ services:
 
 
   celery_worker:
-    image: ppp300a/prj_dept-celery-test:1.0.1
+    image: ppp300a/prj_dept-web:1.0.1
     build:
       context: .  # Dockerfile的位置
       dockerfile: Dockerfile.test

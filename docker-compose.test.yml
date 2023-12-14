@@ -75,7 +75,7 @@ services:
 
 
   celery_worker:
-    image: ppp300a/prj_dept-celery-test:1.0.1
+    image: ppp300a/prj_dept-web-test:1.0.1
     build:
       context: .  # Dockerfile的位置
       dockerfile: Dockerfile.test
