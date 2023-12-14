@@ -141,6 +141,7 @@ Quacqkersort 是專為公司內部管理層設計的開源專案，提供專屬�
 
 ### 生產環境
 * AWS EC2: 應用部署和計算。
+  * 使用 SSH 密鑰進行安全連接。
   * Docker Compose: 容器化服務管理。
     * 運行容器化服務，包括 Web(Django)、MySQL、Redis、Celery 和 Nginx。
   * Nginx: 反向代理和監控系統訪問。
