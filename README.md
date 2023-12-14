@@ -9,7 +9,7 @@
 </h3>
 
 <p align="center">
-    <a href="https://quacqkersort.be/login/">View Quacqkersort Web</a>
+    <a href="https://quacqkersort.be">View Quacqkersort Web</a>
     ·
     <a href="https://grafana.quacqkersort.be">View Grafana Dashboard</a>
     ·
@@ -25,6 +25,8 @@
 <p align="center">
   <img src="screenshot/login.png" alt="login">
   <img src="screenshot/admin.png" alt="admin">
+  <img src="screenshot/task.png" alt="task">
+  <img src="screenshot/email.png" alt="email" width="90%">
 </p>
 
 <details>
@@ -36,7 +38,6 @@
     <img src="screenshot/admin.png" alt="admin">
     <img src="screenshot/add-before.png" alt="CURD-normal">
     <img src="screenshot/add.png" alt="CURD-add">
-    <img src="screenshot/task.png" alt="task">
   </p>
 </details>
 
